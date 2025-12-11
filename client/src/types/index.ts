@@ -9,11 +9,13 @@ export interface User {
 
 export interface Review {
     _id: string;
+    /** Alias para compatibilidad - algunos endpoints devuelven 'id' en lugar de '_id' */
+    id?: string;
     user: string | User;
     name: string;
     rating: number;
     comment: string;
-    title?: string;
+    title: string;
     createdAt: string;
 }
 
@@ -65,8 +67,9 @@ export interface ShippingAddress {
     address: string;
     city: string;
     postalCode: string;
-    country: string;
-    phone?: string;
+    /** @deprecated No usado en el backend actual */
+    country?: string;
+    phone: string;
 }
 
 export interface Order {

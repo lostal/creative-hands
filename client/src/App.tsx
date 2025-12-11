@@ -14,23 +14,25 @@ import Navbar from "./components/Navbar";
 import CartDrawer from "./components/CartDrawer";
 import NoiseOverlay from "./components/NoiseOverlay";
 import useLenis from "./hooks/useLenis";
-const ChatWidget = lazy(() => import("./components/ChatWidget"));
 import ErrorBoundary from "./components/ErrorBoundary";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Products from "./pages/Products";
-import About from "./pages/About";
-import Perfil from "./pages/Perfil";
-import ShippingReturns from "./pages/ShippingReturns";
-import PrivacyTerms from "./pages/PrivacyTerms";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import MyOrders from "./pages/MyOrders";
-import OrderConfirmation from "./pages/OrderConfirmation";
 import Footer from "./components/Footer";
-const Admin = lazy(() => import("./pages/Admin"));
 import { Loader } from "lucide-react";
+
+// Lazy loading de páginas para reducir bundle inicial
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Products = lazy(() => import("./pages/Products"));
+const About = lazy(() => import("./pages/About"));
+const Perfil = lazy(() => import("./pages/Perfil"));
+const ShippingReturns = lazy(() => import("./pages/ShippingReturns"));
+const PrivacyTerms = lazy(() => import("./pages/PrivacyTerms"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const MyOrders = lazy(() => import("./pages/MyOrders"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
+const Admin = lazy(() => import("./pages/Admin"));
+const ChatWidget = lazy(() => import("./components/ChatWidget"));
 
 interface ProtectedRouteProps {
   children: ReactNode;

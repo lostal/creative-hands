@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
 import User from "../models/User";
 import logger from "../utils/logger";
 import { getErrorMessage } from "../utils/errors";
@@ -19,6 +20,30 @@ interface JwtPayload {
   iat?: number;
   exp?: number;
 }
+
+/**
+ * Middleware para validar que un parámetro de URL sea un ObjectId válido de MongoDB
+ * Previene errores de CastError y posibles inyecciones
+ * @param paramName - Nombre del parámetro a validar (default: 'id')
+ */
+export const validateObjectId = (paramName: string = "id") => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params[paramName];
+
+    if (!id) {
+      return next(); // Si no hay parámetro, continuar (puede ser opcional)
+    }
+
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: `ID inválido: ${paramName}`,
+      });
+    }
+
+    next();
+  };
+};
 
 /**
  * Middleware para proteger rutas

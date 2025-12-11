@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
+import logger from "../utils/logger";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -44,17 +45,17 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       });
 
       newSocket.on("connect", () => {
-        if (import.meta.env.DEV) console.log("✅ Socket conectado");
+        logger.socket("✅ Socket conectado");
         setConnected(true);
       });
 
       newSocket.on("disconnect", () => {
-        if (import.meta.env.DEV) console.log("❌ Socket desconectado");
+        logger.socket("❌ Socket desconectado");
         setConnected(false);
       });
 
       newSocket.on("connect_error", (error) => {
-        console.error("Error de conexión:", error);
+        logger.error("Error de conexión:", error);
         setConnected(false);
       });
 

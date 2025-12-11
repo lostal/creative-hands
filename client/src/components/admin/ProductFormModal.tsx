@@ -317,7 +317,7 @@ const ProductFormModal = ({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          onClick={(e: any) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className="glass rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         >
           <div className="flex justify-between items-center mb-6">

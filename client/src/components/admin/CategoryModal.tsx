@@ -74,7 +74,7 @@ const CategoryModal = ({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          onClick={(e: any) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className="glass rounded-3xl p-6 max-w-lg w-full"
         >
           <div className="flex justify-between items-center mb-4">

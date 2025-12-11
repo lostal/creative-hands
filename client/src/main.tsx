@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { registerSW } from "virtual:pwa-register";
 import { CartProvider } from "./context/CartContext.jsx";
+import logger from "./utils/logger";
 
 // Registrar el service worker
 let updateSW: ((reloadPage?: boolean | undefined) => Promise<void>) | undefined;
@@ -14,9 +15,7 @@ registerSW({
     }
   },
   onOfflineReady() {
-    if (import.meta.env.DEV) {
-      console.log("App lista para trabajar sin conexión");
-    }
+    logger.pwa("App lista para trabajar sin conexión");
   },
   onRegistered(registration) {
     updateSW = registration?.update?.bind(registration);

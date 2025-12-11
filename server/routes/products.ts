@@ -4,7 +4,7 @@
  */
 import express from "express";
 import multer from "multer";
-import { protect, adminOnly } from "../middleware/auth";
+import { protect, adminOnly, validateObjectId } from "../middleware/auth";
 import { validate, reviewSchema } from "../validators/schemas";
 import { storage } from "../config/cloudinary";
 
@@ -43,23 +43,24 @@ router.get("/categories/list", productController.getCategoriesList);
 router.get("/category/:slug", productController.getProductsByCategory);
 
 // GET /api/products/:id - Obtener producto por ID
-router.get("/:id", productController.getProductById);
+router.get("/:id", validateObjectId(), productController.getProductById);
 
 // ==================== RUTAS DE REVIEWS (Autenticación requerida) ====================
 
 // POST /api/products/:id/reviews - Añadir review
 router.post(
   "/:id/reviews",
+  validateObjectId(),
   protect,
   validate(reviewSchema),
   reviewController.addReview,
 );
 
 // PUT /api/products/:id/reviews/:reviewId - Editar review
-router.put("/:id/reviews/:reviewId", protect, reviewController.updateReview);
+router.put("/:id/reviews/:reviewId", validateObjectId(), validateObjectId("reviewId"), protect, reviewController.updateReview);
 
 // DELETE /api/products/:id/reviews/:reviewId - Eliminar review
-router.delete("/:id/reviews/:reviewId", protect, reviewController.deleteReview);
+router.delete("/:id/reviews/:reviewId", validateObjectId(), validateObjectId("reviewId"), protect, reviewController.deleteReview);
 
 // ==================== RUTAS DE ADMIN (Solo administradores) ====================
 
@@ -75,6 +76,7 @@ router.post(
 // PUT /api/products/:id - Actualizar producto
 router.put(
   "/:id",
+  validateObjectId(),
   protect,
   adminOnly,
   upload.array("images", 5),
@@ -82,11 +84,12 @@ router.put(
 );
 
 // DELETE /api/products/:id - Eliminar producto
-router.delete("/:id", protect, adminOnly, productController.deleteProduct);
+router.delete("/:id", validateObjectId(), protect, adminOnly, productController.deleteProduct);
 
 // DELETE /api/products/:id/images - Eliminar imagen de producto
 router.delete(
   "/:id/images",
+  validateObjectId(),
   protect,
   adminOnly,
   productController.deleteProductImage,

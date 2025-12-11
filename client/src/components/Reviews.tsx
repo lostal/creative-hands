@@ -6,7 +6,7 @@ import { Trash2, Edit3 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { MotionDiv, MotionButton } from "../lib/motion";
 
-import { Product } from "../types";
+import { Product, Review } from "../types";
 
 // Reviews.jsx - componente consolidado para listado, métricas y formulario
 interface StarsDisplayProps {
@@ -69,7 +69,7 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
       r.user &&
       typeof r.user === "object" &&
       user &&
-      (r.user._id === user._id || (r.user as any).id === user._id),
+      (r.user._id === user._id || r.user.id === user._id),
   );
 
   const openFormForNew = () => {
@@ -79,7 +79,7 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
     setFormVisible(true);
   };
 
-  const openFormForEdit = (rev: any) => {
+  const openFormForEdit = (rev: Review) => {
     // switch to inline edit mode (overlay) so the card doesn't change height
     setError(null);
     setForm({
@@ -87,7 +87,7 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
       comment: rev.comment || "",
       rating: rev.rating || 5,
     });
-    setEditingId(rev._id || rev.id);
+    setEditingId(rev._id || rev.id || null);
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -126,7 +126,7 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
     }
   };
 
-  const remove = async (rev: any) => {
+  const remove = async (rev: Review) => {
     if (!window.confirm("¿Eliminar tu valoración?")) return;
     try {
       const id = rev._id || rev.id;
