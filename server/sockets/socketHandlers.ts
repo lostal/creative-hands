@@ -4,6 +4,7 @@
  */
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
+import cookie from "cookie";
 import User from "../models/User";
 import Message from "../models/Message";
 import logger from "../utils/logger";
@@ -25,13 +26,26 @@ const connectedUsers = new Map<string, Set<string>>();
 
 /**
  * Middleware de autenticación para Socket.IO
- * Verifica el token JWT y adjunta información del usuario al socket
+ * Verifica el token JWT desde cookies httpOnly o auth header
  */
 export const createAuthMiddleware = () => {
     return async (socket: Socket, next: (err?: Error) => void) => {
         try {
             const authSocket = socket as AuthenticatedSocket;
-            const token = socket.handshake.auth.token;
+
+            // Intentar obtener token de las cookies (httpOnly - preferido)
+            let token: string | undefined;
+
+            const cookieHeader = socket.handshake.headers.cookie;
+            if (cookieHeader) {
+                const cookies = cookie.parse(cookieHeader);
+                token = cookies.token;
+            }
+
+            // Fallback: token en auth (para compatibilidad)
+            if (!token) {
+                token = socket.handshake.auth.token;
+            }
 
             if (!token) {
                 return next(new Error("Authentication error: No token provided"));

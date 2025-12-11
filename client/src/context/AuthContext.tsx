@@ -18,7 +18,6 @@ interface LoginCredentials {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   loading: boolean;
   register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
@@ -43,12 +42,16 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * AuthProvider - Maneja autenticación usando httpOnly cookies
+ *
+ * SEGURIDAD: El token JWT se almacena en una cookie httpOnly configurada por el servidor.
+ * Esto previene ataques XSS ya que JavaScript no puede acceder a la cookie.
+ * El navegador envía automáticamente la cookie en cada petición (withCredentials: true).
+ */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // Usar localStorage para persistir la sesión entre pestañas y recargas.
-  // Esto mejora la UX ya que el usuario no necesita loguearse en cada pestaña.
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 
   // Hook de navegación para redirecciones sin recargar la página
   let navigate: ReturnType<typeof useNavigate> | null = null;
@@ -60,10 +63,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Función para limpiar auth y redirigir (usada por interceptor y logout)
   const clearAuthAndRedirect = useCallback(() => {
-    setToken(null);
     setUser(null);
-    delete api.defaults.headers.common["Authorization"];
-    localStorage.removeItem("token");
 
     // Usar navegación de React en lugar de window.location.replace
     // Esto evita recargar la app y perder estado (ej. carrito)
@@ -71,17 +71,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
-
-  // Configurar axios con el token
-  useEffect(() => {
-    if (token) {
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      localStorage.setItem("token", token);
-    } else {
-      delete api.defaults.headers.common["Authorization"];
-      localStorage.removeItem("token");
-    }
-  }, [token]);
 
   // Interceptor global para capturar 401 (token expirado / inválido)
   useEffect(() => {
@@ -102,29 +91,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [clearAuthAndRedirect]);
 
-  // Verificar usuario al cargar
+  // Verificar usuario al cargar (la cookie se envía automáticamente)
   useEffect(() => {
     const checkAuth = async () => {
-      if (token) {
-        try {
-          const { data } = await api.get<{ user: User }>("/auth/me");
-          setUser(data.user);
-        } catch (error) {
-          logger.error("Error al verificar autenticación:", error);
-          setToken(null);
-          setUser(null);
-        }
+      try {
+        // Intentar obtener usuario actual - si hay cookie válida, funcionará
+        const { data } = await api.get<{ user: User }>("/auth/me");
+        setUser(data.user);
+      } catch (error) {
+        // Sin cookie válida o expirada - usuario no autenticado
+        logger.info("No hay sesión activa");
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
-  }, [token]);
+  }, []);
 
   const register = useCallback(async (userData: RegisterData) => {
     try {
-      const { data } = await api.post<{ token: string; user: User }>("/auth/register", userData);
-      setToken(data.token);
+      // El servidor establece la cookie httpOnly automáticamente
+      const { data } = await api.post<{ user: User }>("/auth/register", userData);
       setUser(data.user);
       return { success: true };
     } catch (error: unknown) {
@@ -137,28 +126,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
-      const { data } = await api.post<{ token: string }>("/auth/login", credentials);
-      // Guardar token y establecer header de la instancia api inmediatamente
-      api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-      // Guardar en localStorage para persistir entre pestañas
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
-
-      try {
-        const { data: me } = await api.get<{ user: User }>("/auth/me");
-        setUser(me.user);
-        return { success: true };
-      } catch (err: unknown) {
-        // Si /me falla, limpiar estado y devolver error
-        delete api.defaults.headers.common["Authorization"];
-        localStorage.removeItem("token");
-        setToken(null);
-        setUser(null);
-        return {
-          success: false,
-          message: getApiErrorMessage(err) || "Error al verificar usuario después del login",
-        };
-      }
+      // El servidor establece la cookie httpOnly automáticamente
+      const { data } = await api.post<{ user: User }>("/auth/login", credentials);
+      setUser(data.user);
+      return { success: true };
     } catch (error: unknown) {
       return {
         success: false,
@@ -169,11 +140,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = useCallback(async () => {
     try {
+      // El servidor limpia la cookie httpOnly
       await api.post("/auth/logout");
     } catch (error) {
       logger.error("Error al cerrar sesión:", error);
     } finally {
-      setToken(null);
       setUser(null);
     }
   }, []);
@@ -189,7 +160,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value = useMemo<AuthContextType>(() => ({
     user,
-    token,
     loading,
     register,
     login,
@@ -198,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     clearAuthAndRedirect,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
-  }), [user, token, loading, register, login, refreshUser, logout, clearAuthAndRedirect]);
+  }), [user, loading, register, login, refreshUser, logout, clearAuthAndRedirect]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

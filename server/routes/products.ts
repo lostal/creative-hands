@@ -5,7 +5,7 @@
 import express from "express";
 import multer from "multer";
 import { protect, adminOnly, validateObjectId } from "../middleware/auth";
-import { validate, reviewSchema, productSchema } from "../validators/schemas";
+import { validate, reviewSchema, productSchema, productUpdateSchema } from "../validators/schemas";
 import { storage } from "../config/cloudinary";
 import { UPLOAD_LIMITS } from "../config/constants";
 
@@ -82,7 +82,7 @@ router.put(
   protect,
   adminOnly,
   upload.array("images", UPLOAD_LIMITS.MAX_IMAGES_PER_PRODUCT),
-  validate(productSchema),
+  validate(productUpdateSchema),
   productController.updateProduct,
 );
 

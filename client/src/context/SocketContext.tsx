@@ -25,13 +25,12 @@ interface SocketProviderProps {
 export const SocketProvider = ({ children }: SocketProviderProps) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
-  const { token, isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
     // Esperar a que AuthContext haya terminado la verificación inicial (loading=false)
-    // para evitar conectar un socket con un token que luego el servidor invalide y
-    // provoque una desconexión inmediata.
-    if (!loading && isAuthenticated && token) {
+    // para evitar conectar un socket que luego el servidor invalide.
+    if (!loading && isAuthenticated) {
       // Determinar URL del servidor de sockets:
       // En producción, usar el mismo dominio (sin puerto específico)
       // En desarrollo, usar localhost:5000
@@ -41,7 +40,8 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
           : "http://localhost:5000";
 
       const newSocket = io(serverUrl, {
-        auth: { token },
+        // Enviar cookies automáticamente para autenticación
+        withCredentials: true,
       });
 
       newSocket.on("connect", () => {
@@ -65,7 +65,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
         newSocket.close();
       };
     } else {
-      // Si aún está cargando o no hay token, asegurar que no haya sockets abiertos
+      // Si aún está cargando o no autenticado, asegurar que no haya sockets abiertos
       if (socket) {
         socket.close();
         setSocket(null);
@@ -74,7 +74,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     // Nota: 'socket' omitido intencionalmente para evitar ciclo de reconexión infinito
-  }, [isAuthenticated, token, loading]);
+  }, [isAuthenticated, loading]);
 
   const value: SocketContextType = {
     socket,

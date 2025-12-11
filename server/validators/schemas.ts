@@ -47,7 +47,7 @@ export const updateProfileSchema = Joi.object({
   "object.with": "Se requiere la contraseña actual para cambiar la contraseña",
 });
 
-// Esquema para crear/actualizar producto
+// Esquema para crear producto (todos los campos requeridos)
 export const productSchema = Joi.object({
   name: Joi.string().required().min(3).max(100).messages({
     "string.empty": "El nombre del producto es obligatorio",
@@ -71,6 +71,31 @@ export const productSchema = Joi.object({
     .optional(),
   keepImages: Joi.string().optional(), // JSON string array
   order: Joi.string().optional(), // JSON string array
+});
+
+// Esquema para actualizar producto (campos opcionales para partial updates)
+export const productUpdateSchema = Joi.object({
+  name: Joi.string().min(3).max(100).messages({
+    "string.min": "El nombre debe tener al menos 3 caracteres",
+  }),
+  description: Joi.string().min(10).messages({
+    "string.min": "La descripción debe tener al menos 10 caracteres",
+  }),
+  price: Joi.number().min(0).messages({
+    "number.base": "El precio debe ser un número",
+    "number.min": "El precio no puede ser negativo",
+  }),
+  stock: Joi.number().integer().min(0).messages({
+    "number.base": "El stock debe ser un número",
+    "number.min": "El stock no puede ser negativo",
+  }),
+  categoryId: Joi.string().allow(""),
+  materials: Joi.alternatives()
+    .try(Joi.array().items(Joi.string()), Joi.string()),
+  keepImages: Joi.string(), // JSON string array
+  order: Joi.string(), // JSON string array
+}).min(1).messages({
+  "object.min": "Debe proporcionar al menos un campo para actualizar",
 });
 
 // Esquema para review

@@ -2,11 +2,59 @@
  * Controlador de autenticación
  * Contiene la lógica de negocio para registro, login y gestión de usuarios
  */
-import { Request, Response } from "express";
+import { Request, Response, CookieOptions } from "express";
 import jwt, { SignOptions } from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
+
+/**
+ * Configuración de cookies para autenticación
+ * httpOnly: Previene acceso desde JavaScript (XSS protection)
+ * secure: Solo HTTPS en producción
+ * sameSite: Protección contra CSRF
+ */
+const getCookieOptions = (): CookieOptions => {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  // Parsear JWT_EXPIRE para obtener milisegundos
+  const jwtExpire = process.env.JWT_EXPIRE || "7d";
+  let maxAge = 7 * 24 * 60 * 60 * 1000; // Default: 7 días en ms
+
+  if (jwtExpire.endsWith("d")) {
+    maxAge = parseInt(jwtExpire) * 24 * 60 * 60 * 1000;
+  } else if (jwtExpire.endsWith("h")) {
+    maxAge = parseInt(jwtExpire) * 60 * 60 * 1000;
+  } else if (jwtExpire.endsWith("m")) {
+    maxAge = parseInt(jwtExpire) * 60 * 1000;
+  }
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "strict" : "lax",
+    maxAge,
+    path: "/",
+  };
+};
+
+/**
+ * Establece el token JWT en una cookie httpOnly
+ */
+const setTokenCookie = (res: Response, token: string): void => {
+  res.cookie("token", token, getCookieOptions());
+};
+
+/**
+ * Elimina la cookie de autenticación
+ */
+const clearTokenCookie = (res: Response): void => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    path: "/",
+  });
+};
 
 /**
  * Generar token JWT
@@ -51,9 +99,11 @@ export const register = async (req: Request, res: Response) => {
 
     const token = generateToken(user._id.toString());
 
+    // Establecer token en cookie httpOnly (más seguro que localStorage)
+    setTokenCookie(res, token);
+
     res.status(201).json({
       success: true,
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -103,9 +153,11 @@ export const login = async (req: Request, res: Response) => {
 
     const token = generateToken(user._id.toString());
 
+    // Establecer token en cookie httpOnly (más seguro que localStorage)
+    setTokenCookie(res, token);
+
     res.json({
       success: true,
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -168,6 +220,9 @@ export const logout = async (req: AuthRequest, res: Response) => {
       isOnline: false,
       lastSeen: new Date(),
     });
+
+    // Limpiar cookie de autenticación
+    clearTokenCookie(res);
 
     res.json({
       success: true,

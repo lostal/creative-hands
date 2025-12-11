@@ -102,7 +102,7 @@ test("admin can update and delete product", async () => {
         expiresIn: getJwtExpire(),
     });
 
-    const productPayload = { name: "ToUpdate", description: "x", price: 5 };
+    const productPayload = { name: "ToUpdate", description: "A product that will be updated and deleted", price: 5 };
     const createRes = await request(app)
         .post("/api/products")
         .set("Authorization", `Bearer ${token}`)
@@ -110,11 +110,11 @@ test("admin can update and delete product", async () => {
     expect(createRes.statusCode).toBe(201);
     const prodId = createRes.body.product._id;
 
-    // update
+    // update - solo campos opcionales, no requiere todos los campos
     const updateRes = await request(app)
         .put(`/api/products/${prodId}`)
         .set("Authorization", `Bearer ${token}`)
-        .send({ name: "Updated" });
+        .send({ name: "Updated", description: "An updated product description" });
     expect(updateRes.statusCode).toBe(200);
     expect(updateRes.body.product.name).toBe("Updated");
 
@@ -143,13 +143,16 @@ test("GET /api/products is public and returns products", async () => {
     });
     const productPayload = {
         name: "PublicProduct",
-        description: "pub",
+        description: "A public product for testing purposes",
         price: 3,
     };
-    await request(app)
+    const createRes = await request(app)
         .post("/api/products")
         .set("Authorization", `Bearer ${token}`)
         .send(productPayload);
+
+    // Verificar que el producto se creó correctamente
+    expect(createRes.statusCode).toBe(201);
 
     const res = await request(app).get("/api/products");
     expect(res.statusCode).toBe(200);
