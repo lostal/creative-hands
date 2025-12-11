@@ -62,6 +62,8 @@ export const SocketProvider = ({ children }) => {
         setConnected(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Nota: 'socket' omitido intencionalmente para evitar ciclo de reconexión infinito
   }, [isAuthenticated, token, loading]);
 
   const value = {

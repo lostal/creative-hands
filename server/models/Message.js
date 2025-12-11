@@ -37,5 +37,8 @@ const messageSchema = new mongoose.Schema(
 
 // Índice compuesto para búsquedas eficientes
 messageSchema.index({ conversationId: 1, createdAt: -1 });
+// Índice para consultas de mensajes no leídos por receptor
+messageSchema.index({ receiver: 1, read: 1 });
 
 module.exports = mongoose.model("Message", messageSchema);
+

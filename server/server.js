@@ -10,6 +10,7 @@ const User = require("./models/User");
 const Message = require("./models/Message");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
+const logger = require("./utils/logger");
 
 // Rate limiter para rutas de autenticación (previene ataques de fuerza bruta)
 const authLimiter = rateLimit({
@@ -49,12 +50,12 @@ const createDefaultAdmin = async () => {
         password: process.env.ADMIN_PASSWORD || "Admin123!",
         role: "admin",
       });
-      console.log("✅ Administrador creado exitosamente");
-      console.log(`   Email: ${process.env.ADMIN_EMAIL || "admin@creativehands.com"}`);
-      console.log("   Password: ********** (ver variables de entorno)");
+      logger.startup("✅ Administrador creado exitosamente");
+      logger.startup(`   Email: ${process.env.ADMIN_EMAIL || "admin@creativehands.com"}`);
+      logger.startup("   Password: ********** (ver variables de entorno)");
     }
   } catch (error) {
-    console.error("Error al crear administrador:", error);
+    logger.error("Error al crear administrador:", error);
   }
 };
 
@@ -135,7 +136,7 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log(`✅ Usuario conectado: ${socket.userName} (${socket.userId})`);
+  logger.socket(`Usuario conectado: ${socket.userName} (${socket.userId})`);
 
   // Guardar conexión del usuario (soporta múltiples pestañas)
   if (!connectedUsers.has(socket.userId)) {
@@ -188,7 +189,7 @@ io.on("connection", (socket) => {
         });
       }
     } catch (error) {
-      console.error("Error al enviar mensaje:", error);
+      logger.error("Error al enviar mensaje:", error);
       socket.emit("message:error", { message: "Error al enviar mensaje" });
     }
   });
@@ -240,13 +241,13 @@ io.on("connection", (socket) => {
         io.to(otherUserId).emit("messages:read", { conversationId });
       }
     } catch (error) {
-      console.error("Error al marcar mensajes como leídos:", error);
+      logger.error("Error al marcar mensajes como leídos:", error);
     }
   });
 
   // Desconexión
   socket.on("disconnect", async () => {
-    console.log(`❌ Usuario desconectado: ${socket.userName}`);
+    logger.socket(`Usuario desconectado: ${socket.userName}`);
 
     // Remover solo este socket del Set del usuario
     const userSockets = connectedUsers.get(socket.userId);
@@ -275,7 +276,7 @@ io.on("connection", (socket) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).json({
     success: false,
     message: "Error del servidor",
@@ -286,13 +287,13 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`\n🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`📡 Entorno: ${process.env.NODE_ENV || "development"}`);
+  logger.startup(`\n🚀 Servidor corriendo en puerto ${PORT}`);
+  logger.startup(`📡 Entorno: ${process.env.NODE_ENV || "development"}`);
   if (process.env.NODE_ENV === "production") {
-    console.log(`🌐 App: ${process.env.CLIENT_URL || "https://tu-app.onrender.com"}`);
+    logger.startup(`🌐 App: ${process.env.CLIENT_URL || "https://tu-app.onrender.com"}`);
   } else {
-    console.log(`🌐 Frontend: http://localhost:5173`);
-    console.log(`🔗 API: http://localhost:${PORT}`);
+    logger.startup(`🌐 Frontend: http://localhost:5173`);
+    logger.startup(`🔗 API: http://localhost:${PORT}`);
   }
-  console.log(`🔌 Socket.IO listo para conexiones\n`);
+  logger.startup(`🔌 Socket.IO listo para conexiones\n`);
 });
