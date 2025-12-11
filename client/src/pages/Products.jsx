@@ -1,25 +1,32 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Loader, Package } from "lucide-react";
-import axios from "axios";
-import ProductCard from "../components/ProductCard";
-import ProductModal from "../components/ProductModal";
-import { useAuth } from "../context/AuthContext";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, SlidersHorizontal, X, Loader2, Package, Grid3X3, LayoutList } from 'lucide-react';
+import axios from 'axios';
+import ProductCard from '../components/ProductCard';
+import ProductModal from '../components/ProductModal';
+import { useAuth } from '../context/AuthContext';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Badge } from '../components/ui';
+
+/**
+ * Products Page - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
+ */
 
 const Products = () => {
   const { isAdmin } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [categoriesList, setCategoriesList] = useState([]);
   const [nameToSlug, setNameToSlug] = useState({});
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-
-  // categoriesList will be fetched from the API; we keep a 'Todas' pseudo-category at the start
 
   useEffect(() => {
     fetchCategories();
@@ -29,7 +36,7 @@ const Products = () => {
     fetchProducts();
   }, [selectedCategorySlug]);
 
-  // Initialize selectedCategorySlug: prefer path param /products/category/:slug, fallback to query param
+  // Initialize selectedCategorySlug from URL
   useEffect(() => {
     const { slug } = params || {};
     if (slug) {
@@ -38,19 +45,16 @@ const Products = () => {
     }
 
     const query = new URLSearchParams(location.search);
-    const cat = query.get("category");
+    const cat = query.get('category');
     if (cat) {
-      if (cat === "Todas") {
-        setSelectedCategorySlug("");
+      if (cat === 'Todas') {
+        setSelectedCategorySlug('');
       } else if (nameToSlug[cat]) {
-        // map known category name -> slug provided by server
         setSelectedCategorySlug(nameToSlug[cat]);
       } else {
-        // if it's already a slug-like value, use it as-is
         setSelectedCategorySlug(cat);
       }
     }
-    // only run on mount / when search changes
   }, [location.search, params?.slug, nameToSlug]);
 
   const fetchProducts = async () => {
@@ -59,18 +63,16 @@ const Products = () => {
       let data;
 
       if (selectedCategorySlug) {
-        const res = await axios.get(
-          `/api/products/category/${selectedCategorySlug}`
-        );
+        const res = await axios.get(`/api/products/category/${selectedCategorySlug}`);
         data = res.data;
       } else {
-        const res = await axios.get("/api/products");
+        const res = await axios.get('/api/products');
         data = res.data;
       }
 
       setProducts(data.products);
     } catch (error) {
-      console.error("Error al cargar productos:", error);
+      console.error('Error al cargar productos:', error);
     } finally {
       setLoading(false);
     }
@@ -78,60 +80,50 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get("/api/categories");
-      // build name->slug map for robust mapping from legacy name queries
+      const { data } = await axios.get('/api/categories');
       const map = {};
       data.categories.forEach((c) => {
         map[c.name] = c.slug;
       });
       setNameToSlug(map);
-      // prepend 'Todas' as a pseudo-category
       setCategoriesList([
-        { name: "Todas", slug: "" },
+        { name: 'Todas', slug: '' },
         ...data.categories.map((c) => ({ name: c.name, slug: c.slug })),
       ]);
     } catch (error) {
-      console.error(
-        "Error cargando categorías, usando lista por defecto:",
-        error
-      );
-      setNameToSlug({
-        "Joyería artesanal": "joyeria-artesanal",
-        "Velas y aromáticos": "velas-y-aromaticos",
-        "Textiles y ropa": "textiles-y-ropa",
-        "Cerámica y arcilla": "ceramica-y-arcilla",
-        "Arte hecho a mano": "arte-hecho-a-mano",
-      });
+      console.error('Error cargando categorías:', error);
+      // Fallback
       setCategoriesList([
-        { name: "Todas", slug: "" },
-        { name: "Joyería artesanal", slug: "joyeria-artesanal" },
-        { name: "Velas y aromáticos", slug: "velas-y-aromaticos" },
-        { name: "Textiles y ropa", slug: "textiles-y-ropa" },
-        { name: "Cerámica y arcilla", slug: "ceramica-y-arcilla" },
-        { name: "Arte hecho a mano", slug: "arte-hecho-a-mano" },
+        { name: 'Todas', slug: '' },
+        { name: 'Joyería artesanal', slug: 'joyeria-artesanal' },
+        { name: 'Cerámica y arcilla', slug: 'ceramica-y-arcilla' },
+        { name: 'Arte hecho a mano', slug: 'arte-hecho-a-mano' },
       ]);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
-
+    if (!window.confirm('¿Estás seguro de eliminar este producto?')) return;
     try {
       await axios.delete(`/api/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
-      alert("Error al eliminar el producto");
+      console.error('Error al eliminar producto:', error);
     }
   };
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const handleViewDetails = (product) => {
-    setSelectedProduct(product);
+  const handleCategoryChange = (slug) => {
+    setSelectedCategorySlug(slug);
+    if (slug) {
+      navigate(`/products/category/${slug}`);
+    } else {
+      navigate('/products');
+    }
   };
 
-  const handleCloseModal = () => setSelectedProduct(null);
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
 
   const filteredProducts = products.filter(
     (product) =>
@@ -139,128 +131,201 @@ const Products = () => {
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const activeCategory = categoriesList.find(c => c.slug === selectedCategorySlug);
+
   return (
-    <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background pt-24 pb-16">
+      <div className="container-page">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 sm:mb-10 md:mb-12 text-center px-4"
+          transition={{ duration: 0.5 }}
+          className="mb-10"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-            Nuestros <span className="gradient-text">Productos</span>
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-            Descubre piezas únicas hechas con amor y dedicación
-          </p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+            <div>
+              <Badge variant="primary" className="mb-3">
+                Catálogo
+              </Badge>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+                Nuestros <span className="text-gradient">Productos</span>
+              </h1>
+              <p className="mt-2 text-foreground-secondary">
+                Descubre piezas únicas hechas con amor y dedicación
+              </p>
+            </div>
+
+            {/* Products count */}
+            <div className="flex items-center gap-2 text-sm font-mono text-foreground-tertiary">
+              <span className="w-1.5 h-1.5 rounded-full bg-success" />
+              <span>{filteredProducts.length} productos</span>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Filters */}
+        {/* Filters Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6 sm:mb-8 space-y-4"
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="mb-8 space-y-4"
         >
-          {/* Search */}
-          <div className="relative max-w-md mx-auto px-2 sm:px-0">
-            <Search className="absolute left-4 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3 glass rounded-full text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-all text-base"
-            />
+          {/* Search & View Toggle */}
+          <div className="flex items-center gap-4">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary" />
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input pl-12 pr-10"
+              />
+              {searchTerm && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md
+                           text-foreground-tertiary hover:text-foreground hover:bg-surface-hover
+                           transition-colors"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* View Toggle */}
+            <div className="hidden md:flex items-center border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                    ? 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400'
+                    : 'text-foreground-tertiary hover:text-foreground'
+                  }`}
+                aria-label="Vista en grid"
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                    ? 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400'
+                    : 'text-foreground-tertiary hover:text-foreground'
+                  }`}
+                aria-label="Vista en lista"
+              >
+                <LayoutList className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Categories */}
-                    {/* Categories */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-2">
-            {categoriesList.map((category) => (
-              <motion.button
-                key={category.slug || category.name}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const val = category.slug || "";
-                  setSelectedCategorySlug(val);
-                  // update URL using slug path (preferred)
-                  if (val) {
-                    navigate(`/products/category/${val}`);
-                  } else {
-                    navigate("/products");
-                  }
-                }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] ${
-                  selectedCategorySlug === category.slug ||
-                  (selectedCategorySlug === "" && category.name === "Todas")
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                    : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                }`}
-              >
-                {category.name}
-              </motion.button>
-            ))}
+          {/* Category Pills */}
+          <div className="flex flex-wrap gap-2">
+            {categoriesList.map((category) => {
+              const isActive = selectedCategorySlug === category.slug ||
+                (selectedCategorySlug === '' && category.name === 'Todas');
+
+              return (
+                <motion.button
+                  key={category.slug || category.name}
+                  onClick={() => handleCategoryChange(category.slug)}
+                  className={`
+                    px-4 py-2 rounded-full text-sm font-medium
+                    transition-all duration-fast
+                    ${isActive
+                      ? 'bg-foreground text-background shadow-sm'
+                      : 'bg-surface border border-border-subtle text-foreground-secondary hover:border-border hover:text-foreground'
+                    }
+                  `}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {category.name}
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
 
         {/* Products Grid */}
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader className="w-12 h-12 text-primary-500 animate-spin" />
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+            <p className="text-sm font-mono text-foreground-tertiary">Cargando productos...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12 sm:py-16 md:py-20 px-4"
+            className="text-center py-24"
           >
-            <Package className="w-16 sm:w-20 h-16 sm:h-20 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 
+                          bg-surface-hover rounded-2xl mb-4">
+              <Package className="w-8 h-8 text-foreground-tertiary" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
               No se encontraron productos
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            <p className="text-foreground-secondary mb-6">
               {searchTerm
-                ? "Intenta con otro término de búsqueda"
-                : "Aún no hay productos en esta categoría"}
+                ? 'Intenta con otro término de búsqueda'
+                : 'Aún no hay productos en esta categoría'}
             </p>
+            {(searchTerm || selectedCategorySlug) && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  handleCategoryChange('');
+                }}
+                className="btn btn-secondary"
+              >
+                Ver todos los productos
+              </button>
+            )}
           </motion.div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
+            transition={{ delay: 0.2 }}
+            className={`
+              grid gap-6
+              ${viewMode === 'grid'
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                : 'grid-cols-1 max-w-3xl mx-auto'
+              }
+            `}
           >
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: Math.min(index * 0.05, 0.3) }}
               >
                 <ProductCard
                   product={product}
                   onDelete={handleDelete}
-                  /* For coherence: the admin should not have edit/delete actions in the public Products view.
-                     Admin modifications are restricted to the separate Admin panel. */
                   isAdmin={false}
                   onEdit={(p) => navigate(`/products/${p._id}/edit`)}
-                  onViewDetails={handleViewDetails}
+                  onViewDetails={(p) => setSelectedProduct(p)}
+                  viewMode={viewMode}
                 />
               </motion.div>
             ))}
           </motion.div>
         )}
       </div>
+
+      {/* Product Modal */}
       <AnimatePresence>
         {selectedProduct && (
           <ProductModal
             key={selectedProduct._id}
             product={selectedProduct}
-            onClose={handleCloseModal}
+            onClose={() => setSelectedProduct(null)}
           />
         )}
       </AnimatePresence>
