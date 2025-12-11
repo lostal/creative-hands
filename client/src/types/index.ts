@@ -22,12 +22,12 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    countInStock?: number; // Legacy field
-    stock?: number; // New field from server model
-    imageUrl?: string; // Legacy field
-    images?: string[];
-    category?: string | Category; // Legacy field (populated)
-    categoryId?: string | Category; // New field from server model (reference)
+    /** Stock disponible del producto */
+    stock: number;
+    /** Array de URLs de imágenes del producto */
+    images: string[];
+    /** Categoría del producto (puede venir populada o como ID) */
+    category?: string | Category;
     rating?: number;
     numReviews?: number;
     reviews?: Review[];
@@ -87,17 +87,46 @@ export interface Order {
     updatedAt?: string;
 }
 
+/**
+ * Respuesta estándar de la API
+ * Usa genéricos estrictos - el campo 'data' contiene el payload tipado
+ */
 export interface ApiResponse<T> {
     success: boolean;
-    data?: T;
+    data: T;
     message?: string;
+}
+
+/**
+ * Respuesta paginada de la API
+ */
+export interface PaginatedApiResponse<T> {
+    success: boolean;
+    data: T[];
+    count: number;
+    page: number;
+    pages: number;
+    message?: string;
+}
+
+/**
+ * Respuestas específicas del backend (para compatibilidad)
+ * TODO: Migrar gradualmente al formato estándar ApiResponse<T>
+ */
+export interface ProductsResponse {
+    success: boolean;
+    products: Product[];
     count?: number;
-    products?: T; // Sometimes specific keys are used
-    categories?: T;
-    orders?: T;
-    product?: T;
-    category?: T;
-    order?: T;
     page?: number;
     pages?: number;
+}
+
+export interface CategoriesResponse {
+    success: boolean;
+    categories: Category[];
+}
+
+export interface OrdersResponse {
+    success: boolean;
+    orders: Order[];
 }

@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import Message from "../models/Message";
 import User from "../models/User";
 import { AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
 
 /**
  * Verificar que el router está activo
@@ -29,7 +30,7 @@ export const getAdmin = async (req: Request, res: Response) => {
     }
     res.json({ success: true, admin });
   } catch (error) {
-    console.error("Error al obtener admin:", error);
+    logger.error("Error al obtener admin:", error);
     res.status(500).json({ success: false, message: "Error al obtener admin" });
   }
 };
@@ -56,7 +57,7 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
 
     res.json({ success: true, count: messages.length, messages });
   } catch (error) {
-    console.error("Error al obtener mensajes:", error);
+    logger.error("Error al obtener mensajes:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al obtener mensajes" });
@@ -105,7 +106,7 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
 
     res.json({ success: true, count: conversations.length, conversations });
   } catch (error) {
-    console.error("Error al obtener conversaciones:", error);
+    logger.error("Error al obtener conversaciones:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al obtener conversaciones" });

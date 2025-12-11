@@ -3,17 +3,27 @@
  * Contiene la lógica de negocio para registro, login y gestión de usuarios
  */
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
 
 /**
  * Generar token JWT
+ * @param id - ID del usuario
+ * @returns Token JWT firmado
  */
-const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: process.env.JWT_EXPIRE as any, // Cast to any or standard JWT types if installed
-  });
+const generateToken = (id: string): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET no está configurado");
+  }
+
+  // JWT_EXPIRE debe ser un string válido como "7d", "24h", "3600" (segundos)
+  // Usamos "7d" como valor por defecto tipado correctamente
+  const expiresIn = (process.env.JWT_EXPIRE || "7d") as jwt.SignOptions["expiresIn"];
+
+  return jwt.sign({ id }, secret, { expiresIn });
 };
 
 /**
@@ -52,7 +62,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error en registro:", error);
+    logger.error("Error en registro:", error);
     res.status(500).json({
       success: false,
       message: "Error al registrar usuario",
@@ -105,7 +115,7 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error en login:", error);
+    logger.error("Error en login:", error);
     res.status(500).json({
       success: false,
       message: "Error al iniciar sesión",
@@ -140,7 +150,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error al obtener usuario:", error);
+    logger.error("Error al obtener usuario:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener información del usuario",
@@ -164,7 +174,7 @@ export const logout = async (req: AuthRequest, res: Response) => {
       message: "Sesión cerrada correctamente",
     });
   } catch (error) {
-    console.error("Error en logout:", error);
+    logger.error("Error en logout:", error);
     res.status(500).json({
       success: false,
       message: "Error al cerrar sesión",
@@ -223,7 +233,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error al actualizar perfil:", error);
+    logger.error("Error al actualizar perfil:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al actualizar perfil" });

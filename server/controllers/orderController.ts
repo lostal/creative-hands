@@ -6,6 +6,7 @@ import { Response } from "express";
 import Order from "../models/Order";
 import Product from "../models/Product";
 import { AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
 
 /**
  * Crear nuevo pedido
@@ -80,7 +81,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       order,
     });
   } catch (error: any) {
-    console.error("Error al crear pedido:", error);
+    logger.error("Error al crear pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al crear el pedido",
@@ -104,7 +105,7 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
       orders,
     });
   } catch (error: any) {
-    console.error("Error al obtener pedidos:", error);
+    logger.error("Error al obtener pedidos:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
@@ -129,7 +130,7 @@ export const getAllOrders = async (req: AuthRequest, res: Response) => {
       orders,
     });
   } catch (error: any) {
-    console.error("Error al obtener todos los pedidos:", error);
+    logger.error("Error al obtener todos los pedidos:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
@@ -174,7 +175,7 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
       order,
     });
   } catch (error: any) {
-    console.error("Error al obtener pedido:", error);
+    logger.error("Error al obtener pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener el pedido",
@@ -209,7 +210,7 @@ export const deliverOrder = async (req: AuthRequest, res: Response) => {
       order,
     });
   } catch (error: any) {
-    console.error("Error al entregar pedido:", error);
+    logger.error("Error al entregar pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al entregar el pedido",

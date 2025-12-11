@@ -106,10 +106,10 @@ const CartDrawer = () => {
                       onClick={() =>
                         updateQuantity(
                           item.product._id,
-                          Math.min(item.product.stock ?? item.product.countInStock ?? 999, item.quantity + 1),
+                          Math.min(item.product.stock ?? 999, item.quantity + 1),
                         )
                       }
-                      disabled={item.quantity >= (item.product.stock ?? item.product.countInStock ?? 999)}
+                      disabled={item.quantity >= (item.product.stock ?? 999)}
                       className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
                     >
                       +

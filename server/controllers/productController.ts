@@ -8,6 +8,7 @@ import Category from "../models/Category";
 import { cloudinary } from "../config/cloudinary";
 import { enrichProductWithMetrics } from "../utils/reviewUtils";
 import { AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
 
 // Fix: Allow files to be object or array to match Express.Request type compatibility
 interface MulterRequest extends AuthRequest {
@@ -40,7 +41,7 @@ export const getProducts = async (req: Request, res: Response) => {
       products: enriched,
     });
   } catch (error) {
-    console.error("Error al obtener productos:", error);
+    logger.error("Error al obtener productos:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener productos",
@@ -72,7 +73,7 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
 
     res.json({ success: true, count: products.length, products: enriched });
   } catch (error) {
-    console.error("Error al obtener productos por categoría:", error);
+    logger.error("Error al obtener productos por categoría:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener productos por categoría",
@@ -103,7 +104,7 @@ export const getProductById = async (req: Request, res: Response) => {
       product: enrichProductWithMetrics(product),
     });
   } catch (error) {
-    console.error("Error al obtener producto:", error);
+    logger.error("Error al obtener producto:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener producto",
@@ -146,7 +147,7 @@ export const createProduct = async (req: MulterRequest, res: Response) => {
       product,
     });
   } catch (error: any) {
-    console.error("Error al crear producto:", error);
+    logger.error("Error al crear producto:", error);
     res.status(500).json({
       success: false,
       message: "Error al crear producto",
@@ -260,7 +261,7 @@ export const updateProduct = async (req: MulterRequest, res: Response) => {
       product,
     });
   } catch (error) {
-    console.error("Error al actualizar producto:", error);
+    logger.error("Error al actualizar producto:", error);
     res.status(500).json({
       success: false,
       message: "Error al actualizar producto",
@@ -305,7 +306,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
       message: "Producto eliminado correctamente",
     });
   } catch (error) {
-    console.error("Error al eliminar producto:", error);
+    logger.error("Error al eliminar producto:", error);
     res.status(500).json({
       success: false,
       message: "Error al eliminar producto",
@@ -355,7 +356,7 @@ export const deleteProductImage = async (req: Request, res: Response) => {
 
     res.json({ success: true, product });
   } catch (error) {
-    console.error("Error al eliminar imagen:", error);
+    logger.error("Error al eliminar imagen:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al eliminar imagen" });
@@ -371,7 +372,7 @@ export const getCategoriesList = async (req: Request, res: Response) => {
     const categories = await Category.find().sort("name");
     res.json({ success: true, categories });
   } catch (error) {
-    console.error("Error al obtener lista de categorías:", error);
+    logger.error("Error al obtener lista de categorías:", error);
     const fallback = [
       "Joyería artesanal",
       "Velas y aromáticos",

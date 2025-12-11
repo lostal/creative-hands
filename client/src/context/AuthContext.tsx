@@ -1,4 +1,5 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { User } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
@@ -22,6 +23,7 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
+  clearAuthAndRedirect: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
@@ -43,19 +45,40 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // Usar sessionStorage para que cada pestaña/ventana tenga su propia sesión.
-  // sessionStorage persiste al refrescar la misma pestaña, pero no se comparte
-  // entre pestañas diferentes (comportamiento deseado para sesiones independientes).
-  const [token, setToken] = useState<string | null>(sessionStorage.getItem("token"));
+  // Usar localStorage para persistir la sesión entre pestañas y recargas.
+  // Esto mejora la UX ya que el usuario no necesita loguearse en cada pestaña.
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+
+  // Hook de navegación para redirecciones sin recargar la página
+  let navigate: ReturnType<typeof useNavigate> | null = null;
+  try {
+    navigate = useNavigate();
+  } catch {
+    // En tests o fuera de Router, navigate no está disponible
+  }
+
+  // Función para limpiar auth y redirigir (usada por interceptor y logout)
+  const clearAuthAndRedirect = useCallback(() => {
+    setToken(null);
+    setUser(null);
+    delete api.defaults.headers.common["Authorization"];
+    localStorage.removeItem("token");
+
+    // Usar navegación de React en lugar de window.location.replace
+    // Esto evita recargar la app y perder estado (ej. carrito)
+    if (navigate) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
   // Configurar axios con el token
   useEffect(() => {
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      sessionStorage.setItem("token", token);
+      localStorage.setItem("token", token);
     } else {
       delete api.defaults.headers.common["Authorization"];
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
     }
   }, [token]);
 
@@ -66,15 +89,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       (error) => {
         const status = error?.response?.status;
         if (status === 401) {
-          // Token inválido o expirado: limpiar estado local y redirigir al login
-          setToken(null);
-          setUser(null);
-          try {
-            // Redirigimos a la página de login para que el usuario vuelva a autenticarse
-            window.location.replace("/login");
-          } catch (e) {
-            // en entornos sin window (tests) lo ignoramos
-          }
+          // Token inválido o expirado: limpiar estado y redirigir sin recargar
+          clearAuthAndRedirect();
         }
         return Promise.reject(error);
       },
@@ -83,7 +99,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       api.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [clearAuthAndRedirect]);
 
   // Verificar usuario al cargar
   useEffect(() => {
@@ -123,8 +139,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { data } = await api.post<{ token: string }>("/auth/login", credentials);
       // Guardar token y establecer header de la instancia api inmediatamente
       api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-      // Guardar en sessionStorage para que la autenticación sea independiente por pestaña
-      sessionStorage.setItem("token", data.token);
+      // Guardar en localStorage para persistir entre pestañas
+      localStorage.setItem("token", data.token);
       setToken(data.token);
 
       try {
@@ -134,7 +150,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch (err: unknown) {
         // Si /me falla, limpiar estado y devolver error
         delete api.defaults.headers.common["Authorization"];
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
         setToken(null);
         setUser(null);
         return {
@@ -177,6 +193,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     },
     logout,
+    clearAuthAndRedirect,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
   };

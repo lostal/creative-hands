@@ -7,6 +7,7 @@ import { Types } from "mongoose";
 import Product from "../models/Product";
 import { enrichProductWithMetrics } from "../utils/reviewUtils";
 import { AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
 
 /**
  * Helper para poblar producto con reviews
@@ -84,7 +85,7 @@ export const addReview = async (req: AuthRequest, res: Response) => {
       product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
-    console.error("Error al añadir review:", error);
+    logger.error("Error al añadir review:", error);
     res.status(500).json({ success: false, message: "Error al añadir review" });
   }
 };
@@ -149,7 +150,7 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
       product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
-    console.error("Error editing review:", error);
+    logger.error("Error al editar review:", error);
     res.status(500).json({ success: false, message: "Error al editar review" });
   }
 };
@@ -201,7 +202,7 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
       product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
-    console.error("Error deleting review:", error);
+    logger.error("Error al eliminar review:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al eliminar review" });

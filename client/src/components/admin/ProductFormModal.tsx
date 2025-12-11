@@ -34,11 +34,11 @@ const ProductFormModal = ({
   // Helper to extract category ID from various possible shapes
   const getCategoryId = (product: Product | null): string => {
     if (!product) return "";
-    // categoryId can be an object (populated) or string (ID)
-    if (product.categoryId) {
-      if (typeof product.categoryId === "string") return product.categoryId;
-      if (typeof product.categoryId === "object" && "_id" in product.categoryId) {
-        return product.categoryId._id;
+    // category can be an object (populated) or string (ID)
+    if (product.category) {
+      if (typeof product.category === "string") return product.category;
+      if (typeof product.category === "object" && "_id" in product.category) {
+        return product.category._id;
       }
     }
     return "";
@@ -51,7 +51,7 @@ const ProductFormModal = ({
         description: editingProduct.description,
         price: editingProduct.price,
         categoryId: getCategoryId(editingProduct),
-        stock: editingProduct.stock ?? editingProduct.countInStock ?? 0,
+        stock: editingProduct.stock ?? 0,
         materials: editingProduct.materials?.join(", ") || "",
       }
       : {
@@ -90,7 +90,7 @@ const ProductFormModal = ({
     >,
   ) => {
     const { name, value } = e.target;
-    // Checkbox case normally handled by 'checked' but not used here explicitly in initial state, 
+    // Checkbox case normally handled by 'checked' but not used here explicitly in initial state,
     // kept for robustness if needed or removed if unused.
     // For standard inputs:
     setFormData({

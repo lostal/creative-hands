@@ -120,10 +120,10 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(
                           item.product._id,
-                          Math.min(item.product.stock ?? item.product.countInStock ?? 999, item.quantity + 1),
+                          Math.min(item.product.stock ?? 999, item.quantity + 1),
                         )
                       }
-                      disabled={item.quantity >= (item.product.stock ?? item.product.countInStock ?? 999)}
+                      disabled={item.quantity >= (item.product.stock ?? 999)}
                       className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       +

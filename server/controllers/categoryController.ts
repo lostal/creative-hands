@@ -4,6 +4,7 @@
  */
 import { Request, Response } from "express";
 import Category from "../models/Category";
+import logger from "../utils/logger";
 
 /**
  * Helper para generar slug
@@ -27,7 +28,7 @@ export const getCategories = async (req: Request, res: Response) => {
     const categories = await Category.find().sort("name");
     res.json({ success: true, count: categories.length, categories });
   } catch (error) {
-    console.error("Error al obtener categorías:", error);
+    logger.error("Error al obtener categorías:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al obtener categorías" });
@@ -65,7 +66,7 @@ export const createCategory = async (req: Request, res: Response) => {
     });
     res.status(201).json({ success: true, category });
   } catch (error) {
-    console.error("Error al crear categoría:", error);
+    logger.error("Error al crear categoría:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al crear categoría" });
@@ -99,7 +100,7 @@ export const updateCategory = async (req: Request, res: Response) => {
     });
     res.json({ success: true, category });
   } catch (error) {
-    console.error("Error al actualizar categoría:", error);
+    logger.error("Error al actualizar categoría:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al actualizar categoría" });
@@ -123,7 +124,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
     await category.deleteOne();
     res.json({ success: true, message: "Categoría eliminada" });
   } catch (error) {
-    console.error("Error al eliminar categoría:", error);
+    logger.error("Error al eliminar categoría:", error);
     res
       .status(500)
       .json({ success: false, message: "Error al eliminar categoría" });
