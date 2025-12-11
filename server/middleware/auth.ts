@@ -45,7 +45,7 @@ export const protect = async (
         .json({ success: false, message: "Usuario no encontrado" });
     }
 
-    req.user = { id: user._id.toString(), role: user.role };
+    req.user = { id: (user._id as any).toString(), role: user.role };
     next();
   } catch (error: any) {
     console.error("Middleware protect error:", error.message);

@@ -138,7 +138,7 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
 
     await product.save();
 
-    const updated = await populateProduct(product._id.toString());
+    const updated = await populateProduct((product._id as any).toString());
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
@@ -190,7 +190,7 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
 
     await product.save();
 
-    const updated = await populateProduct(product._id.toString());
+    const updated = await populateProduct((product._id as any).toString());
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });

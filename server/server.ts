@@ -142,7 +142,7 @@ io.use(async (socket: Socket, next: (err?: any) => void) => {
             return next(new Error("User not found"));
         }
 
-        authSocket.userId = user._id.toString();
+        authSocket.userId = (user._id as any).toString();
         authSocket.userRole = user.role;
         authSocket.userName = user.name;
 

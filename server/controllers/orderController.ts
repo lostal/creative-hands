@@ -20,7 +20,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
     const products = await Product.find({ _id: { $in: productIds } });
 
     // Crear mapa para acceso rápido
-    const productMap = new Map(products.map((p) => [p._id.toString(), p]));
+    const productMap = new Map(products.map((p) => [(p._id as any).toString(), p]));
 
     // Validar stock y calcular precio total
     let totalPrice = 0;
