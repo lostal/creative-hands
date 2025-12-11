@@ -1,6 +1,40 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-const productSchema = new mongoose.Schema(
+export interface IReview {
+  user: Types.ObjectId;
+  title: string;
+  comment: string;
+  rating: number;
+  createdAt: Date;
+}
+
+export interface IProductDimensions {
+  height?: number;
+  width?: number;
+  depth?: number;
+  unit: string;
+}
+
+export interface IProductWeight {
+  value?: number;
+  unit: string;
+}
+
+export interface IProduct extends Document {
+  name: string;
+  description: string;
+  price: number;
+  categoryId?: Types.ObjectId;
+  stock: number;
+  images: string[];
+  materials: string[];
+  dimensions?: IProductDimensions;
+  weight?: IProductWeight;
+  createdBy: Types.ObjectId;
+  reviews: IReview[];
+}
+
+const productSchema = new Schema(
   {
     name: {
       type: String,
@@ -18,7 +52,7 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
     categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
     },
     stock: {
@@ -49,7 +83,7 @@ const productSchema = new mongoose.Schema(
       },
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -57,7 +91,7 @@ const productSchema = new mongoose.Schema(
     reviews: [
       {
         user: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: "User",
           required: true,
         },
@@ -80,4 +114,4 @@ productSchema.index({ categoryId: 1 });
 productSchema.index({ createdBy: 1 });
 productSchema.index({ createdAt: -1 });
 
-module.exports = mongoose.model("Product", productSchema);
+export default mongoose.model<IProduct>("Product", productSchema);

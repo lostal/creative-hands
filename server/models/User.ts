@@ -1,7 +1,18 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+import mongoose, { Schema, Document } from "mongoose";
+import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password?: string;
+  role: "user" | "admin";
+  avatar?: string;
+  isOnline: boolean;
+  lastSeen: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -46,17 +57,21 @@ const userSchema = new mongoose.Schema(
 );
 
 // Encriptar contraseña antes de guardar
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (this: IUser, next) {
   if (!this.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password!, salt);
   next();
 });
 
 // Método para comparar contraseñas
-userSchema.methods.comparePassword = async function (candidatePassword) {
+userSchema.methods.comparePassword = async function (
+  this: IUser,
+  candidatePassword: string,
+) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+export default mongoose.model<IUser>("User", userSchema);

@@ -2,14 +2,16 @@
  * Controlador de chat
  * Contiene la lógica de negocio para gestión de mensajes y conversaciones
  */
-const Message = require("../models/Message");
-const User = require("../models/User");
+import { Request, Response } from "express";
+import Message from "../models/Message";
+import User from "../models/User";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Verificar que el router está activo
  * @route GET /api/chat
  */
-exports.healthCheck = (req, res) => {
+export const healthCheck = (req: Request, res: Response) => {
   res.json({ success: true, message: "Chat route active" });
 };
 
@@ -17,7 +19,7 @@ exports.healthCheck = (req, res) => {
  * Obtener admin
  * @route GET /api/chat/admin
  */
-exports.getAdmin = async (req, res) => {
+export const getAdmin = async (req: Request, res: Response) => {
   try {
     const admin = await User.findOne({ role: "admin" }).select("-password");
     if (!admin) {
@@ -36,14 +38,14 @@ exports.getAdmin = async (req, res) => {
  * Obtener mensajes de una conversación
  * @route GET /api/chat/messages/:conversationId
  */
-exports.getMessages = async (req, res) => {
+export const getMessages = async (req: AuthRequest, res: Response) => {
   try {
     let { conversationId } = req.params;
 
     // Si no contiene '_', asumimos que es el userId del otro participante
     if (!conversationId.includes("_")) {
       const otherUserId = conversationId;
-      const currentUserId = req.user.id;
+      const currentUserId = req.user?.id;
       conversationId = [currentUserId, otherUserId].sort().join("_");
     }
 
@@ -65,9 +67,9 @@ exports.getMessages = async (req, res) => {
  * Obtener conversaciones del usuario
  * @route GET /api/chat/conversations
  */
-exports.getConversations = async (req, res) => {
+export const getConversations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
 
     const messages = await Message.find({
       $or: [{ sender: userId }, { receiver: userId }],
@@ -94,7 +96,7 @@ exports.getConversations = async (req, res) => {
 
       // Contar no leídos
       const conv = convMap.get(msg.conversationId);
-      if (msg.receiver.toString() === userId && !msg.read) {
+      if (msg.receiver._id.toString() === userId && !msg.read) {
         conv.unreadCount += 1;
       }
     }

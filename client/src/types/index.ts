@@ -22,13 +22,16 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    countInStock: number;
-    imageUrl: string;
+    countInStock?: number; // Legacy field
+    stock?: number; // New field from server model
+    imageUrl?: string; // Legacy field
     images?: string[];
-    category: string | Category;
+    category?: string | Category; // Legacy field (populated)
+    categoryId?: string | Category; // New field from server model (reference)
     rating?: number;
     numReviews?: number;
     reviews?: Review[];
+    materials?: string[];
     slug?: string;
     createdAt?: string;
     updatedAt?: string;

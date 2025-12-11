@@ -2,5 +2,10 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 30000,
   rootDir: '.',
-  testMatch: ['<rootDir>/server/tests/**/*.test.js']
+  preset: 'ts-jest',
+  moduleFileExtensions: ['ts', 'js'],
+  testMatch: ['<rootDir>/server/tests/**/*.test.ts'],
+  transform: {
+    '^.+\\.ts$': 'ts-jest'
+  }
 };

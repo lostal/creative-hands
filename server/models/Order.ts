@@ -1,9 +1,33 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-const orderSchema = new mongoose.Schema(
+export interface IOrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+  product: Types.ObjectId;
+}
+
+export interface IShippingAddress {
+  address: string;
+  city: string;
+  postalCode: string;
+  phone: string;
+}
+
+export interface IOrder extends Document {
+  user: Types.ObjectId;
+  orderItems: IOrderItem[];
+  shippingAddress: IShippingAddress;
+  paymentMethod: string;
+  totalPrice: number;
+  isPaid: boolean;
+  isDelivered: boolean;
+}
+
+const orderSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -24,7 +48,7 @@ const orderSchema = new mongoose.Schema(
           min: 0,
         },
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: "Product",
           required: true,
         },
@@ -76,4 +100,4 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ user: 1, createdAt: -1 }); // "Mis pedidos" ordenados por fecha
 orderSchema.index({ isDelivered: 1 }); // Filtrar pedidos pendientes/entregados
 
-module.exports = mongoose.model("Order", orderSchema);
+export default mongoose.model<IOrder>("Order", orderSchema);

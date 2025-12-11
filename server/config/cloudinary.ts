@@ -1,5 +1,5 @@
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -15,7 +15,7 @@ const storage = new CloudinaryStorage({
     folder: "creative-hands/products", // Carpeta en Cloudinary
     allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
     transformation: [{ width: 1000, height: 1000, crop: "limit" }], // Optimización automática
-  },
+  } as any, // Cast specific params if types are incomplete
 });
 
-module.exports = { cloudinary, storage };
+export { cloudinary, storage };

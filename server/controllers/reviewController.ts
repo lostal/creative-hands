@@ -2,14 +2,17 @@
  * Controlador de reviews
  * Contiene la lógica de negocio para operaciones CRUD de valoraciones
  */
-const Product = require("../models/Product");
-const { enrichProductWithMetrics } = require("../utils/reviewUtils");
+import { Response } from "express";
+import { Types } from "mongoose";
+import Product from "../models/Product";
+import { enrichProductWithMetrics } from "../utils/reviewUtils";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Helper para poblar producto con reviews
  */
-const populateProduct = (productId) => {
-  return Product.findById(productId)
+const populateProduct = async (productId: string) => {
+  return await Product.findById(productId)
     .populate("createdBy", "name email")
     .populate("categoryId", "name slug")
     .populate("reviews.user", "name email");
@@ -19,7 +22,7 @@ const populateProduct = (productId) => {
  * Añadir review a un producto
  * @route POST /api/products/:id/reviews
  */
-exports.addReview = async (req, res) => {
+export const addReview = async (req: AuthRequest, res: Response) => {
   try {
     const { title, comment, rating } = req.body;
 
@@ -48,7 +51,7 @@ exports.addReview = async (req, res) => {
 
     // Evitar duplicados del mismo usuario
     const existing = (product.reviews || []).find(
-      (r) => r.user && r.user.toString() === req.user.id.toString(),
+      (r: any) => r.user && r.user.toString() === req.user?.id.toString(),
     );
     if (existing) {
       return res.status(400).json({
@@ -60,21 +63,25 @@ exports.addReview = async (req, res) => {
 
     // Crear review
     const review = {
-      user: req.user.id,
+      user: req.user?.id,
       title: String(title).trim(),
       comment: String(comment).trim(),
       rating: numericRating,
     };
 
     product.reviews = product.reviews || [];
-    product.reviews.push(review);
+    product.reviews.push(review as any);
     await product.save();
 
-    const updated = await populateProduct(product._id);
+    const updated = await populateProduct(product._id.toString());
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+    }
 
     res.status(201).json({
       success: true,
-      product: enrichProductWithMetrics(updated),
+      product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
     console.error("Error al añadir review:", error);
@@ -86,7 +93,7 @@ exports.addReview = async (req, res) => {
  * Editar review propia
  * @route PUT /api/products/:id/reviews/:reviewId
  */
-exports.updateReview = async (req, res) => {
+export const updateReview = async (req: AuthRequest, res: Response) => {
   try {
     const { title, comment, rating } = req.body;
     const numericRating =
@@ -99,18 +106,18 @@ exports.updateReview = async (req, res) => {
         .json({ success: false, message: "Producto no encontrado" });
     }
 
-    const review =
-      (product.reviews || []).id(req.params.reviewId) ||
-      (product.reviews || []).find(
-        (r) => r._id && r._id.toString() === req.params.reviewId,
-      );
+    // Cast reviews to any to access mongoose methods if needed, or just find manually
+    const reviews = product.reviews as any;
+    const review = reviews.id(req.params.reviewId) ||
+      reviews.find((r: any) => r._id && r._id.toString() === req.params.reviewId);
+
     if (!review) {
       return res
         .status(404)
         .json({ success: false, message: "Review no encontrada" });
     }
 
-    if (review.user.toString() !== req.user.id.toString()) {
+    if (review.user.toString() !== req.user?.id.toString()) {
       return res.status(403).json({
         success: false,
         message: "No tienes permiso para editar esta review",
@@ -131,11 +138,15 @@ exports.updateReview = async (req, res) => {
 
     await product.save();
 
-    const updated = await populateProduct(product._id);
+    const updated = await populateProduct(product._id.toString());
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+    }
 
     res.json({
       success: true,
-      product: enrichProductWithMetrics(updated),
+      product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
     console.error("Error editing review:", error);
@@ -147,7 +158,7 @@ exports.updateReview = async (req, res) => {
  * Eliminar review propia
  * @route DELETE /api/products/:id/reviews/:reviewId
  */
-exports.deleteReview = async (req, res) => {
+export const deleteReview = async (req: AuthRequest, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -156,34 +167,38 @@ exports.deleteReview = async (req, res) => {
         .json({ success: false, message: "Producto no encontrado" });
     }
 
-    const review =
-      (product.reviews || []).id(req.params.reviewId) ||
-      (product.reviews || []).find(
-        (r) => r._id && r._id.toString() === req.params.reviewId,
-      );
+    const reviews = product.reviews as any;
+    const review = reviews.id(req.params.reviewId) ||
+      reviews.find((r: any) => r._id && r._id.toString() === req.params.reviewId);
+
     if (!review) {
       return res
         .status(404)
         .json({ success: false, message: "Review no encontrada" });
     }
 
-    if (review.user.toString() !== req.user.id.toString()) {
+    if (review.user.toString() !== req.user?.id.toString()) {
       return res.status(403).json({
         success: false,
         message: "No tienes permiso para eliminar esta review",
       });
     }
 
-    product.reviews = (product.reviews || []).filter(
-      (r) => !(r._id && r._id.toString() === req.params.reviewId),
-    );
+    // Use pull or filter
+    // Mongoose array pull is safer for subdocs
+    reviews.pull(review._id);
+
     await product.save();
 
-    const updated = await populateProduct(product._id);
+    const updated = await populateProduct(product._id.toString());
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+    }
 
     res.json({
       success: true,
-      product: enrichProductWithMetrics(updated),
+      product: enrichProductWithMetrics(updated as any),
     });
   } catch (error) {
     console.error("Error deleting review:", error);

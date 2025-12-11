@@ -122,9 +122,9 @@ const ProductCard = ({
             <p className="text-xl sm:text-2xl font-bold text-primary-500">
               {formatCurrency(product.price)}
             </p>
-            {product.countInStock > 0 ? (
+            {(product.stock ?? product.countInStock ?? 0) > 0 ? (
               <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                {product.countInStock} en stock
+                {product.stock ?? product.countInStock} en stock
               </p>
             ) : (
               <p className="text-xs text-red-600 dark:text-red-400 mt-1">
@@ -139,7 +139,7 @@ const ProductCard = ({
               whileTap={{ scale: 0.95 }}
               // dejar la animación de escala a framer-motion; CSS solo anima colores
               className="px-3 sm:px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-h-[40px] sm:min-h-[44px]"
-              disabled={product.countInStock === 0}
+              disabled={(product.stock ?? product.countInStock ?? 0) === 0}
               onClick={() => onViewDetails && onViewDetails(product)}
             >
               Ver detalles

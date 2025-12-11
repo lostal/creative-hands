@@ -1,13 +1,25 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import api from "../utils/axios";
 import { User } from "../types";
+import { getApiErrorMessage } from "../utils/errors";
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  register: (userData: any) => Promise<{ success: boolean; message?: string }>;
-  login: (credentials: any) => Promise<{ success: boolean; message?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -92,21 +104,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, [token]);
 
-  const register = async (userData: any) => {
+  const register = async (userData: RegisterData) => {
     try {
       const { data } = await api.post<{ token: string; user: User }>("/auth/register", userData);
       setToken(data.token);
       setUser(data.user);
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error.response?.data?.message || "Error al registrarse",
+        message: getApiErrorMessage(error) || "Error al registrarse",
       };
     }
   };
 
-  const login = async (credentials: any) => {
+  const login = async (credentials: LoginCredentials) => {
     try {
       const { data } = await api.post<{ token: string }>("/auth/login", credentials);
       // Guardar token y establecer header de la instancia api inmediatamente
@@ -119,7 +131,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const { data: me } = await api.get<{ user: User }>("/auth/me");
         setUser(me.user);
         return { success: true };
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Si /me falla, limpiar estado y devolver error
         delete api.defaults.headers.common["Authorization"];
         sessionStorage.removeItem("token");
@@ -127,15 +139,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(null);
         return {
           success: false,
-          message:
-            err.response?.data?.message ||
-            "Error al verificar usuario después del login",
+          message: getApiErrorMessage(err) || "Error al verificar usuario después del login",
         };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error.response?.data?.message || "Error al iniciar sesión",
+        message: getApiErrorMessage(error) || "Error al iniciar sesión",
       };
     }
   };

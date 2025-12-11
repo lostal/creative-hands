@@ -2,26 +2,33 @@
  * Controlador de productos
  * Contiene la lógica de negocio para operaciones CRUD de productos
  */
-const Product = require("../models/Product");
-const Category = require("../models/Category");
-const { cloudinary } = require("../config/cloudinary");
-const { enrichProductWithMetrics } = require("../utils/reviewUtils");
+import { Request, Response } from "express";
+import Product from "../models/Product";
+import Category from "../models/Category";
+import { cloudinary } from "../config/cloudinary";
+import { enrichProductWithMetrics } from "../utils/reviewUtils";
+import { AuthRequest } from "../middleware/auth";
+
+// Fix: Allow files to be object or array to match Express.Request type compatibility
+interface MulterRequest extends AuthRequest {
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
+}
 
 /**
  * Obtener todos los productos
  * @route GET /api/products
  */
-exports.getProducts = async (req, res) => {
+export const getProducts = async (req: Request, res: Response) => {
   try {
     const { search, sort = "-createdAt" } = req.query;
-    const query = {};
+    const query: any = {};
 
     if (search) {
       query.$text = { $search: search };
     }
 
     const products = await Product.find(query)
-      .sort(sort)
+      .sort(sort as string)
       .populate("createdBy", "name")
       .populate("categoryId", "name slug");
 
@@ -45,7 +52,7 @@ exports.getProducts = async (req, res) => {
  * Obtener productos por categoría
  * @route GET /api/products/category/:slug
  */
-exports.getProductsByCategory = async (req, res) => {
+export const getProductsByCategory = async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     const category = await Category.findOne({ slug });
@@ -77,7 +84,7 @@ exports.getProductsByCategory = async (req, res) => {
  * Obtener un producto por ID
  * @route GET /api/products/:id
  */
-exports.getProductById = async (req, res) => {
+export const getProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate("createdBy", "name email")
@@ -108,11 +115,11 @@ exports.getProductById = async (req, res) => {
  * Crear nuevo producto
  * @route POST /api/products
  */
-exports.createProduct = async (req, res) => {
+export const createProduct = async (req: MulterRequest, res: Response) => {
   try {
     const productData = {
       ...req.body,
-      createdBy: req.user.id,
+      createdBy: req.user?.id,
     };
 
     if (productData.price) productData.price = parseFloat(productData.price);
@@ -121,24 +128,24 @@ exports.createProduct = async (req, res) => {
     if (productData.materials && typeof productData.materials === "string") {
       productData.materials = productData.materials
         .split(",")
-        .map((m) => m.trim())
+        .map((m: string) => m.trim())
         .filter(Boolean);
     }
 
-    if (req.files && req.files.length > 0) {
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       productData.images = req.files.map((f) => f.path);
     }
 
     let product = await Product.create(productData);
-    product = await Product.findById(product._id)
+    product = (await Product.findById(product._id)
       .populate("createdBy", "name")
-      .populate("categoryId", "name slug");
+      .populate("categoryId", "name slug")) as any;
 
     res.status(201).json({
       success: true,
       product,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al crear producto:", error);
     res.status(500).json({
       success: false,
@@ -152,7 +159,7 @@ exports.createProduct = async (req, res) => {
  * Actualizar producto
  * @route PUT /api/products/:id
  */
-exports.updateProduct = async (req, res) => {
+export const updateProduct = async (req: MulterRequest, res: Response) => {
   try {
     let product = await Product.findById(req.params.id);
 
@@ -164,7 +171,7 @@ exports.updateProduct = async (req, res) => {
     }
 
     // Procesar imágenes a mantener
-    let keepImages = [];
+    let keepImages: string[] = [];
     if (req.body.keepImages) {
       try {
         keepImages =
@@ -187,17 +194,17 @@ exports.updateProduct = async (req, res) => {
           const publicId = matches[0].substring(1);
           await cloudinary.uploader.destroy(publicId);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn("Warning al borrar imagen de Cloudinary:", err.message);
       }
     }
 
     // Construir lista final de imágenes
-    const newFiles = req.files && req.files.length > 0 ? req.files : [];
-    let finalImages = [];
+    const newFiles = (req.files && Array.isArray(req.files) && req.files.length > 0) ? req.files : [];
+    let finalImages: string[] = [];
 
     if (req.body.order) {
-      let orderArr = [];
+      let orderArr: string[] = [];
       try {
         orderArr =
           typeof req.body.order === "string"
@@ -235,7 +242,7 @@ exports.updateProduct = async (req, res) => {
     if (req.body.materials && typeof req.body.materials === "string") {
       req.body.materials = req.body.materials
         .split(",")
-        .map((m) => m.trim())
+        .map((m: string) => m.trim())
         .filter(Boolean);
     }
 
@@ -244,9 +251,9 @@ exports.updateProduct = async (req, res) => {
       runValidators: true,
     });
 
-    product = await Product.findById(product._id)
+    product = (await Product.findById(product!._id)
       .populate("createdBy", "name")
-      .populate("categoryId", "name slug");
+      .populate("categoryId", "name slug")) as any;
 
     res.json({
       success: true,
@@ -265,7 +272,7 @@ exports.updateProduct = async (req, res) => {
  * Eliminar producto
  * @route DELETE /api/products/:id
  */
-exports.deleteProduct = async (req, res) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -285,7 +292,7 @@ exports.deleteProduct = async (req, res) => {
             const publicId = matches[0].substring(1);
             await cloudinary.uploader.destroy(publicId);
           }
-        } catch (err) {
+        } catch (err: any) {
           console.warn("Warning al borrar imagen en delete:", err.message);
         }
       }
@@ -310,7 +317,7 @@ exports.deleteProduct = async (req, res) => {
  * Eliminar una imagen específica de un producto
  * @route DELETE /api/products/:id/images
  */
-exports.deleteProductImage = async (req, res) => {
+export const deleteProductImage = async (req: Request, res: Response) => {
   try {
     const { image } = req.body;
     if (!image) {
@@ -339,7 +346,7 @@ exports.deleteProductImage = async (req, res) => {
         const publicId = matches[0].substring(1);
         await cloudinary.uploader.destroy(publicId);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn("Warning al borrar imagen (del endpoint):", err.message);
     }
 
@@ -359,7 +366,7 @@ exports.deleteProductImage = async (req, res) => {
  * Obtener lista de categorías (legacy)
  * @route GET /api/products/categories/list
  */
-exports.getCategoriesList = async (req, res) => {
+export const getCategoriesList = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find().sort("name");
     res.json({ success: true, categories });

@@ -2,13 +2,15 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Loader, Upload, GripVertical, Star } from "lucide-react";
 import api from "../../utils/axios";
+import { Category, Product } from "../../types";
+import { getApiErrorMessage } from "../../utils/errors";
 
 interface ProductFormModalProps {
   show: boolean;
   onClose: () => void;
-  editingProduct: any;
-  categoriesList: any[];
-  onProductSaved: (product: any, mode: "create" | "update") => void;
+  editingProduct: Product | null;
+  categoriesList: Category[];
+  onProductSaved: (product: Product, mode: "create" | "update") => void;
 }
 
 interface ImageItem {
@@ -29,16 +31,27 @@ const ProductFormModal = ({
   categoriesList,
   onProductSaved,
 }: ProductFormModalProps) => {
+  // Helper to extract category ID from various possible shapes
+  const getCategoryId = (product: Product | null): string => {
+    if (!product) return "";
+    // categoryId can be an object (populated) or string (ID)
+    if (product.categoryId) {
+      if (typeof product.categoryId === "string") return product.categoryId;
+      if (typeof product.categoryId === "object" && "_id" in product.categoryId) {
+        return product.categoryId._id;
+      }
+    }
+    return "";
+  };
+
   const [formData, setFormData] = useState(() =>
     editingProduct
       ? {
         name: editingProduct.name,
         description: editingProduct.description,
         price: editingProduct.price,
-        categoryId: editingProduct.categoryId
-          ? editingProduct.categoryId._id || editingProduct.categoryId
-          : "",
-        stock: editingProduct.stock,
+        categoryId: getCategoryId(editingProduct),
+        stock: editingProduct.stock ?? editingProduct.countInStock ?? 0,
         materials: editingProduct.materials?.join(", ") || "",
       }
       : {
@@ -52,10 +65,10 @@ const ProductFormModal = ({
   );
 
   const [imageList, setImageList] = useState<ImageItem[]>(() =>
-    editingProduct?.images?.length > 0
+    (editingProduct?.images && editingProduct.images.length > 0)
       ? editingProduct.images.map((url: string, idx: number) => ({
         id: `e-${idx}-${Date.now()}`,
-        type: "existing",
+        type: "existing" as const,
         url,
       }))
       : [],
@@ -247,9 +260,9 @@ const ProductFormModal = ({
         } else {
           alert(data.message || "No se pudo eliminar la imagen");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error al eliminar imagen:", error);
-        alert(error.response?.data?.message || "Error al eliminar imagen");
+        alert(getApiErrorMessage(error) || "Error al eliminar imagen");
       }
     } else {
       if (item.url) URL.revokeObjectURL(item.url);

@@ -2,15 +2,17 @@
  * Controlador de autenticación
  * Contiene la lógica de negocio para registro, login y gestión de usuarios
  */
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import User, { IUser } from "../models/User";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Generar token JWT
  */
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+const generateToken = (id: string) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
+    expiresIn: process.env.JWT_EXPIRE as any, // Cast to any or standard JWT types if installed
   });
 };
 
@@ -18,7 +20,7 @@ const generateToken = (id) => {
  * Registrar nuevo usuario
  * @route POST /api/auth/register
  */
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
@@ -37,7 +39,7 @@ exports.register = async (req, res) => {
       role: "user",
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id.toString());
 
     res.status(201).json({
       success: true,
@@ -62,7 +64,7 @@ exports.register = async (req, res) => {
  * Iniciar sesión
  * @route POST /api/auth/login
  */
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -89,7 +91,7 @@ exports.login = async (req, res) => {
     user.lastSeen = new Date();
     await user.save();
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id.toString());
 
     res.json({
       success: true,
@@ -115,9 +117,16 @@ exports.login = async (req, res) => {
  * Obtener usuario actual
  * @route GET /api/auth/me
  */
-exports.getMe = async (req, res) => {
+export const getMe = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user?.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado"
+      })
+    }
 
     res.json({
       success: true,
@@ -143,9 +152,9 @@ exports.getMe = async (req, res) => {
  * Cerrar sesión
  * @route POST /api/auth/logout
  */
-exports.logout = async (req, res) => {
+export const logout = async (req: AuthRequest, res: Response) => {
   try {
-    await User.findByIdAndUpdate(req.user.id, {
+    await User.findByIdAndUpdate(req.user?.id, {
       isOnline: false,
       lastSeen: new Date(),
     });
@@ -167,11 +176,11 @@ exports.logout = async (req, res) => {
  * Actualizar perfil del usuario
  * @route PATCH /api/auth/me
  */
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const { name, password, currentPassword } = req.body;
 
-    const user = await User.findById(req.user.id).select("+password");
+    const user = await User.findById(req.user?.id).select("+password");
 
     if (!user) {
       return res

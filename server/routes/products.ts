@@ -2,19 +2,20 @@
  * Rutas de productos
  * Mapeo de rutas a controladores - lógica de negocio en controllers/
  */
-const express = require("express");
-const router = express.Router();
-const { protect, adminOnly } = require("../middleware/auth");
-const { validate, reviewSchema } = require("../validators/schemas");
-const multer = require("multer");
-const { storage } = require("../config/cloudinary");
+import express from "express";
+import multer from "multer";
+import { protect, adminOnly } from "../middleware/auth";
+import { validate, reviewSchema } from "../validators/schemas";
+import { storage } from "../config/cloudinary";
 
 // Controladores
-const productController = require("../controllers/productController");
-const reviewController = require("../controllers/reviewController");
+import * as productController from "../controllers/productController";
+import * as reviewController from "../controllers/reviewController";
+
+const router = express.Router();
 
 // Configuración de Multer para subida de imágenes
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   if (allowed.includes(file.mimetype)) cb(null, true);
   else cb(new Error("Tipo de archivo no permitido. Solo JPEG/PNG/WebP/GIF."));
@@ -87,4 +88,4 @@ router.delete(
   productController.deleteProductImage,
 );
 
-module.exports = router;
+export default router;

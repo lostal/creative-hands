@@ -2,19 +2,21 @@
  * Controlador de pedidos
  * Contiene la lógica de negocio para gestión de pedidos
  */
-const Order = require("../models/Order");
-const Product = require("../models/Product");
+import { Response } from "express";
+import Order from "../models/Order";
+import Product from "../models/Product";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Crear nuevo pedido
  * @route POST /api/orders
  */
-exports.createOrder = async (req, res) => {
+export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
     const { orderItems, shippingAddress } = req.body;
 
     // Obtener todos los productos en una sola consulta (evita N+1)
-    const productIds = orderItems.map((item) => item.product);
+    const productIds = orderItems.map((item: any) => item.product);
     const products = await Product.find({ _id: { $in: productIds } });
 
     // Crear mapa para acceso rápido
@@ -55,12 +57,13 @@ exports.createOrder = async (req, res) => {
 
     // Actualizar stock en una sola operación
     if (stockUpdates.length > 0) {
+      // @ts-ignore - BulkWrite types can be complex with Mongoose versions
       await Product.bulkWrite(stockUpdates);
     }
 
     // Crear el pedido
     const order = new Order({
-      user: req.user.id,
+      user: req.user?.id,
       orderItems,
       shippingAddress,
       totalPrice,
@@ -76,7 +79,7 @@ exports.createOrder = async (req, res) => {
       success: true,
       order,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al crear pedido:", error);
     res.status(500).json({
       success: false,
@@ -90,9 +93,9 @@ exports.createOrder = async (req, res) => {
  * Obtener mis pedidos
  * @route GET /api/orders/myorders
  */
-exports.getMyOrders = async (req, res) => {
+export const getMyOrders = async (req: AuthRequest, res: Response) => {
   try {
-    const orders = await Order.find({ user: req.user.id })
+    const orders = await Order.find({ user: req.user?.id })
       .populate("orderItems.product")
       .sort({ createdAt: -1 });
 
@@ -100,7 +103,7 @@ exports.getMyOrders = async (req, res) => {
       success: true,
       orders,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al obtener pedidos:", error);
     res.status(500).json({
       success: false,
@@ -114,7 +117,7 @@ exports.getMyOrders = async (req, res) => {
  * Obtener todos los pedidos (Admin)
  * @route GET /api/orders
  */
-exports.getAllOrders = async (req, res) => {
+export const getAllOrders = async (req: AuthRequest, res: Response) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")
@@ -125,7 +128,7 @@ exports.getAllOrders = async (req, res) => {
       success: true,
       orders,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al obtener todos los pedidos:", error);
     res.status(500).json({
       success: false,
@@ -139,7 +142,7 @@ exports.getAllOrders = async (req, res) => {
  * Obtener pedido por ID
  * @route GET /api/orders/:id
  */
-exports.getOrderById = async (req, res) => {
+export const getOrderById = async (req: AuthRequest, res: Response) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate("user", "name email")
@@ -153,9 +156,12 @@ exports.getOrderById = async (req, res) => {
     }
 
     // Verificar autorización
+    // @ts-ignore - user is populated so it might be an object
+    const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+
     if (
-      order.user._id.toString() !== req.user.id &&
-      req.user.role !== "admin"
+      orderUserId !== req.user?.id &&
+      req.user?.role !== "admin"
     ) {
       return res.status(403).json({
         success: false,
@@ -167,7 +173,7 @@ exports.getOrderById = async (req, res) => {
       success: true,
       order,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al obtener pedido:", error);
     res.status(500).json({
       success: false,
@@ -181,7 +187,7 @@ exports.getOrderById = async (req, res) => {
  * Marcar pedido como entregado
  * @route PUT /api/orders/:id/deliver
  */
-exports.deliverOrder = async (req, res) => {
+export const deliverOrder = async (req: AuthRequest, res: Response) => {
   try {
     const order = await Order.findByIdAndUpdate(
       req.params.id,
@@ -202,7 +208,7 @@ exports.deliverOrder = async (req, res) => {
       success: true,
       order,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al entregar pedido:", error);
     res.status(500).json({
       success: false,

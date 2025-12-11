@@ -2,7 +2,8 @@
  * Controlador de categorías
  * Contiene la lógica de negocio para gestión de categorías
  */
-const Category = require("../models/Category");
+import { Request, Response } from "express";
+import Category from "../models/Category";
 
 /**
  * Helper para generar slug
@@ -21,7 +22,7 @@ const generateSlug = (str = "") => {
  * Obtener todas las categorías
  * @route GET /api/categories
  */
-exports.getCategories = async (req, res) => {
+export const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find().sort("name");
     res.json({ success: true, count: categories.length, categories });
@@ -37,7 +38,7 @@ exports.getCategories = async (req, res) => {
  * Crear categoría
  * @route POST /api/categories
  */
-exports.createCategory = async (req, res) => {
+export const createCategory = async (req: Request, res: Response) => {
   try {
     const { name, slug, description } = req.body;
     if (!name) {
@@ -75,7 +76,7 @@ exports.createCategory = async (req, res) => {
  * Actualizar categoría
  * @route PUT /api/categories/:id
  */
-exports.updateCategory = async (req, res) => {
+export const updateCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -109,7 +110,7 @@ exports.updateCategory = async (req, res) => {
  * Eliminar categoría
  * @route DELETE /api/categories/:id
  */
-exports.deleteCategory = async (req, res) => {
+export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const category = await Category.findById(id);

@@ -1,8 +1,20 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/User";
+
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+    role: string;
+  };
+}
 
 // Middleware para proteger rutas (verifica JWT en header Authorization o cookies)
-const protect = async (req, res, next) => {
+export const protect = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   let token;
 
   if (
@@ -21,7 +33,10 @@ const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string,
+    ) as jwt.JwtPayload;
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -32,14 +47,18 @@ const protect = async (req, res, next) => {
 
     req.user = { id: user._id.toString(), role: user.role };
     next();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Middleware protect error:", error.message);
     return res.status(401).json({ success: false, message: "Token inválido" });
   }
 };
 
 // Middleware para rutas sólo administradores
-const adminOnly = (req, res, next) => {
+export const adminOnly = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   if (req.user && req.user.role === "admin") {
     return next();
   }
@@ -47,5 +66,3 @@ const adminOnly = (req, res, next) => {
     .status(403)
     .json({ success: false, message: "Permisos de administrador requeridos" });
 };
-
-module.exports = { protect, adminOnly };

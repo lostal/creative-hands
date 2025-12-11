@@ -2,13 +2,14 @@
  * Rutas de pedidos
  * Mapeo de rutas a controladores - lógica de negocio en controllers/
  */
-const express = require("express");
-const router = express.Router();
-const { protect, adminOnly } = require("../middleware/auth");
-const { validate, orderSchema } = require("../validators/schemas");
+import express from "express";
+import { protect, adminOnly } from "../middleware/auth";
+import { validate, orderSchema } from "../validators/schemas";
 
 // Controlador
-const orderController = require("../controllers/orderController");
+import * as orderController from "../controllers/orderController";
+
+const router = express.Router();
 
 // ==================== RUTAS PROTEGIDAS ====================
 
@@ -29,4 +30,4 @@ router.get("/", protect, adminOnly, orderController.getAllOrders);
 // PUT /api/orders/:id/deliver - Marcar como entregado
 router.put("/:id/deliver", protect, adminOnly, orderController.deliverOrder);
 
-module.exports = router;
+export default router;

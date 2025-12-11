@@ -2,12 +2,13 @@
  * Rutas de categorías
  * Mapeo de rutas a controladores - lógica de negocio en controllers/
  */
-const express = require("express");
-const router = express.Router();
-const { protect, adminOnly } = require("../middleware/auth");
+import express from "express";
+import { protect, adminOnly } from "../middleware/auth";
 
 // Controlador
-const categoryController = require("../controllers/categoryController");
+import * as categoryController from "../controllers/categoryController";
+
+const router = express.Router();
 
 // ==================== RUTAS PÚBLICAS ====================
 
@@ -25,4 +26,4 @@ router.put("/:id", protect, adminOnly, categoryController.updateCategory);
 // DELETE /api/categories/:id - Eliminar categoría
 router.delete("/:id", protect, adminOnly, categoryController.deleteCategory);
 
-module.exports = router;
+export default router;

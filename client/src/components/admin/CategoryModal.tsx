@@ -2,6 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import api from "../../utils/axios";
+import { Category } from "../../types";
+import { getApiErrorMessage } from "../../utils/errors";
+
+interface CategoryModalProps {
+  show: boolean;
+  onClose: () => void;
+  categoriesList: Category[];
+  onCategoriesChange: () => void;
+  onEditCategory: (cat: Category) => void;
+}
 
 /**
  * Modal para gestionar categorías (listar, crear, eliminar)
@@ -13,13 +23,7 @@ const CategoryModal = ({
   categoriesList,
   onCategoriesChange,
   onEditCategory,
-}: {
-  show: boolean;
-  onClose: () => void;
-  categoriesList: any[];
-  onCategoriesChange: () => void;
-  onEditCategory: (cat: any) => void;
-}) => {
+}: CategoryModalProps) => {
   const [newCategory, setNewCategory] = useState({
     name: "",
     slug: "",
@@ -34,9 +38,9 @@ const CategoryModal = ({
       await api.post("/api/categories", newCategory);
       onCategoriesChange();
       setNewCategory({ name: "", slug: "", description: "" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al crear categoría:", error);
-      alert(error.response?.data?.message || "Error al crear categoría");
+      alert(getApiErrorMessage(error) || "Error al crear categoría");
     }
   };
 
@@ -50,9 +54,9 @@ const CategoryModal = ({
     try {
       await api.delete(`/api/categories/${id}`);
       onCategoriesChange();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al eliminar categoría:", error);
-      alert(error.response?.data?.message || "Error al eliminar categoría");
+      alert(getApiErrorMessage(error) || "Error al eliminar categoría");
     }
   };
 

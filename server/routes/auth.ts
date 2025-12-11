@@ -2,17 +2,18 @@
  * Rutas de autenticación
  * Mapeo de rutas a controladores - lógica de negocio en controllers/
  */
-const express = require("express");
-const router = express.Router();
-const { protect } = require("../middleware/auth");
-const {
+import express from "express";
+import { protect } from "../middleware/auth";
+import {
   validate,
   registerSchema,
   loginSchema,
-} = require("../validators/schemas");
+} from "../validators/schemas";
 
 // Controlador
-const authController = require("../controllers/authController");
+import * as authController from "../controllers/authController";
+
+const router = express.Router();
 
 // ==================== RUTAS PÚBLICAS ====================
 
@@ -33,4 +34,4 @@ router.post("/logout", protect, authController.logout);
 // PATCH /api/auth/me - Actualizar perfil
 router.patch("/me", protect, authController.updateProfile);
 
-module.exports = router;
+export default router;

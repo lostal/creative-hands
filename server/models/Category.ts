@@ -1,6 +1,12 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document } from "mongoose";
 
-const categorySchema = new mongoose.Schema(
+export interface ICategory extends Document {
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+const categorySchema = new Schema(
   {
     name: {
       type: String,
@@ -22,4 +28,4 @@ const categorySchema = new mongoose.Schema(
   },
 );
 
-module.exports = mongoose.model("Category", categorySchema);
+export default mongoose.model<ICategory>("Category", categorySchema);

@@ -334,9 +334,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
                 <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                   <strong>Estado: </strong>
-                  {product.countInStock > 0 ? (
+                  {(product.stock ?? product.countInStock ?? 0) > 0 ? (
                     <span className="text-green-600 dark:text-green-400">
-                      {product.countInStock} en stock
+                      {product.stock ?? product.countInStock} en stock
                     </span>
                   ) : (
                     <span className="text-red-600 dark:text-red-400">
@@ -379,10 +379,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     </span>
                     <button
                       onClick={() =>
-                        setQuantity(Math.min(product.countInStock, quantity + 1))
+                        setQuantity(Math.min(product.stock ?? product.countInStock ?? 999, quantity + 1))
                       }
                       className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                      disabled={quantity >= product.countInStock}
+                      disabled={quantity >= (product.stock ?? product.countInStock ?? 999)}
                       aria-label="Aumentar cantidad"
                     >
                       +
@@ -409,8 +409,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         setAddedToCart(true);
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
-                      disabled={product.countInStock === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${product.countInStock === 0
+                      disabled={(product.stock ?? product.countInStock ?? 0) === 0}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${(product.stock ?? product.countInStock ?? 0) === 0
                         ? "bg-gray-400 cursor-not-allowed"
                         : addedToCart
                           ? "bg-green-600 hover:bg-green-700"

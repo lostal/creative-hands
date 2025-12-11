@@ -2,6 +2,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import api from "../../utils/axios";
+import { Category } from "../../types";
+import { getApiErrorMessage } from "../../utils/errors";
+
+interface CategoryEditModalProps {
+  show: boolean;
+  onClose: () => void;
+  category: Category | null;
+  onCategorySaved: () => void;
+}
 
 /**
  * Modal para editar una categoría existente
@@ -11,12 +20,7 @@ const CategoryEditModal = ({
   onClose,
   category,
   onCategorySaved,
-}: {
-  show: boolean;
-  onClose: () => void;
-  category: any;
-  onCategorySaved: () => void;
-}) => {
+}: CategoryEditModalProps) => {
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -38,11 +42,11 @@ const CategoryEditModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.put(`/api/categories/${category._id}`, formData);
+      await api.put(`/api/categories/${category?._id}`, formData);
       onCategorySaved();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al actualizar categoría:", error);
-      alert(error.response?.data?.message || "Error al actualizar categoría");
+      alert(getApiErrorMessage(error) || "Error al actualizar categoría");
     }
   };
 

@@ -2,10 +2,11 @@
  * Esquemas de validación con Joi para requests del servidor
  * Centraliza validaciones para mantener controladores limpios
  */
-const Joi = require("joi");
+import Joi from "joi";
+import { Request, Response, NextFunction } from "express";
 
 // Esquema para registro de usuario
-const registerSchema = Joi.object({
+export const registerSchema = Joi.object({
   name: Joi.string().required().min(2).max(50).messages({
     "string.empty": "El nombre es obligatorio",
     "string.min": "El nombre debe tener al menos 2 caracteres",
@@ -22,7 +23,7 @@ const registerSchema = Joi.object({
 });
 
 // Esquema para login
-const loginSchema = Joi.object({
+export const loginSchema = Joi.object({
   email: Joi.string().required().email().messages({
     "string.empty": "El email es obligatorio",
     "string.email": "Email no válido",
@@ -33,7 +34,7 @@ const loginSchema = Joi.object({
 });
 
 // Esquema para crear/actualizar producto
-const productSchema = Joi.object({
+export const productSchema = Joi.object({
   name: Joi.string().required().min(3).max(100).messages({
     "string.empty": "El nombre del producto es obligatorio",
     "string.min": "El nombre debe tener al menos 3 caracteres",
@@ -59,7 +60,7 @@ const productSchema = Joi.object({
 });
 
 // Esquema para review
-const reviewSchema = Joi.object({
+export const reviewSchema = Joi.object({
   title: Joi.string().required().min(3).max(100).messages({
     "string.empty": "El título es obligatorio",
     "string.min": "El título debe tener al menos 3 caracteres",
@@ -76,7 +77,7 @@ const reviewSchema = Joi.object({
 });
 
 // Esquema para crear pedido
-const orderSchema = Joi.object({
+export const orderSchema = Joi.object({
   orderItems: Joi.array()
     .items(
       Joi.object({
@@ -100,7 +101,7 @@ const orderSchema = Joi.object({
 });
 
 // Esquema para categoría
-const categorySchema = Joi.object({
+export const categorySchema = Joi.object({
   name: Joi.string().required().min(2).max(50).messages({
     "string.empty": "El nombre es obligatorio",
   }),
@@ -110,10 +111,10 @@ const categorySchema = Joi.object({
 
 /**
  * Middleware factory para validar request body con Joi
- * @param {Joi.Schema} schema - Esquema de validación
+ * @param schema - Esquema de validación
  */
-const validate = (schema) => {
-  return (req, res, next) => {
+export const validate = (schema: Joi.Schema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const { error, value } = schema.validate(req.body, {
       abortEarly: false, // Recoger todos los errores
       stripUnknown: true, // Eliminar campos no definidos
@@ -132,14 +133,4 @@ const validate = (schema) => {
     req.body = value;
     next();
   };
-};
-
-module.exports = {
-  registerSchema,
-  loginSchema,
-  productSchema,
-  reviewSchema,
-  orderSchema,
-  categorySchema,
-  validate,
 };
