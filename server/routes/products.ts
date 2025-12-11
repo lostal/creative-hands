@@ -5,7 +5,7 @@
 import express from "express";
 import multer from "multer";
 import { protect, adminOnly, validateObjectId } from "../middleware/auth";
-import { validate, reviewSchema, productSchema, productUpdateSchema } from "../validators/schemas";
+import { validate, validateQuery, reviewSchema, productSchema, productUpdateSchema, productQuerySchema } from "../validators/schemas";
 import { storage } from "../config/cloudinary";
 import { UPLOAD_LIMITS } from "../config/constants";
 
@@ -35,7 +35,7 @@ const upload = multer({
 // ==================== RUTAS PÚBLICAS ====================
 
 // GET /api/products - Obtener todos los productos
-router.get("/", productController.getProducts);
+router.get("/", validateQuery(productQuerySchema), productController.getProducts);
 
 // GET /api/products/categories/list - Lista de categorías (legacy)
 router.get("/categories/list", productController.getCategoriesList);

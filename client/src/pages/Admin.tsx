@@ -73,14 +73,8 @@ const Admin = () => {
       setCategoriesList(data.categories || []);
     } catch (error) {
       logger.error("Error cargando categorías:", error);
-      // Categorías por defecto como fallback
-      setCategoriesList([
-        { _id: "", name: "Joyería artesanal", slug: "joyeria-artesanal" },
-        { _id: "", name: "Velas y aromáticos", slug: "velas-y-aromaticos" },
-        { _id: "", name: "Textiles y ropa", slug: "textiles-y-ropa" },
-        { _id: "", name: "Cerámica y arcilla", slug: "ceramica-y-arcilla" },
-        { _id: "", name: "Arte hecho a mano", slug: "arte-hecho-a-mano" },
-      ]);
+      // Mantener lista vacía - el usuario puede crear categorías desde el panel
+      setCategoriesList([]);
     }
   };
 

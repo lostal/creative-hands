@@ -8,6 +8,7 @@
         "outDir": "./dist",
         "rootDir": "./",
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "baseUrl": ".",
         "esModuleInterop": true,
         "skipLibCheck": true,

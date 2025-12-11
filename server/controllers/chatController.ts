@@ -43,6 +43,13 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
   try {
     let { conversationId } = req.params;
 
+    if (!conversationId) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de conversación requerido",
+      });
+    }
+
     // Si no contiene '_', asumimos que es el userId del otro participante
     if (!conversationId.includes("_")) {
       const otherUserId = conversationId;

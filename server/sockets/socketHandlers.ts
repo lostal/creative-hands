@@ -9,14 +9,46 @@ import User from "../models/User";
 import Message from "../models/Message";
 import logger from "../utils/logger";
 
-/**
- * Socket autenticado con información del usuario
- */
-export interface AuthenticatedSocket extends Socket {
+// ==================== TIPOS DE EVENTOS ====================
+
+/** Datos de un mensaje populado */
+interface PopulatedMessage {
+    _id: string;
+    conversationId: string;
+    sender: { _id: string; name: string; avatar?: string };
+    receiver: { _id: string; name: string; avatar?: string };
+    content: string;
+    read: boolean;
+    createdAt: Date;
+}
+
+/** Eventos emitidos del servidor al cliente */
+export interface ServerToClientEvents {
+    "message:new": (message: PopulatedMessage) => void;
+    "message:notification": (data: { from: string; conversationId: string }) => void;
+    "message:error": (data: { message: string }) => void;
+    "messages:read": (data: { conversationId: string }) => void;
+    "user:status": (data: { userId: string; isOnline: boolean }) => void;
+    "typing:status": (data: { userId: string; userName: string; isTyping: boolean }) => void;
+}
+
+/** Eventos enviados del cliente al servidor */
+export interface ClientToServerEvents {
+    "message:send": (data: { receiverId: string; content: string }) => void;
+    "typing:start": (data: { receiverId: string }) => void;
+    "typing:stop": (data: { receiverId: string }) => void;
+    "messages:read": (data: { conversationId: string }) => void;
+}
+
+/** Socket autenticado con información del usuario */
+export interface AuthenticatedSocket extends Socket<ClientToServerEvents, ServerToClientEvents> {
     userId?: string;
     userRole?: string;
     userName?: string;
 }
+
+/** Servidor tipado de Socket.IO */
+export type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
 /**
  * Mapa de usuarios conectados - userId -> Set<socketId>

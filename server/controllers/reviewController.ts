@@ -102,8 +102,15 @@ export const addReview = async (req: AuthRequest, res: Response) => {
 export const updateReview = async (req: AuthRequest, res: Response) => {
   try {
     const { title, comment, rating } = req.body;
+    const { reviewId } = req.params;
     const numericRating =
       rating !== undefined ? parseInt(rating, 10) : undefined;
+
+    if (!reviewId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID de review requerido" });
+    }
 
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -114,8 +121,8 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
 
     // Buscar review por ID
     const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
-    const review = reviews.id(req.params.reviewId) ||
-      reviews.find((r) => r._id && r._id.toString() === req.params.reviewId);
+    const review = reviews.id(reviewId) ||
+      reviews.find((r) => r._id && r._id.toString() === reviewId);
 
     if (!review) {
       return res
@@ -166,6 +173,14 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
  */
 export const deleteReview = async (req: AuthRequest, res: Response) => {
   try {
+    const { reviewId } = req.params;
+
+    if (!reviewId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID de review requerido" });
+    }
+
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res
@@ -174,8 +189,8 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
     }
 
     const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
-    const review = reviews.id(req.params.reviewId) ||
-      reviews.find((r) => r._id && r._id.toString() === req.params.reviewId);
+    const review = reviews.id(reviewId) ||
+      reviews.find((r) => r._id && r._id.toString() === reviewId);
 
     if (!review) {
       return res

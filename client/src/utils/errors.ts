@@ -24,12 +24,14 @@ export const getErrorMessage = (error: unknown): string => {
  * Type guard to check if error has a response property (Axios-like errors)
  */
 export const isAxiosError = (error: unknown): error is { response: { data: { message?: string } } } => {
-    return (
-        error !== null &&
-        typeof error === 'object' &&
-        'response' in error &&
-        typeof (error as any).response === 'object'
-    );
+    if (error === null || typeof error !== 'object') {
+        return false;
+    }
+    if (!('response' in error)) {
+        return false;
+    }
+    const errorWithResponse = error as { response: unknown };
+    return errorWithResponse.response !== null && typeof errorWithResponse.response === 'object';
 };
 
 /**

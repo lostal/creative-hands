@@ -1,4 +1,4 @@
-import { Suspense, lazy, ReactNode, startTransition } from "react";
+import { Suspense, lazy, ReactNode } from "react";
 import {
   BrowserRouter as Router,
   Routes,

@@ -255,16 +255,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
     if (name) user.name = name;
 
-    // Cambio de contraseña
+    // Cambio de contraseña (Joi ya valida que currentPassword esté presente)
     if (password) {
-      if (!currentPassword) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Se requiere la contraseña actual para cambiar la contraseña",
-        });
-      }
-
       const isMatch = await user.comparePassword(currentPassword);
       if (!isMatch) {
         return res

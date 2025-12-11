@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, useCallback, ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import logger from "../utils/logger";
@@ -22,25 +22,43 @@ interface SocketProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Obtener URL del servidor de sockets según el entorno
+ */
+const getServerUrl = (): string => {
+  return import.meta.env.MODE === "production"
+    ? window.location.origin
+    : "http://localhost:5000";
+};
+
 export const SocketProvider = ({ children }: SocketProviderProps) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // Usar useRef para el socket evita problemas con el ciclo de dependencias
+  const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { isAuthenticated, loading } = useAuth();
 
-  useEffect(() => {
-    // Esperar a que AuthContext haya terminado la verificación inicial (loading=false)
-    // para evitar conectar un socket que luego el servidor invalide.
-    if (!loading && isAuthenticated) {
-      // Determinar URL del servidor de sockets:
-      // En producción, usar el mismo dominio (sin puerto específico)
-      // En desarrollo, usar localhost:5000
-      const serverUrl =
-        import.meta.env.MODE === "production"
-          ? window.location.origin
-          : "http://localhost:5000";
+  // Función para cerrar el socket actual
+  const closeSocket = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.close();
+      socketRef.current = null;
+      setConnected(false);
+    }
+  }, []);
 
-      const newSocket = io(serverUrl, {
-        // Enviar cookies automáticamente para autenticación
+  useEffect(() => {
+    // Esperar a que AuthContext haya terminado la verificación inicial
+    if (loading) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      // Evitar crear múltiples conexiones
+      if (socketRef.current) {
+        return;
+      }
+
+      const newSocket = io(getServerUrl(), {
         withCredentials: true,
       });
 
@@ -59,25 +77,19 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
         setConnected(false);
       });
 
-      setSocket(newSocket);
+      socketRef.current = newSocket;
 
       return () => {
-        newSocket.close();
+        closeSocket();
       };
     } else {
-      // Si aún está cargando o no autenticado, asegurar que no haya sockets abiertos
-      if (socket) {
-        socket.close();
-        setSocket(null);
-        setConnected(false);
-      }
+      // No autenticado: cerrar socket si existe
+      closeSocket();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // Nota: 'socket' omitido intencionalmente para evitar ciclo de reconexión infinito
-  }, [isAuthenticated, loading]);
+  }, [isAuthenticated, loading, closeSocket]);
 
   const value: SocketContextType = {
-    socket,
+    socket: socketRef.current,
     connected,
   };
 

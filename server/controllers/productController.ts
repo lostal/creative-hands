@@ -220,8 +220,9 @@ export const updateProduct = async (req: MulterRequest, res: Response) => {
       let newIdx = 0;
       for (const entry of orderArr) {
         if (entry === "__new__") {
-          if (newFiles[newIdx]) {
-            finalImages.push(newFiles[newIdx].path);
+          const file = newFiles[newIdx];
+          if (file) {
+            finalImages.push(file.path);
             newIdx++;
           }
         } else if (typeof entry === "string") {

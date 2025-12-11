@@ -98,6 +98,40 @@ export const productUpdateSchema = Joi.object({
   "object.min": "Debe proporcionar al menos un campo para actualizar",
 });
 
+// Esquema para query params de búsqueda de productos
+export const productQuerySchema = Joi.object({
+  search: Joi.string().max(100).trim().messages({
+    "string.max": "La búsqueda no puede exceder 100 caracteres",
+  }),
+  sort: Joi.string().valid("-createdAt", "createdAt", "price", "-price", "name", "-name").default("-createdAt"),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(50).default(12),
+});
+
+/**
+ * Middleware para validar query params
+ */
+export const validateQuery = (schema: Joi.Schema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { error, value } = schema.validate(req.query, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      const errors = error.details.map((detail) => detail.message);
+      return res.status(400).json({
+        success: false,
+        message: "Parámetros de búsqueda inválidos",
+        errors,
+      });
+    }
+
+    req.query = value;
+    next();
+  };
+};
+
 // Esquema para review
 export const reviewSchema = Joi.object({
   title: Joi.string().required().min(3).max(100).messages({
