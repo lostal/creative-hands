@@ -32,7 +32,7 @@ const messageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Índice compuesto para búsquedas eficientes
@@ -41,4 +41,3 @@ messageSchema.index({ conversationId: 1, createdAt: -1 });
 messageSchema.index({ receiver: 1, read: 1 });
 
 module.exports = mongoose.model("Message", messageSchema);
-

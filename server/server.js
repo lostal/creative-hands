@@ -18,7 +18,8 @@ const authLimiter = rateLimit({
   max: 5, // 5 intentos por ventana
   message: {
     success: false,
-    message: "Demasiados intentos de autenticación. Intenta de nuevo en 15 minutos.",
+    message:
+      "Demasiados intentos de autenticación. Intenta de nuevo en 15 minutos.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -51,7 +52,9 @@ const createDefaultAdmin = async () => {
         role: "admin",
       });
       logger.startup("✅ Administrador creado exitosamente");
-      logger.startup(`   Email: ${process.env.ADMIN_EMAIL || "admin@creativehands.com"}`);
+      logger.startup(
+        `   Email: ${process.env.ADMIN_EMAIL || "admin@creativehands.com"}`,
+      );
       logger.startup("   Password: ********** (ver variables de entorno)");
     }
   } catch (error) {
@@ -69,7 +72,7 @@ app.use(
         ? process.env.CLIENT_URL
         : "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -227,7 +230,7 @@ io.on("connection", (socket) => {
         {
           read: true,
           readAt: new Date(),
-        }
+        },
       );
 
       // Notificar al remitente
@@ -290,7 +293,9 @@ server.listen(PORT, () => {
   logger.startup(`\n🚀 Servidor corriendo en puerto ${PORT}`);
   logger.startup(`📡 Entorno: ${process.env.NODE_ENV || "development"}`);
   if (process.env.NODE_ENV === "production") {
-    logger.startup(`🌐 App: ${process.env.CLIENT_URL || "https://tu-app.onrender.com"}`);
+    logger.startup(
+      `🌐 App: ${process.env.CLIENT_URL || "https://tu-app.onrender.com"}`,
+    );
   } else {
     logger.startup(`🌐 Frontend: http://localhost:5173`);
     logger.startup(`🔗 API: http://localhost:${PORT}`);

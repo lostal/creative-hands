@@ -47,18 +47,14 @@ router.post(
   "/:id/reviews",
   protect,
   validate(reviewSchema),
-  reviewController.addReview
+  reviewController.addReview,
 );
 
 // PUT /api/products/:id/reviews/:reviewId - Editar review
 router.put("/:id/reviews/:reviewId", protect, reviewController.updateReview);
 
 // DELETE /api/products/:id/reviews/:reviewId - Eliminar review
-router.delete(
-  "/:id/reviews/:reviewId",
-  protect,
-  reviewController.deleteReview
-);
+router.delete("/:id/reviews/:reviewId", protect, reviewController.deleteReview);
 
 // ==================== RUTAS DE ADMIN (Solo administradores) ====================
 
@@ -68,7 +64,7 @@ router.post(
   protect,
   adminOnly,
   upload.array("images", 5),
-  productController.createProduct
+  productController.createProduct,
 );
 
 // PUT /api/products/:id - Actualizar producto
@@ -77,7 +73,7 @@ router.put(
   protect,
   adminOnly,
   upload.array("images", 5),
-  productController.updateProduct
+  productController.updateProduct,
 );
 
 // DELETE /api/products/:id - Eliminar producto
@@ -88,7 +84,7 @@ router.delete(
   "/:id/images",
   protect,
   adminOnly,
-  productController.deleteProductImage
+  productController.deleteProductImage,
 );
 
 module.exports = router;

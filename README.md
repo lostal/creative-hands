@@ -35,7 +35,7 @@ flowchart TB
         API[API REST]
         SocketIO[Socket.IO Server]
         MW[Middleware JWT]
-        
+
         subgraph Rutas
             AuthR["/api/auth"]
             ProdR["/api/products"]
@@ -61,21 +61,21 @@ flowchart TB
     UI --> Cart
     UI --> Socket
     UI --> Theme
-    
+
     Auth -->|HTTP + JWT| API
     Cart -->|HTTP| API
     Socket -->|WebSocket| SocketIO
-    
+
     API --> MW
     MW --> Rutas
-    
+
     AuthR --> Users
     ProdR --> Products
     ProdR --> Cloud
     ChatR --> Messages
     OrdR --> Orders
     CatR --> Categories
-    
+
     SocketIO -->|Tiempo Real| Messages
 ```
 
@@ -113,14 +113,14 @@ flowchart TB
 
 ### Roles y Permisos
 
-| Funcionalidad | Usuario | Administrador |
-|---------------|:-------:|:-------------:|
-| Ver productos | ✅ | ✅ |
-| Comprar productos | ✅ | ❌ |
-| Chat con admin | ✅ | ✅ |
-| Gestionar productos | ❌ | ✅ |
-| Ver todos los pedidos | ❌ | ✅ |
-| Panel de administración | ❌ | ✅ |
+| Funcionalidad           | Usuario | Administrador |
+| ----------------------- | :-----: | :-----------: |
+| Ver productos           |   ✅    |      ✅       |
+| Comprar productos       |   ✅    |      ❌       |
+| Chat con admin          |   ✅    |      ✅       |
+| Gestionar productos     |   ❌    |      ✅       |
+| Ver todos los pedidos   |   ❌    |      ✅       |
+| Panel de administración |   ❌    |      ✅       |
 
 ### Seguridad
 
@@ -144,13 +144,13 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 ### Eventos Socket.IO
 
-| Evento | Dirección | Descripción |
-|--------|-----------|-------------|
-| `message:send` | Cliente → Servidor | Enviar nuevo mensaje |
-| `message:new` | Servidor → Cliente | Notificar mensaje recibido |
-| `typing:start/stop` | Bidireccional | Indicador de escritura |
-| `user:status` | Servidor → Clientes | Cambio de estado online |
-| `messages:read` | Bidireccional | Marcar como leído |
+| Evento              | Dirección           | Descripción                |
+| ------------------- | ------------------- | -------------------------- |
+| `message:send`      | Cliente → Servidor  | Enviar nuevo mensaje       |
+| `message:new`       | Servidor → Cliente  | Notificar mensaje recibido |
+| `typing:start/stop` | Bidireccional       | Indicador de escritura     |
+| `user:status`       | Servidor → Clientes | Cambio de estado online    |
+| `messages:read`     | Bidireccional       | Marcar como leído          |
 
 ---
 
@@ -158,33 +158,33 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 ### Autenticación (`/api/auth`)
 
-| Método | Endpoint | Descripción | Acceso |
-|--------|----------|-------------|--------|
-| POST | `/register` | Registrar usuario | Público |
-| POST | `/login` | Iniciar sesión | Público |
-| GET | `/me` | Obtener perfil | Privado |
-| PATCH | `/me` | Actualizar perfil | Privado |
-| POST | `/logout` | Cerrar sesión | Privado |
+| Método | Endpoint    | Descripción       | Acceso  |
+| ------ | ----------- | ----------------- | ------- |
+| POST   | `/register` | Registrar usuario | Público |
+| POST   | `/login`    | Iniciar sesión    | Público |
+| GET    | `/me`       | Obtener perfil    | Privado |
+| PATCH  | `/me`       | Actualizar perfil | Privado |
+| POST   | `/logout`   | Cerrar sesión     | Privado |
 
 ### Productos (`/api/products`)
 
-| Método | Endpoint | Descripción | Acceso |
-|--------|----------|-------------|--------|
-| GET | `/` | Listar productos | Público |
-| GET | `/:id` | Obtener producto | Público |
-| POST | `/` | Crear producto | Admin |
-| PUT | `/:id` | Actualizar producto | Admin |
-| DELETE | `/:id` | Eliminar producto | Admin |
-| POST | `/:id/reviews` | Añadir reseña | Privado |
+| Método | Endpoint       | Descripción         | Acceso  |
+| ------ | -------------- | ------------------- | ------- |
+| GET    | `/`            | Listar productos    | Público |
+| GET    | `/:id`         | Obtener producto    | Público |
+| POST   | `/`            | Crear producto      | Admin   |
+| PUT    | `/:id`         | Actualizar producto | Admin   |
+| DELETE | `/:id`         | Eliminar producto   | Admin   |
+| POST   | `/:id/reviews` | Añadir reseña       | Privado |
 
 ### Pedidos (`/api/orders`)
 
-| Método | Endpoint | Descripción | Acceso |
-|--------|----------|-------------|--------|
-| POST | `/` | Crear pedido | Usuario |
-| GET | `/my-orders` | Mis pedidos | Usuario |
-| GET | `/` | Todos los pedidos | Admin |
-| PATCH | `/:id/status` | Cambiar estado | Admin |
+| Método | Endpoint      | Descripción       | Acceso  |
+| ------ | ------------- | ----------------- | ------- |
+| POST   | `/`           | Crear pedido      | Usuario |
+| GET    | `/my-orders`  | Mis pedidos       | Usuario |
+| GET    | `/`           | Todos los pedidos | Admin   |
+| PATCH  | `/:id/status` | Cambiar estado    | Admin   |
 
 ---
 

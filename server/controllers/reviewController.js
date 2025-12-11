@@ -9,10 +9,10 @@ const { enrichProductWithMetrics } = require("../utils/reviewUtils");
  * Helper para poblar producto con reviews
  */
 const populateProduct = (productId) => {
-    return Product.findById(productId)
-        .populate("createdBy", "name email")
-        .populate("categoryId", "name slug")
-        .populate("reviews.user", "name email");
+  return Product.findById(productId)
+    .populate("createdBy", "name email")
+    .populate("categoryId", "name slug")
+    .populate("reviews.user", "name email");
 };
 
 /**
@@ -20,66 +20,66 @@ const populateProduct = (productId) => {
  * @route POST /api/products/:id/reviews
  */
 exports.addReview = async (req, res) => {
-    try {
-        const { title, comment, rating } = req.body;
+  try {
+    const { title, comment, rating } = req.body;
 
-        const numericRating = parseInt(rating, 10);
-        if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
-            return res.status(400).json({
-                success: false,
-                message: "Rating debe ser un entero entre 1 y 5",
-            });
-        }
-
-        // No permitir que administradores añadan reviews
-        if (req.user && req.user.role === "admin") {
-            return res.status(403).json({
-                success: false,
-                message: "Administradores no pueden dejar valoraciones",
-            });
-        }
-
-        const product = await Product.findById(req.params.id);
-        if (!product) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Producto no encontrado" });
-        }
-
-        // Evitar duplicados del mismo usuario
-        const existing = (product.reviews || []).find(
-            (r) => r.user && r.user.toString() === req.user.id.toString()
-        );
-        if (existing) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    "Ya has dejado una valoración en este producto. Edita o elimina tu valoración para publicar otra.",
-            });
-        }
-
-        // Crear review
-        const review = {
-            user: req.user.id,
-            title: String(title).trim(),
-            comment: String(comment).trim(),
-            rating: numericRating,
-        };
-
-        product.reviews = product.reviews || [];
-        product.reviews.push(review);
-        await product.save();
-
-        const updated = await populateProduct(product._id);
-
-        res.status(201).json({
-            success: true,
-            product: enrichProductWithMetrics(updated),
-        });
-    } catch (error) {
-        console.error("Error al añadir review:", error);
-        res.status(500).json({ success: false, message: "Error al añadir review" });
+    const numericRating = parseInt(rating, 10);
+    if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating debe ser un entero entre 1 y 5",
+      });
     }
+
+    // No permitir que administradores añadan reviews
+    if (req.user && req.user.role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Administradores no pueden dejar valoraciones",
+      });
+    }
+
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Producto no encontrado" });
+    }
+
+    // Evitar duplicados del mismo usuario
+    const existing = (product.reviews || []).find(
+      (r) => r.user && r.user.toString() === req.user.id.toString(),
+    );
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Ya has dejado una valoración en este producto. Edita o elimina tu valoración para publicar otra.",
+      });
+    }
+
+    // Crear review
+    const review = {
+      user: req.user.id,
+      title: String(title).trim(),
+      comment: String(comment).trim(),
+      rating: numericRating,
+    };
+
+    product.reviews = product.reviews || [];
+    product.reviews.push(review);
+    await product.save();
+
+    const updated = await populateProduct(product._id);
+
+    res.status(201).json({
+      success: true,
+      product: enrichProductWithMetrics(updated),
+    });
+  } catch (error) {
+    console.error("Error al añadir review:", error);
+    res.status(500).json({ success: false, message: "Error al añadir review" });
+  }
 };
 
 /**
@@ -87,60 +87,60 @@ exports.addReview = async (req, res) => {
  * @route PUT /api/products/:id/reviews/:reviewId
  */
 exports.updateReview = async (req, res) => {
-    try {
-        const { title, comment, rating } = req.body;
-        const numericRating =
-            rating !== undefined ? parseInt(rating, 10) : undefined;
+  try {
+    const { title, comment, rating } = req.body;
+    const numericRating =
+      rating !== undefined ? parseInt(rating, 10) : undefined;
 
-        const product = await Product.findById(req.params.id);
-        if (!product) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Producto no encontrado" });
-        }
-
-        const review =
-            (product.reviews || []).id(req.params.reviewId) ||
-            (product.reviews || []).find(
-                (r) => r._id && r._id.toString() === req.params.reviewId
-            );
-        if (!review) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Review no encontrada" });
-        }
-
-        if (review.user.toString() !== req.user.id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: "No tienes permiso para editar esta review",
-            });
-        }
-
-        if (title !== undefined) review.title = String(title).trim();
-        if (comment !== undefined) review.comment = String(comment).trim();
-        if (numericRating !== undefined) {
-            if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Rating debe ser un entero entre 1 y 5",
-                });
-            }
-            review.rating = numericRating;
-        }
-
-        await product.save();
-
-        const updated = await populateProduct(product._id);
-
-        res.json({
-            success: true,
-            product: enrichProductWithMetrics(updated),
-        });
-    } catch (error) {
-        console.error("Error editing review:", error);
-        res.status(500).json({ success: false, message: "Error al editar review" });
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Producto no encontrado" });
     }
+
+    const review =
+      (product.reviews || []).id(req.params.reviewId) ||
+      (product.reviews || []).find(
+        (r) => r._id && r._id.toString() === req.params.reviewId,
+      );
+    if (!review) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Review no encontrada" });
+    }
+
+    if (review.user.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "No tienes permiso para editar esta review",
+      });
+    }
+
+    if (title !== undefined) review.title = String(title).trim();
+    if (comment !== undefined) review.comment = String(comment).trim();
+    if (numericRating !== undefined) {
+      if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "Rating debe ser un entero entre 1 y 5",
+        });
+      }
+      review.rating = numericRating;
+    }
+
+    await product.save();
+
+    const updated = await populateProduct(product._id);
+
+    res.json({
+      success: true,
+      product: enrichProductWithMetrics(updated),
+    });
+  } catch (error) {
+    console.error("Error editing review:", error);
+    res.status(500).json({ success: false, message: "Error al editar review" });
+  }
 };
 
 /**
@@ -148,47 +148,47 @@ exports.updateReview = async (req, res) => {
  * @route DELETE /api/products/:id/reviews/:reviewId
  */
 exports.deleteReview = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Producto no encontrado" });
-        }
-
-        const review =
-            (product.reviews || []).id(req.params.reviewId) ||
-            (product.reviews || []).find(
-                (r) => r._id && r._id.toString() === req.params.reviewId
-            );
-        if (!review) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Review no encontrada" });
-        }
-
-        if (review.user.toString() !== req.user.id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: "No tienes permiso para eliminar esta review",
-            });
-        }
-
-        product.reviews = (product.reviews || []).filter(
-            (r) => !(r._id && r._id.toString() === req.params.reviewId)
-        );
-        await product.save();
-
-        const updated = await populateProduct(product._id);
-
-        res.json({
-            success: true,
-            product: enrichProductWithMetrics(updated),
-        });
-    } catch (error) {
-        console.error("Error deleting review:", error);
-        res
-            .status(500)
-            .json({ success: false, message: "Error al eliminar review" });
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Producto no encontrado" });
     }
+
+    const review =
+      (product.reviews || []).id(req.params.reviewId) ||
+      (product.reviews || []).find(
+        (r) => r._id && r._id.toString() === req.params.reviewId,
+      );
+    if (!review) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Review no encontrada" });
+    }
+
+    if (review.user.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "No tienes permiso para eliminar esta review",
+      });
+    }
+
+    product.reviews = (product.reviews || []).filter(
+      (r) => !(r._id && r._id.toString() === req.params.reviewId),
+    );
+    await product.save();
+
+    const updated = await populateProduct(product._id);
+
+    res.json({
+      success: true,
+      product: enrichProductWithMetrics(updated),
+    });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error al eliminar review" });
+  }
 };
