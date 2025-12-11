@@ -8,6 +8,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import api from "../utils/axios";
+import logger from "../utils/logger";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
@@ -60,7 +61,7 @@ const Admin = () => {
       const { data } = await api.get<{ products: Product[] }>("/products");
       setProducts(data.products);
     } catch (error) {
-      console.error("Error al cargar productos:", error);
+      logger.error("Error al cargar productos:", error);
     } finally {
       setLoading(false);
     }
@@ -71,7 +72,7 @@ const Admin = () => {
       const { data } = await api.get<{ categories: Category[] }>("/categories");
       setCategoriesList(data.categories || []);
     } catch (error) {
-      console.error("Error cargando categorías:", error);
+      logger.error("Error cargando categorías:", error);
       // Categorías por defecto como fallback
       setCategoriesList([
         { _id: "", name: "Joyería artesanal", slug: "joyeria-artesanal" },
@@ -109,7 +110,7 @@ const Admin = () => {
       await api.delete(`/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
+      logger.error("Error al eliminar producto:", error);
       alert("Error al eliminar el producto");
     }
   };

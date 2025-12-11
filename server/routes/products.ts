@@ -5,8 +5,9 @@
 import express from "express";
 import multer from "multer";
 import { protect, adminOnly, validateObjectId } from "../middleware/auth";
-import { validate, reviewSchema } from "../validators/schemas";
+import { validate, reviewSchema, productSchema } from "../validators/schemas";
 import { storage } from "../config/cloudinary";
+import { UPLOAD_LIMITS } from "../config/constants";
 
 // Controladores
 import * as productController from "../controllers/productController";
@@ -27,7 +28,7 @@ const fileFilter = (
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  limits: { fileSize: UPLOAD_LIMITS.MAX_FILE_SIZE_BYTES },
   fileFilter,
 });
 
@@ -69,7 +70,8 @@ router.post(
   "/",
   protect,
   adminOnly,
-  upload.array("images", 5),
+  upload.array("images", UPLOAD_LIMITS.MAX_IMAGES_PER_PRODUCT),
+  validate(productSchema),
   productController.createProduct,
 );
 
@@ -79,7 +81,8 @@ router.put(
   validateObjectId(),
   protect,
   adminOnly,
-  upload.array("images", 5),
+  upload.array("images", UPLOAD_LIMITS.MAX_IMAGES_PER_PRODUCT),
+  validate(productSchema),
   productController.updateProduct,
 );
 

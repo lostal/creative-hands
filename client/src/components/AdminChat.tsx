@@ -4,6 +4,7 @@ import { useSocket } from "../context/SocketContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { User } from "../types";
+import logger from "../utils/logger";
 import { MotionDiv, MotionButton } from "../lib/motion";
 
 interface Message {
@@ -83,7 +84,7 @@ const AdminChat = () => {
       setConversations(data.conversations);
       setLoading(false);
     } catch (error) {
-      console.error("Error al cargar conversaciones:", error);
+      logger.error("Error al cargar conversaciones:", error);
       setLoading(false);
     }
   };
@@ -94,7 +95,7 @@ const AdminChat = () => {
       const { data } = await api.get<{ messages: Message[] }>(`/chat/messages/${conversation.user._id}`);
       setMessages(data.messages);
     } catch (error) {
-      console.error("Error al cargar mensajes:", error);
+      logger.error("Error al cargar mensajes:", error);
     }
   };
 

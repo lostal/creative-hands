@@ -4,6 +4,7 @@ import { MessageCircle, X, Send, Loader } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import api from "../utils/axios";
+import logger from "../utils/logger";
 import { MotionButton, MotionDiv, MotionSpan } from "../lib/motion";
 
 const ChatWidget = () => {
@@ -55,7 +56,7 @@ const ChatWidget = () => {
           );
           setMessages(messagesData.messages);
         } catch (error) {
-          console.error("Error al cargar datos:", error);
+          logger.error("Error al cargar datos:", error);
         } finally {
           setLoading(false);
         }

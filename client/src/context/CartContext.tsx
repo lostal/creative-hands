@@ -1,5 +1,6 @@
-import { createContext, useState, useContext, useEffect, useMemo, ReactNode } from "react";
+import { createContext, useState, useContext, useEffect, useMemo, useCallback, ReactNode } from "react";
 import type { CartItem, Product } from "../types";
+import logger from "../utils/logger";
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -40,7 +41,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       try {
         setCartItems(JSON.parse(savedCart));
       } catch (error) {
-        console.error("Error al cargar carrito:", error);
+        logger.error("Error al cargar carrito:", error);
         setCartItems([]);
       }
     }
@@ -51,7 +52,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = useCallback((product: Product, quantity: number = 1) => {
     setCartItems((prevItems) => {
       // Buscar si el producto ya existe en el carrito
       const existingItem = prevItems.find(
@@ -76,17 +77,19 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         ];
       }
     });
-  };
+  }, []);
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = useCallback((productId: string) => {
     setCartItems((prevItems) =>
       prevItems.filter((item) => item.product._id !== productId),
     );
-  };
+  }, []);
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
+  const updateQuantity = useCallback((productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeFromCart(productId);
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.product._id !== productId),
+      );
       return;
     }
     setCartItems((prevItems) =>
@@ -96,15 +99,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           : item,
       ),
     );
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
-  };
+  }, []);
 
-  const openCart = () => setIsCartOpen(true);
-  const closeCart = () => setIsCartOpen(false);
-  const toggleCart = () => setIsCartOpen((s) => !s);
+  const openCart = useCallback(() => setIsCartOpen(true), []);
+  const closeCart = useCallback(() => setIsCartOpen(false), []);
+  const toggleCart = useCallback(() => setIsCartOpen((s) => !s), []);
 
   // Calcular número total de items (memoizado)
   const totalItems = useMemo(
@@ -122,7 +125,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     [cartItems],
   );
 
-  const value: CartContextType = {
+  const value = useMemo<CartContextType>(() => ({
     cartItems,
     addToCart,
     removeFromCart,
@@ -134,7 +137,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     toggleCart,
     totalItems,
     totalPrice,
-  };
+  }), [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, openCart, closeCart, toggleCart, totalItems, totalPrice]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

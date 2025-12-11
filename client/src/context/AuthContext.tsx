@@ -1,8 +1,9 @@
-import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from "react";
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { User } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 
 interface RegisterData {
   name: string;
@@ -109,7 +110,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const { data } = await api.get<{ user: User }>("/auth/me");
           setUser(data.user);
         } catch (error) {
-          console.error("Error al verificar autenticación:", error);
+          logger.error("Error al verificar autenticación:", error);
           setToken(null);
           setUser(null);
         }
@@ -120,7 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, [token]);
 
-  const register = async (userData: RegisterData) => {
+  const register = useCallback(async (userData: RegisterData) => {
     try {
       const { data } = await api.post<{ token: string; user: User }>("/auth/register", userData);
       setToken(data.token);
@@ -132,9 +133,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         message: getApiErrorMessage(error) || "Error al registrarse",
       };
     }
-  };
+  }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials) => {
     try {
       const { data } = await api.post<{ token: string }>("/auth/login", credentials);
       // Guardar token y establecer header de la instancia api inmediatamente
@@ -164,39 +165,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         message: getApiErrorMessage(error) || "Error al iniciar sesión",
       };
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await api.post("/auth/logout");
     } catch (error) {
-      console.error("Error al cerrar sesión:", error);
+      logger.error("Error al cerrar sesión:", error);
     } finally {
       setToken(null);
       setUser(null);
     }
-  };
+  }, []);
 
-  const value: AuthContextType = {
+  const refreshUser = useCallback(async () => {
+    try {
+      const { data } = await api.get<{ user: User }>("/auth/me");
+      setUser(data.user);
+    } catch (err) {
+      logger.error("Error refrescando usuario:", err);
+    }
+  }, []);
+
+  const value = useMemo<AuthContextType>(() => ({
     user,
     token,
     loading,
     register,
     login,
-    // Permite a componentes refrescar el usuario actual después de cambios
-    refreshUser: async () => {
-      try {
-        const { data } = await api.get<{ user: User }>("/auth/me");
-        setUser(data.user);
-      } catch (err) {
-        console.error("Error refrescando usuario:", err);
-      }
-    },
+    refreshUser,
     logout,
     clearAuthAndRedirect,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
-  };
+  }), [user, token, loading, register, login, refreshUser, logout, clearAuthAndRedirect]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import productRouter from "../routes/products";
 import User from "../models/User";
 import Product from "../models/Product";
+import { getJwtExpire } from "./helpers/types";
 
 let mongoServer: MongoMemoryServer;
 let app: Express;
@@ -44,7 +45,7 @@ test("admin can create product", async () => {
     });
 
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const productPayload = {
@@ -79,7 +80,7 @@ test("non-admin cannot create product (403)", async () => {
         role: "user",
     });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const productPayload = { name: "UserProduct", description: "x", price: 2 };
@@ -98,7 +99,7 @@ test("admin can update and delete product", async () => {
         role: "admin",
     });
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const productPayload = { name: "ToUpdate", description: "x", price: 5 };
@@ -138,7 +139,7 @@ test("GET /api/products is public and returns products", async () => {
         role: "admin",
     });
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
     const productPayload = {
         name: "PublicProduct",

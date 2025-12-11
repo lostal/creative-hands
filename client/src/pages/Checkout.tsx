@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 import { ArrowLeft, Loader } from "lucide-react";
 import { MotionDiv } from "../lib/motion";
 
@@ -78,7 +79,7 @@ const Checkout = () => {
         });
       }
     } catch (err: unknown) {
-      console.error("Error al crear pedido:", err);
+      logger.error("Error al crear pedido:", err);
       setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);

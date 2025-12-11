@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
 import connectDB from "./config/db";
+import { RATE_LIMITS } from "./config/constants";
 import User from "./models/User";
 import logger from "./utils/logger";
 import { setupSocketHandlers } from "./sockets/socketHandlers";
@@ -29,6 +30,9 @@ const validateEnvironment = (): void => {
     const requiredEnvVars = [
         "JWT_SECRET",
         "MONGODB_URI",
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET",
     ];
 
     const missing = requiredEnvVars.filter((envVar) => !process.env[envVar]);
@@ -97,8 +101,8 @@ const createDefaultAdmin = async (): Promise<void> => {
  */
 const createRateLimiters = () => {
     const authLimiter = rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 minutos
-        max: 5, // 5 intentos por ventana
+        windowMs: RATE_LIMITS.AUTH_WINDOW_MS,
+        max: RATE_LIMITS.AUTH_MAX_ATTEMPTS,
         message: {
             success: false,
             message:

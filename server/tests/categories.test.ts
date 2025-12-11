@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import categoriesRouter from "../routes/categories";
 import User from "../models/User";
 import Category from "../models/Category";
+import { getJwtExpire } from "./helpers/types";
 
 let mongoServer: MongoMemoryServer;
 let app: Express;
@@ -47,7 +48,7 @@ test("admin can create, update and delete category", async () => {
         role: "admin",
     });
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const createRes = await request(app)
@@ -78,7 +79,7 @@ test("non-admin cannot create category", async () => {
         role: "user",
     });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const res = await request(app)

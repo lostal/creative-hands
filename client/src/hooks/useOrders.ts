@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import * as orderService from "../services/orderService";
 import { Order } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 
 interface UseMyOrdersReturn {
   orders: Order[];
@@ -29,7 +30,7 @@ export const useMyOrders = (): UseMyOrdersReturn => {
       setOrders(data.orders || []);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
-      console.error("Error fetching orders:", err);
+      logger.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
     }

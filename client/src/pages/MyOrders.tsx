@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 import {
   Loader,
   ShoppingBag,
@@ -36,7 +37,7 @@ const MyOrders = () => {
           setOrders(data.orders);
         }
       } catch (err: unknown) {
-        console.error("Error al cargar pedidos:", err);
+        logger.error("Error al cargar pedidos:", err);
         setError(getApiErrorMessage(err));
       } finally {
         setLoading(false);

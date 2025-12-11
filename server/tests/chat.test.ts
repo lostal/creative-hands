@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import chatRouter from "../routes/chat";
 import User from "../models/User";
 import Message from "../models/Message";
+import { getJwtExpire } from "./helpers/types";
 
 let mongoServer: MongoMemoryServer;
 let app: Express;
@@ -49,7 +50,7 @@ test("GET /api/chat/admin is protected and returns admin when authenticated", as
     });
 
     const tokenUser = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     // without token -> 401
@@ -90,7 +91,7 @@ test("GET /api/chat/messages/:conversationId returns messages for conversation",
     });
 
     const tokenA = jwt.sign({ id: userA._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const res = await request(app)
@@ -124,7 +125,7 @@ test("GET /api/chat/conversations returns conversation summaries", async () => {
     });
 
     const token1 = jwt.sign({ id: user1._id }, process.env.JWT_SECRET as string, {
-        expiresIn: process.env.JWT_EXPIRE as any,
+        expiresIn: getJwtExpire(),
     });
 
     const res = await request(app)

@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import * as productService from "../services/productService";
 import { Product } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 
 interface UseProductsOptions {
   categorySlug?: string | null;
@@ -41,7 +42,7 @@ export const useProducts = ({ categorySlug = null, autoFetch = true }: UseProduc
       setProducts(data.products || []);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
-      console.error("Error fetching products:", err);
+      logger.error("Error fetching products:", err);
     } finally {
       setLoading(false);
     }
@@ -88,7 +89,7 @@ export const useProduct = (productId: string): UseProductReturn => {
       setProduct(data.product);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
-      console.error("Error fetching product:", err);
+      logger.error("Error fetching product:", err);
     } finally {
       setLoading(false);
     }

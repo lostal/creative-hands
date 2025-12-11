@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../utils/axios";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 import {
   Loader,
   CheckCircle2,
@@ -32,7 +33,7 @@ const AdminOrders = () => {
         setOrders(data.orders);
       }
     } catch (err: unknown) {
-      console.error("Error al cargar pedidos:", err);
+      logger.error("Error al cargar pedidos:", err);
       setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
@@ -51,7 +52,7 @@ const AdminOrders = () => {
         );
       }
     } catch (err: unknown) {
-      console.error("Error al marcar como entregado:", err);
+      logger.error("Error al marcar como entregado:", err);
       setError(getApiErrorMessage(err));
     } finally {
       setDelivering(null);
@@ -114,10 +115,10 @@ const AdminOrders = () => {
                     Cliente
                   </p>
                   <p className="text-gray-900 dark:text-white font-medium">
-                    {(order.user as any).name}
+                    {typeof order.user === 'object' ? order.user.name : 'Usuario'}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {(order.user as any).email}
+                    {typeof order.user === 'object' ? order.user.email : ''}
                   </p>
                 </div>
 

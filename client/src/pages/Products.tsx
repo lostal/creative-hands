@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Search, Package } from "lucide-react";
 import api from "../utils/axios";
+import logger from "../utils/logger";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import ProductModal from "../components/ProductModal";
@@ -75,7 +76,7 @@ const Products = () => {
 
       setProducts(data.products);
     } catch (error) {
-      console.error("Error al cargar productos:", error);
+      logger.error("Error al cargar productos:", error);
     } finally {
       setLoading(false);
     }
@@ -88,7 +89,7 @@ const Products = () => {
       await api.delete(`/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
+      logger.error("Error al eliminar producto:", error);
       alert("Error al eliminar el producto");
     }
   };
