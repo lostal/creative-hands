@@ -1,4 +1,12 @@
-import { createContext, useState, useContext, useEffect, useMemo, useCallback, ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useCallback,
+  ReactNode,
+} from "react";
 import type { CartItem, Product } from "../types";
 import logger from "../utils/logger";
 
@@ -85,21 +93,24 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     );
   }, []);
 
-  const updateQuantity = useCallback((productId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
+  const updateQuantity = useCallback(
+    (productId: string, newQuantity: number) => {
+      if (newQuantity <= 0) {
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.product._id !== productId),
+        );
+        return;
+      }
       setCartItems((prevItems) =>
-        prevItems.filter((item) => item.product._id !== productId),
+        prevItems.map((item) =>
+          item.product._id === productId
+            ? { ...item, quantity: newQuantity }
+            : item,
+        ),
       );
-      return;
-    }
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.product._id === productId
-          ? { ...item, quantity: newQuantity }
-          : item,
-      ),
-    );
-  }, []);
+    },
+    [],
+  );
 
   const clearCart = useCallback(() => {
     setCartItems([]);
@@ -125,19 +136,34 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     [cartItems],
   );
 
-  const value = useMemo<CartContextType>(() => ({
-    cartItems,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    isCartOpen,
-    openCart,
-    closeCart,
-    toggleCart,
-    totalItems,
-    totalPrice,
-  }), [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, openCart, closeCart, toggleCart, totalItems, totalPrice]);
+  const value = useMemo<CartContextType>(
+    () => ({
+      cartItems,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      isCartOpen,
+      openCart,
+      closeCart,
+      toggleCart,
+      totalItems,
+      totalPrice,
+    }),
+    [
+      cartItems,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      isCartOpen,
+      openCart,
+      closeCart,
+      toggleCart,
+      totalItems,
+      totalPrice,
+    ],
+  );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

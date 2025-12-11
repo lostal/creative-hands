@@ -100,10 +100,18 @@ interface UseProductFormReturn {
   fileErrors: string[];
   dragActive: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleClose: () => void;
-  onFilesSelected: (e: React.ChangeEvent<HTMLInputElement> | { target: { files: FileList | File[] } }) => void;
+  onFilesSelected: (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | { target: { files: FileList | File[] } },
+  ) => void;
   removeImage: (id: string) => Promise<void>;
   triggerFileInput: () => void;
   setDragActive: React.Dispatch<React.SetStateAction<boolean>>;
@@ -120,11 +128,11 @@ export const useProductForm = ({
   onClose,
 }: UseProductFormProps): UseProductFormReturn => {
   const [formData, setFormData] = useState<ProductFormData>(() =>
-    getInitialFormData(editingProduct)
+    getInitialFormData(editingProduct),
   );
 
   const [imageList, setImageList] = useState<ImageItem[]>(() =>
-    getInitialImageList(editingProduct)
+    getInitialImageList(editingProduct),
   );
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -135,12 +143,17 @@ export const useProductForm = ({
   /**
    * Maneja cambios en los campos del formulario
    */
-  const handleChange = useCallback((
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }, []);
+  const handleChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >,
+    ) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
   /**
    * Limpia recursos y cierra el modal
@@ -155,46 +168,51 @@ export const useProductForm = ({
   /**
    * Valida y procesa archivos seleccionados
    */
-  const onFilesSelected = useCallback((
-    e: React.ChangeEvent<HTMLInputElement> | { target: { files: FileList | File[] } }
-  ) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  const onFilesSelected = useCallback(
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | { target: { files: FileList | File[] } },
+    ) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
 
-    const errors: string[] = [];
-    const validFiles: File[] = [];
+      const errors: string[] = [];
+      const validFiles: File[] = [];
 
-    files.forEach((file) => {
-      if (!FILE_CONFIG.allowedTypes.includes(file.type)) {
-        errors.push(`${file.name}: tipo no permitido`);
+      files.forEach((file) => {
+        if (!FILE_CONFIG.allowedTypes.includes(file.type)) {
+          errors.push(`${file.name}: tipo no permitido`);
+          return;
+        }
+        if (file.size > FILE_CONFIG.maxSize) {
+          errors.push(`${file.name}: excede 2MB`);
+          return;
+        }
+        validFiles.push(file);
+      });
+
+      if (errors.length > 0) {
+        setFileErrors((prev) => [...prev, ...errors]);
+      }
+
+      if (validFiles.length === 0) {
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
-      if (file.size > FILE_CONFIG.maxSize) {
-        errors.push(`${file.name}: excede 2MB`);
-        return;
-      }
-      validFiles.push(file);
-    });
 
-    if (errors.length > 0) {
-      setFileErrors(prev => [...prev, ...errors]);
-    }
+      const previews: ImageItem[] = validFiles.map((file, idx) => ({
+        id: `n-${Date.now()}-${idx}`,
+        type: "new",
+        url: URL.createObjectURL(file),
+        file,
+      }));
 
-    if (validFiles.length === 0) {
+      setImageList((prev) => [...prev, ...previews]);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-
-    const previews: ImageItem[] = validFiles.map((file, idx) => ({
-      id: `n-${Date.now()}-${idx}`,
-      type: "new",
-      url: URL.createObjectURL(file),
-      file,
-    }));
-
-    setImageList(prev => [...prev, ...previews]);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }, []);
+    },
+    [],
+  );
 
   /**
    * Abre el selector de archivos
@@ -206,104 +224,116 @@ export const useProductForm = ({
   /**
    * Elimina una imagen de la lista
    */
-  const removeImage = useCallback(async (id: string) => {
-    const item = imageList.find((it) => it.id === id);
-    if (!item) return;
+  const removeImage = useCallback(
+    async (id: string) => {
+      const item = imageList.find((it) => it.id === id);
+      if (!item) return;
 
-    if (item.type === "existing") {
-      if (!editingProduct) {
-        setImageList(prev => prev.filter((it) => it.id !== id));
-        return;
-      }
-
-      if (!window.confirm("¿Eliminar esta imagen? Esta acción borrará el archivo del servidor.")) {
-        return;
-      }
-
-      try {
-        const { data } = await api.delete(
-          `/products/${editingProduct._id}/images`,
-          { data: { image: item.url } }
-        );
-        if (data?.success) {
-          setImageList(prev => prev.filter((it) => it.id !== id));
-        } else {
-          alert(data.message || "No se pudo eliminar la imagen");
+      if (item.type === "existing") {
+        if (!editingProduct) {
+          setImageList((prev) => prev.filter((it) => it.id !== id));
+          return;
         }
-      } catch (error: unknown) {
-        const errorMsg = getApiErrorMessage(error) || "Error al eliminar imagen";
-        logger.error("Error al eliminar imagen:", errorMsg);
-        alert(errorMsg);
+
+        if (
+          !window.confirm(
+            "¿Eliminar esta imagen? Esta acción borrará el archivo del servidor.",
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const { data } = await api.delete(
+            `/products/${editingProduct._id}/images`,
+            { data: { image: item.url } },
+          );
+          if (data?.success) {
+            setImageList((prev) => prev.filter((it) => it.id !== id));
+          } else {
+            alert(data.message || "No se pudo eliminar la imagen");
+          }
+        } catch (error: unknown) {
+          const errorMsg =
+            getApiErrorMessage(error) || "Error al eliminar imagen";
+          logger.error("Error al eliminar imagen:", errorMsg);
+          alert(errorMsg);
+        }
+      } else {
+        if (item.url) URL.revokeObjectURL(item.url);
+        setImageList((prev) => prev.filter((it) => it.id !== id));
       }
-    } else {
-      if (item.url) URL.revokeObjectURL(item.url);
-      setImageList(prev => prev.filter((it) => it.id !== id));
-    }
-  }, [imageList, editingProduct]);
+    },
+    [imageList, editingProduct],
+  );
 
   /**
    * Envía el formulario al servidor
    */
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSaving(true);
 
-    try {
-      const fd = new FormData();
-      fd.append("name", formData.name);
-      fd.append("description", formData.description);
-      fd.append("price", String(formData.price));
-      fd.append("categoryId", formData.categoryId);
-      fd.append("stock", String(formData.stock));
-      fd.append("materials", formData.materials);
+      try {
+        const fd = new FormData();
+        fd.append("name", formData.name);
+        fd.append("description", formData.description);
+        fd.append("price", String(formData.price));
+        fd.append("categoryId", formData.categoryId);
+        fd.append("stock", String(formData.stock));
+        fd.append("materials", formData.materials);
 
-      if (editingProduct) {
-        // Modo edición: mantener imágenes existentes y agregar nuevas
-        const keepImages = imageList
-          .filter((it) => it.type === "existing")
-          .map((it) => it.url);
-        fd.append("keepImages", JSON.stringify(keepImages));
+        if (editingProduct) {
+          // Modo edición: mantener imágenes existentes y agregar nuevas
+          const keepImages = imageList
+            .filter((it) => it.type === "existing")
+            .map((it) => it.url);
+          fd.append("keepImages", JSON.stringify(keepImages));
 
-        const order = imageList.map((it) =>
-          it.type === "existing" ? it.url : "__new__"
-        );
-        fd.append("order", JSON.stringify(order));
+          const order = imageList.map((it) =>
+            it.type === "existing" ? it.url : "__new__",
+          );
+          fd.append("order", JSON.stringify(order));
 
-        for (const it of imageList) {
-          if (it.type === "new" && it.file) fd.append("images", it.file);
+          for (const it of imageList) {
+            if (it.type === "new" && it.file) fd.append("images", it.file);
+          }
+
+          const response = await api.put(
+            `/products/${editingProduct._id}`,
+            fd,
+            { headers: { "Content-Type": "multipart/form-data" } },
+          );
+          onProductSaved(response.data.product, "update");
+        } else {
+          // Modo creación
+          for (const it of imageList) {
+            if (it.type === "new" && it.file) fd.append("images", it.file);
+          }
+
+          const response = await api.post("/products", fd, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          onProductSaved(response.data.product, "create");
         }
 
-        const response = await api.put(
-          `/products/${editingProduct._id}`,
-          fd,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        onProductSaved(response.data.product, "update");
-      } else {
-        // Modo creación
-        for (const it of imageList) {
-          if (it.type === "new" && it.file) fd.append("images", it.file);
-        }
-
-        const response = await api.post("/products", fd, {
-          headers: { "Content-Type": "multipart/form-data" },
+        // Limpiar previews locales
+        imageList.forEach((it) => {
+          if (it.type === "new" && it.url) URL.revokeObjectURL(it.url);
         });
-        onProductSaved(response.data.product, "create");
+        handleClose();
+      } catch (error: unknown) {
+        const errorMsg =
+          getApiErrorMessage(error) || "Error al guardar el producto";
+        logger.error("Error al guardar producto:", errorMsg);
+        alert(errorMsg);
+      } finally {
+        setSaving(false);
       }
-
-      // Limpiar previews locales
-      imageList.forEach((it) => {
-        if (it.type === "new" && it.url) URL.revokeObjectURL(it.url);
-      });
-      handleClose();
-    } catch (error: unknown) {
-      const errorMsg = getApiErrorMessage(error) || "Error al guardar el producto";
-      logger.error("Error al guardar producto:", errorMsg);
-      alert(errorMsg);
-    } finally {
-      setSaving(false);
-    }
-  }, [formData, imageList, editingProduct, onProductSaved, handleClose]);
+    },
+    [formData, imageList, editingProduct, onProductSaved, handleClose],
+  );
 
   return {
     formData,

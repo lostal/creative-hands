@@ -1,5 +1,13 @@
-import { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from "react";
+import { useNavigate } from "react-router";
 import api from "../utils/axios";
 import { User } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
@@ -19,8 +27,12 @@ interface LoginCredentials {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
-  login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
+  register: (
+    userData: RegisterData,
+  ) => Promise<{ success: boolean; message?: string }>;
+  login: (
+    credentials: LoginCredentials,
+  ) => Promise<{ success: boolean; message?: string }>;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
   clearAuthAndRedirect: () => void;
@@ -117,7 +129,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const register = useCallback(async (userData: RegisterData) => {
     try {
       // El servidor establece la cookie httpOnly automáticamente
-      const { data } = await api.post<{ user: User }>("/auth/register", userData);
+      const { data } = await api.post<{ user: User }>(
+        "/auth/register",
+        userData,
+      );
       setUser(data.user);
       return { success: true };
     } catch (error: unknown) {
@@ -131,7 +146,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
       // El servidor establece la cookie httpOnly automáticamente
-      const { data } = await api.post<{ user: User }>("/auth/login", credentials);
+      const { data } = await api.post<{ user: User }>(
+        "/auth/login",
+        credentials,
+      );
       setUser(data.user);
       return { success: true };
     } catch (error: unknown) {
@@ -162,17 +180,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, []);
 
-  const value = useMemo<AuthContextType>(() => ({
-    user,
-    loading,
-    register,
-    login,
-    refreshUser,
-    logout,
-    clearAuthAndRedirect,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === "admin",
-  }), [user, loading, register, login, refreshUser, logout, clearAuthAndRedirect]);
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      loading,
+      register,
+      login,
+      refreshUser,
+      logout,
+      clearAuthAndRedirect,
+      isAuthenticated: !!user,
+      isAdmin: user?.role === "admin",
+    }),
+    [user, loading, register, login, refreshUser, logout, clearAuthAndRedirect],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

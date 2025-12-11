@@ -25,7 +25,9 @@ interface ProductResponse {
  * Obtener todos los productos
  * @param {Object} params - Parámetros de búsqueda y ordenación
  */
-export const getProducts = async (params: GetProductsParams = {}): Promise<{ success: boolean } & ProductResponse> => {
+export const getProducts = async (
+  params: GetProductsParams = {},
+): Promise<{ success: boolean } & ProductResponse> => {
   const { data } = await api.get("/products", { params });
   return data;
 };
@@ -34,7 +36,9 @@ export const getProducts = async (params: GetProductsParams = {}): Promise<{ suc
  * Obtener producto por ID
  * @param {string} id - ID del producto
  */
-export const getProductById = async (id: string): Promise<{ success: boolean; product: Product }> => {
+export const getProductById = async (
+  id: string,
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.get(`/products/${id}`);
   return data;
 };
@@ -43,7 +47,9 @@ export const getProductById = async (id: string): Promise<{ success: boolean; pr
  * Obtener productos por categoría (slug)
  * @param {string} slug - Slug de la categoría
  */
-export const getProductsByCategory = async (slug: string): Promise<{ success: boolean } & ProductResponse> => {
+export const getProductsByCategory = async (
+  slug: string,
+): Promise<{ success: boolean } & ProductResponse> => {
   const { data } = await api.get(`/products/category/${slug}`);
   return data;
 };
@@ -52,7 +58,9 @@ export const getProductsByCategory = async (slug: string): Promise<{ success: bo
  * Crear producto (requiere admin)
  * @param {FormData} formData - Datos del producto incluyendo imágenes
  */
-export const createProduct = async (formData: FormData): Promise<{ success: boolean; product: Product }> => {
+export const createProduct = async (
+  formData: FormData,
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.post("/products", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
@@ -64,7 +72,10 @@ export const createProduct = async (formData: FormData): Promise<{ success: bool
  * @param {string} id - ID del producto
  * @param {FormData} formData - Datos a actualizar
  */
-export const updateProduct = async (id: string, formData: FormData): Promise<{ success: boolean; product: Product }> => {
+export const updateProduct = async (
+  id: string,
+  formData: FormData,
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.put(`/products/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
@@ -75,7 +86,9 @@ export const updateProduct = async (id: string, formData: FormData): Promise<{ s
  * Eliminar producto (requiere admin)
  * @param {string} id - ID del producto
  */
-export const deleteProduct = async (id: string): Promise<{ success: boolean; message: string }> => {
+export const deleteProduct = async (
+  id: string,
+): Promise<{ success: boolean; message: string }> => {
   const { data } = await api.delete(`/products/${id}`);
   return data;
 };
@@ -85,7 +98,10 @@ export const deleteProduct = async (id: string): Promise<{ success: boolean; mes
  * @param {string} productId - ID del producto
  * @param {Object} review - {title, comment, rating}
  */
-export const addReview = async (productId: string, review: { rating: number; comment: string; title?: string }): Promise<{ success: boolean; product: Product }> => {
+export const addReview = async (
+  productId: string,
+  review: { rating: number; comment: string; title?: string },
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.post(`/products/${productId}/reviews`, review);
   return data;
 };
@@ -96,7 +112,11 @@ export const addReview = async (productId: string, review: { rating: number; com
  * @param {string} reviewId - ID de la review
  * @param {Object} updates - Campos a actualizar
  */
-export const updateReview = async (productId: string, reviewId: string, updates: Partial<{ rating: number; comment: string; title: string }>): Promise<{ success: boolean; product: Product }> => {
+export const updateReview = async (
+  productId: string,
+  reviewId: string,
+  updates: Partial<{ rating: number; comment: string; title: string }>,
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.put(
     `/products/${productId}/reviews/${reviewId}`,
     updates,
@@ -109,7 +129,10 @@ export const updateReview = async (productId: string, reviewId: string, updates:
  * @param {string} productId - ID del producto
  * @param {string} reviewId - ID de la review
  */
-export const deleteReview = async (productId: string, reviewId: string): Promise<{ success: boolean; product: Product }> => {
+export const deleteReview = async (
+  productId: string,
+  reviewId: string,
+): Promise<{ success: boolean; product: Product }> => {
   const { data } = await api.delete(
     `/products/${productId}/reviews/${reviewId}`,
   );

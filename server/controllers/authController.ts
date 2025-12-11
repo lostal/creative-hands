@@ -69,7 +69,8 @@ const generateToken = (id: string): string => {
 
   // JWT_EXPIRE debe ser un string válido como "7d", "24h", "3600" (segundos)
   // Usamos "7d" como valor por defecto tipado correctamente
-  const expiresIn = (process.env.JWT_EXPIRE || "7d") as jwt.SignOptions["expiresIn"];
+  const expiresIn = (process.env.JWT_EXPIRE ||
+    "7d") as jwt.SignOptions["expiresIn"];
 
   return jwt.sign({ id }, secret, { expiresIn });
 };
@@ -186,8 +187,8 @@ export const getMe = async (req: AuthRequest, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "Usuario no encontrado"
-      })
+        message: "Usuario no encontrado",
+      });
     }
 
     res.json({

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { MotionDiv, MotionButton } from "../lib/motion";
 import { Mail, Lock, User, Eye, EyeOff, UserPlus, Loader } from "lucide-react";
 import { useAuth } from "../context/AuthContext";

@@ -29,7 +29,9 @@ interface CreateOrderData {
  * Crear nuevo pedido
  * @param {Object} orderData - {orderItems, shippingAddress}
  */
-export const createOrder = async (orderData: CreateOrderData): Promise<{ success: boolean; order: Order }> => {
+export const createOrder = async (
+  orderData: CreateOrderData,
+): Promise<{ success: boolean; order: Order }> => {
   const { data } = await api.post("/orders", orderData);
   return data;
 };
@@ -37,7 +39,10 @@ export const createOrder = async (orderData: CreateOrderData): Promise<{ success
 /**
  * Obtener mis pedidos (usuario actual)
  */
-export const getMyOrders = async (): Promise<{ success: boolean; orders: Order[] }> => {
+export const getMyOrders = async (): Promise<{
+  success: boolean;
+  orders: Order[];
+}> => {
   const { data } = await api.get("/orders/myorders");
   return data;
 };
@@ -45,7 +50,10 @@ export const getMyOrders = async (): Promise<{ success: boolean; orders: Order[]
 /**
  * Obtener todos los pedidos (requiere admin)
  */
-export const getAllOrders = async (): Promise<{ success: boolean; orders: Order[] }> => {
+export const getAllOrders = async (): Promise<{
+  success: boolean;
+  orders: Order[];
+}> => {
   const { data } = await api.get("/orders");
   return data;
 };
@@ -54,7 +62,9 @@ export const getAllOrders = async (): Promise<{ success: boolean; orders: Order[
  * Obtener pedido por ID
  * @param {string} id - ID del pedido
  */
-export const getOrderById = async (id: string): Promise<{ success: boolean; order: Order }> => {
+export const getOrderById = async (
+  id: string,
+): Promise<{ success: boolean; order: Order }> => {
   const { data } = await api.get(`/orders/${id}`);
   return data;
 };
@@ -63,7 +73,9 @@ export const getOrderById = async (id: string): Promise<{ success: boolean; orde
  * Marcar pedido como entregado (requiere admin)
  * @param {string} id - ID del pedido
  */
-export const markAsDelivered = async (id: string): Promise<{ success: boolean; order: Order }> => {
+export const markAsDelivered = async (
+  id: string,
+): Promise<{ success: boolean; order: Order }> => {
   const { data } = await api.put(`/orders/${id}/deliver`);
   return data;
 };

@@ -3,7 +3,7 @@
  * Contiene la lógica de negocio para operaciones CRUD de productos
  */
 import { Request, Response } from "express";
-import { FilterQuery } from "mongoose";
+import { QueryFilter } from "mongoose";
 import Product, { IProduct } from "../models/Product";
 import Category from "../models/Category";
 import { cloudinary } from "../config/cloudinary";
@@ -14,7 +14,9 @@ import { getErrorMessage } from "../utils/errors";
 
 // Fix: Allow files to be object or array to match Express.Request type compatibility
 interface MulterRequest extends AuthRequest {
-  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
+  files?:
+    | Express.Multer.File[]
+    | { [fieldname: string]: Express.Multer.File[] };
 }
 
 /**
@@ -24,7 +26,7 @@ interface MulterRequest extends AuthRequest {
 export const getProducts = async (req: Request, res: Response) => {
   try {
     const { search, sort = "-createdAt" } = req.query;
-    const query: FilterQuery<IProduct> = {};
+    const query: QueryFilter<IProduct> = {};
 
     if (search) {
       query.$text = { $search: search as string };
@@ -139,14 +141,15 @@ export const createProduct = async (req: MulterRequest, res: Response) => {
       productData.images = req.files.map((f) => f.path);
     }
 
-    let product = await Product.create(productData);
-    product = (await Product.findById(product._id)
+    const newProduct = new Product(productData);
+    const product = await newProduct.save();
+    const populatedProduct = await Product.findById(product._id)
       .populate("createdBy", "name")
-      .populate("categoryId", "name slug")) as typeof product;
+      .populate("categoryId", "name slug");
 
     res.status(201).json({
       success: true,
-      product,
+      product: populatedProduct || product,
     });
   } catch (error: unknown) {
     logger.error("Error al crear producto:", error);
@@ -198,12 +201,18 @@ export const updateProduct = async (req: MulterRequest, res: Response) => {
           await cloudinary.uploader.destroy(publicId);
         }
       } catch (err: unknown) {
-        logger.warn("Warning al borrar imagen de Cloudinary:", getErrorMessage(err));
+        logger.warn(
+          "Warning al borrar imagen de Cloudinary:",
+          getErrorMessage(err),
+        );
       }
     }
 
     // Construir lista final de imágenes
-    const newFiles = (req.files && Array.isArray(req.files) && req.files.length > 0) ? req.files : [];
+    const newFiles =
+      req.files && Array.isArray(req.files) && req.files.length > 0
+        ? req.files
+        : [];
     let finalImages: string[] = [];
 
     if (req.body.order) {
@@ -297,7 +306,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
             await cloudinary.uploader.destroy(publicId);
           }
         } catch (err: unknown) {
-          logger.warn("Warning al borrar imagen en delete:", getErrorMessage(err));
+          logger.warn(
+            "Warning al borrar imagen en delete:",
+            getErrorMessage(err),
+          );
         }
       }
     }
@@ -351,7 +363,10 @@ export const deleteProductImage = async (req: Request, res: Response) => {
         await cloudinary.uploader.destroy(publicId);
       }
     } catch (err: unknown) {
-      logger.warn("Warning al borrar imagen (del endpoint):", getErrorMessage(err));
+      logger.warn(
+        "Warning al borrar imagen (del endpoint):",
+        getErrorMessage(err),
+      );
     }
 
     product.images = product.images.filter((u) => u !== image);

@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
-} from "react-router-dom";
+} from "react-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { SocketProvider } from "./context/SocketContext";
@@ -97,57 +97,59 @@ function AppContent() {
       <Navbar />
       <CartDrawer />
       <ErrorBoundary>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader className="w-12 h-12 text-primary-500 animate-spin" />
-          </div>
-        }>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/envios" element={<ShippingReturns />} />
-          <Route path="/privacidad" element={<PrivacyTerms />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute excludeAdmin>{<Checkout />}</ProtectedRoute>
-            }
-          />
-          <Route
-            path="/order-confirmation"
-            element={
-              <ProtectedRoute excludeAdmin>
-                {<OrderConfirmation />}
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-orders"
-            element={
-              <ProtectedRoute excludeAdmin>{<MyOrders />}</ProtectedRoute>
-            }
-          />
-          <Route
-            path="/perfil"
-            element={<ProtectedRoute>{<Perfil />}</ProtectedRoute>}
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/products/category/:slug" element={<Products />} />
-          <Route path="/products" element={<Products />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute adminOnly>
-                <Suspense fallback={<div />}>
-                  <Admin />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense
+          fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <Loader className="w-12 h-12 text-primary-500 animate-spin" />
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/envios" element={<ShippingReturns />} />
+            <Route path="/privacidad" element={<PrivacyTerms />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute excludeAdmin>{<Checkout />}</ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order-confirmation"
+              element={
+                <ProtectedRoute excludeAdmin>
+                  {<OrderConfirmation />}
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-orders"
+              element={
+                <ProtectedRoute excludeAdmin>{<MyOrders />}</ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={<ProtectedRoute>{<Perfil />}</ProtectedRoute>}
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/products/category/:slug" element={<Products />} />
+            <Route path="/products" element={<Products />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Suspense fallback={<div />}>
+                    <Admin />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </Suspense>
       </ErrorBoundary>
       <Suspense fallback={null}>

@@ -43,9 +43,12 @@ export const updateProfileSchema = Joi.object({
   password: Joi.string().min(6).optional().messages({
     "string.min": "La nueva contraseña debe tener al menos 6 caracteres",
   }),
-}).with("password", "currentPassword").messages({
-  "object.with": "Se requiere la contraseña actual para cambiar la contraseña",
-});
+})
+  .with("password", "currentPassword")
+  .messages({
+    "object.with":
+      "Se requiere la contraseña actual para cambiar la contraseña",
+  });
 
 // Esquema para crear producto (todos los campos requeridos)
 export const productSchema = Joi.object({
@@ -90,20 +93,26 @@ export const productUpdateSchema = Joi.object({
     "number.min": "El stock no puede ser negativo",
   }),
   categoryId: Joi.string().allow(""),
-  materials: Joi.alternatives()
-    .try(Joi.array().items(Joi.string()), Joi.string()),
+  materials: Joi.alternatives().try(
+    Joi.array().items(Joi.string()),
+    Joi.string(),
+  ),
   keepImages: Joi.string(), // JSON string array
   order: Joi.string(), // JSON string array
-}).min(1).messages({
-  "object.min": "Debe proporcionar al menos un campo para actualizar",
-});
+})
+  .min(1)
+  .messages({
+    "object.min": "Debe proporcionar al menos un campo para actualizar",
+  });
 
 // Esquema para query params de búsqueda de productos
 export const productQuerySchema = Joi.object({
   search: Joi.string().max(100).trim().messages({
     "string.max": "La búsqueda no puede exceder 100 caracteres",
   }),
-  sort: Joi.string().valid("-createdAt", "createdAt", "price", "-price", "name", "-name").default("-createdAt"),
+  sort: Joi.string()
+    .valid("-createdAt", "createdAt", "price", "-price", "name", "-name")
+    .default("-createdAt"),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(50).default(12),
 });

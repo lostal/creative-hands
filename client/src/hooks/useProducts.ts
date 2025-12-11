@@ -27,7 +27,10 @@ interface UseProductsReturn {
  * @param {string} options.categorySlug - Filtrar por categoría
  * @param {boolean} options.autoFetch - Si debe cargar automáticamente (default: true)
  */
-export const useProducts = ({ categorySlug = null, autoFetch = true }: UseProductsOptions = {}): UseProductsReturn => {
+export const useProducts = ({
+  categorySlug = null,
+  autoFetch = true,
+}: UseProductsOptions = {}): UseProductsReturn => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

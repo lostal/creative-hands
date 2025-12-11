@@ -1,11 +1,6 @@
-import {
-  ArrowRight,
-  Sparkles,
-  Palette,
-  ChevronDown,
-} from "lucide-react";
+import { ArrowRight, Sparkles, Palette, ChevronDown } from "lucide-react";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import {
   MotionDiv,
   MotionH1,
@@ -255,6 +250,5 @@ const Home = () => {
     </div>
   );
 };
-
 
 export default Home;

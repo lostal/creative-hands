@@ -36,8 +36,8 @@ export const calculateReviewMetrics = (
   const count = reviews.length;
   const avg = count
     ? Math.round(
-      (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / count) * 10,
-    ) / 10
+        (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / count) * 10,
+      ) / 10
     : 0;
   return { reviewsCount: count, avgRating: avg };
 };
@@ -47,10 +47,13 @@ export const calculateReviewMetrics = (
  * @param product - Producto de Mongoose (puede ser documento o objeto plano)
  * @returns Producto con reviewsCount y avgRating añadidos
  */
-export const enrichProductWithMetrics = (product: ProductInput): EnrichedProduct => {
-  const obj = "toObject" in product && typeof product.toObject === "function"
-    ? product.toObject()
-    : product;
+export const enrichProductWithMetrics = (
+  product: ProductInput,
+): EnrichedProduct => {
+  const obj =
+    "toObject" in product && typeof product.toObject === "function"
+      ? product.toObject()
+      : product;
   const metrics = calculateReviewMetrics(obj.reviews);
   return { ...obj, ...metrics };
 };

@@ -6,7 +6,11 @@ interface ImageUploaderProps {
   imageList: ImageItem[];
   dragActive: boolean;
   fileErrors: string[];
-  onFilesSelected: (e: React.ChangeEvent<HTMLInputElement> | { target: { files: FileList | File[] } }) => void;
+  onFilesSelected: (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | { target: { files: FileList | File[] } },
+  ) => void;
   removeImage: (id: string) => Promise<void>;
   setDragActive: React.Dispatch<React.SetStateAction<boolean>>;
   setImageList: React.Dispatch<React.SetStateAction<ImageItem[]>>;
@@ -32,32 +36,44 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const draggedIdRef = useRef<string | null>(null);
 
   // Handlers para drag-and-drop de archivos
-  const onDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  }, [setDragActive]);
+  const onDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(true);
+    },
+    [setDragActive],
+  );
 
-  const onDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-  }, [setDragActive]);
+  const onDragLeave = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+    },
+    [setDragActive],
+  );
 
-  const onDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  }, [setDragActive]);
+  const onDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(true);
+    },
+    [setDragActive],
+  );
 
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    const files = Array.from(e.dataTransfer.files || []);
-    if (files.length === 0) return;
-    onFilesSelected({ target: { files } });
-  }, [setDragActive, onFilesSelected]);
+  const onDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      const files = Array.from(e.dataTransfer.files || []);
+      if (files.length === 0) return;
+      onFilesSelected({ target: { files } });
+    },
+    [setDragActive, onFilesSelected],
+  );
 
   // Handlers para reordenación de thumbnails
   const onThumbDragStart = useCallback((e: React.DragEvent, id: string) => {
@@ -75,22 +91,26 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     e.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onThumbDrop = useCallback((e: React.DragEvent, targetId: string) => {
-    e.preventDefault();
-    const fromId = draggedIdRef.current || e.dataTransfer.getData("text/plain");
-    if (!fromId || fromId === targetId) return;
+  const onThumbDrop = useCallback(
+    (e: React.DragEvent, targetId: string) => {
+      e.preventDefault();
+      const fromId =
+        draggedIdRef.current || e.dataTransfer.getData("text/plain");
+      if (!fromId || fromId === targetId) return;
 
-    setImageList((prev) => {
-      const arr = [...prev];
-      const fromIndex = arr.findIndex((it) => it.id === fromId);
-      const toIndex = arr.findIndex((it) => it.id === targetId);
-      if (fromIndex === -1 || toIndex === -1) return prev;
-      const [moved] = arr.splice(fromIndex, 1);
-      arr.splice(toIndex, 0, moved);
-      return arr;
-    });
-    draggedIdRef.current = null;
-  }, [setImageList]);
+      setImageList((prev) => {
+        const arr = [...prev];
+        const fromIndex = arr.findIndex((it) => it.id === fromId);
+        const toIndex = arr.findIndex((it) => it.id === targetId);
+        if (fromIndex === -1 || toIndex === -1) return prev;
+        const [moved] = arr.splice(fromIndex, 1);
+        arr.splice(toIndex, 0, moved);
+        return arr;
+      });
+      draggedIdRef.current = null;
+    },
+    [setImageList],
+  );
 
   const onThumbDragEnd = useCallback(() => {
     draggedIdRef.current = null;

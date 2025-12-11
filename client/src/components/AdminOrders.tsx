@@ -115,10 +115,12 @@ const AdminOrders = () => {
                     Cliente
                   </p>
                   <p className="text-gray-900 dark:text-white font-medium">
-                    {typeof order.user === 'object' ? order.user.name : 'Usuario'}
+                    {typeof order.user === "object"
+                      ? order.user.name
+                      : "Usuario"}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {typeof order.user === 'object' ? order.user.email : ''}
+                    {typeof order.user === "object" ? order.user.email : ""}
                   </p>
                 </div>
 
@@ -151,8 +153,9 @@ const AdminOrders = () => {
             </div>
 
             <ChevronDown
-              className={`w-5 h-5 text-gray-400 transition-transform ${expandedOrder === order._id ? "rotate-180" : ""
-                }`}
+              className={`w-5 h-5 text-gray-400 transition-transform ${
+                expandedOrder === order._id ? "rotate-180" : ""
+              }`}
             />
           </button>
 
@@ -257,7 +260,9 @@ const AdminOrders = () => {
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <p className="text-sm text-green-700 dark:text-green-400">
                       Este pedido fue entregado el{" "}
-                      {new Date(order.updatedAt || "").toLocaleDateString("es-ES")}
+                      {new Date(order.updatedAt || "").toLocaleDateString(
+                        "es-ES",
+                      )}
                     </p>
                   </div>
                 )}

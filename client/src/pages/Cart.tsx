@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
@@ -117,7 +117,10 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(
                           item.product._id,
-                          Math.min(item.product.stock ?? 999, item.quantity + 1),
+                          Math.min(
+                            item.product.stock ?? 999,
+                            item.quantity + 1,
+                          ),
                         )
                       }
                       disabled={item.quantity >= (item.product.stock ?? 999)}

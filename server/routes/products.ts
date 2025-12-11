@@ -5,7 +5,14 @@
 import express from "express";
 import multer from "multer";
 import { protect, adminOnly, validateObjectId } from "../middleware/auth";
-import { validate, validateQuery, reviewSchema, productSchema, productUpdateSchema, productQuerySchema } from "../validators/schemas";
+import {
+  validate,
+  validateQuery,
+  reviewSchema,
+  productSchema,
+  productUpdateSchema,
+  productQuerySchema,
+} from "../validators/schemas";
 import { storage } from "../config/cloudinary";
 import { UPLOAD_LIMITS } from "../config/constants";
 
@@ -19,7 +26,7 @@ const router = express.Router();
 const fileFilter = (
   _req: Express.Request,
   file: Express.Multer.File,
-  cb: multer.FileFilterCallback
+  cb: multer.FileFilterCallback,
 ) => {
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   if (allowed.includes(file.mimetype)) cb(null, true);
@@ -35,7 +42,11 @@ const upload = multer({
 // ==================== RUTAS PÚBLICAS ====================
 
 // GET /api/products - Obtener todos los productos
-router.get("/", validateQuery(productQuerySchema), productController.getProducts);
+router.get(
+  "/",
+  validateQuery(productQuerySchema),
+  productController.getProducts,
+);
 
 // GET /api/products/categories/list - Lista de categorías (legacy)
 router.get("/categories/list", productController.getCategoriesList);
@@ -58,10 +69,22 @@ router.post(
 );
 
 // PUT /api/products/:id/reviews/:reviewId - Editar review
-router.put("/:id/reviews/:reviewId", validateObjectId(), validateObjectId("reviewId"), protect, reviewController.updateReview);
+router.put(
+  "/:id/reviews/:reviewId",
+  validateObjectId(),
+  validateObjectId("reviewId"),
+  protect,
+  reviewController.updateReview,
+);
 
 // DELETE /api/products/:id/reviews/:reviewId - Eliminar review
-router.delete("/:id/reviews/:reviewId", validateObjectId(), validateObjectId("reviewId"), protect, reviewController.deleteReview);
+router.delete(
+  "/:id/reviews/:reviewId",
+  validateObjectId(),
+  validateObjectId("reviewId"),
+  protect,
+  reviewController.deleteReview,
+);
 
 // ==================== RUTAS DE ADMIN (Solo administradores) ====================
 
@@ -87,7 +110,13 @@ router.put(
 );
 
 // DELETE /api/products/:id - Eliminar producto
-router.delete("/:id", validateObjectId(), protect, adminOnly, productController.deleteProduct);
+router.delete(
+  "/:id",
+  validateObjectId(),
+  protect,
+  adminOnly,
+  productController.deleteProduct,
+);
 
 // DELETE /api/products/:id/images - Eliminar imagen de producto
 router.delete(

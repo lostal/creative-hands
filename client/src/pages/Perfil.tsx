@@ -19,7 +19,11 @@ const Perfil = () => {
     setError(null);
 
     try {
-      const payload: { name?: string; password?: string; currentPassword?: string } = {};
+      const payload: {
+        name?: string;
+        password?: string;
+        currentPassword?: string;
+      } = {};
       if (name && name !== user?.name) payload.name = name;
       if (newPassword) {
         payload.password = newPassword;

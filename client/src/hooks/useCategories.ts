@@ -34,7 +34,9 @@ interface UseCategoriesReturn {
  * @param {Object} options - Opciones de configuración
  * @param {boolean} options.autoFetch - Si debe cargar automáticamente (default: true)
  */
-export const useCategories = ({ autoFetch = true }: UseCategoriesOptions = {}): UseCategoriesReturn => {
+export const useCategories = ({
+  autoFetch = true,
+}: UseCategoriesOptions = {}): UseCategoriesReturn => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

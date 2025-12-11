@@ -42,7 +42,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [ctaMessage, setCtaMessage] = useState("");
-  const [detailedProduct, setDetailedProduct] = useState<Product | null>(product);
+  const [detailedProduct, setDetailedProduct] = useState<Product | null>(
+    product,
+  );
   const [selectedTab, setSelectedTab] = useState("details");
 
   const { addToCart } = useCart();
@@ -95,10 +97,15 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
     let mounted = true;
     const fetchDetails = async () => {
       try {
-        const { data } = await api.get<{ product: Product }>(`/products/${product._id}`);
+        const { data } = await api.get<{ product: Product }>(
+          `/products/${product._id}`,
+        );
         if (mounted && data?.product) setDetailedProduct(data.product);
       } catch (err: unknown) {
-        console.warn("No se pudo cargar detalles del producto:", getErrorMessage(err));
+        console.warn(
+          "No se pudo cargar detalles del producto:",
+          getErrorMessage(err),
+        );
       }
     };
 
@@ -247,8 +254,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     setDirection(i > index ? 1 : -1);
                     setIndex(i);
                   }}
-                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${i === index ? "border-primary-500" : "border-transparent"
-                    } min-w-[64px] min-h-[64px]`}
+                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${
+                    i === index ? "border-primary-500" : "border-transparent"
+                  } min-w-[64px] min-h-[64px]`}
                 >
                   <img
                     src={img}
@@ -303,19 +311,21 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               <div className="flex gap-1 sm:gap-2">
                 <button
                   onClick={() => setSelectedTab("details")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${selectedTab === "details"
-                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                    : "text-gray-600 dark:text-gray-300"
-                    }`}
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
+                    selectedTab === "details"
+                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                      : "text-gray-600 dark:text-gray-300"
+                  }`}
                 >
                   Detalles
                 </button>
                 <button
                   onClick={() => setSelectedTab("reviews")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${selectedTab === "reviews"
-                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                    : "text-gray-600 dark:text-gray-300"
-                    }`}
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
+                    selectedTab === "reviews"
+                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                      : "text-gray-600 dark:text-gray-300"
+                  }`}
                 >
                   Valoraciones ({detailedProduct?.numReviews ?? 0})
                 </button>
@@ -347,18 +357,21 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 </div>
 
                 {/* Extra details area: propiedades, tags, seller info, etc. (si existen) */}
-                {(product as any).features && (product as any).features.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">
-                      Características
-                    </h3>
-                    <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300">
-                      {(product as any).features.map((f: string, idx: number) => (
-                        <li key={idx}>{f}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {(product as any).features &&
+                  (product as any).features.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold mb-2">
+                        Características
+                      </h3>
+                      <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300">
+                        {(product as any).features.map(
+                          (f: string, idx: number) => (
+                            <li key={idx}>{f}</li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
 
                 {/* CTA */}
                 <div className="mt-4 sm:mt-6 flex flex-row flex-nowrap items-center gap-3">
@@ -376,7 +389,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     </span>
                     <button
                       onClick={() =>
-                        setQuantity(Math.min(product.stock ?? 999, quantity + 1))
+                        setQuantity(
+                          Math.min(product.stock ?? 999, quantity + 1),
+                        )
                       }
                       className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       disabled={quantity >= (product.stock ?? 999)}
@@ -407,12 +422,13 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={(product.stock ?? 0) === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${(product.stock ?? 0) === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : addedToCart
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                        }`}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${
+                        (product.stock ?? 0) === 0
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : addedToCart
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                      }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>{addedToCart ? "Añadido" : "Añadir"}</span>

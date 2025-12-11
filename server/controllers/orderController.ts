@@ -33,7 +33,12 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
     const { orderItems, shippingAddress } = req.body as {
       orderItems: OrderItemInput[];
-      shippingAddress: { address: string; city: string; postalCode: string; phone: string };
+      shippingAddress: {
+        address: string;
+        city: string;
+        postalCode: string;
+        phone: string;
+      };
     };
 
     // Obtener todos los productos en una sola consulta (evita N+1)
@@ -45,7 +50,12 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
     // Validar stock y calcular precio total
     let totalPrice = 0;
-    const stockUpdates: { updateOne: { filter: { _id: Types.ObjectId }; update: { $inc: { stock: number } } } }[] = [];
+    const stockUpdates: {
+      updateOne: {
+        filter: { _id: Types.ObjectId };
+        update: { $inc: { stock: number } };
+      };
+    }[] = [];
 
     for (const item of orderItems) {
       const product = productMap.get(item.product.toString());
@@ -177,12 +187,11 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
 
     // Verificar autorización
     const populatedUser = order.user as unknown as PopulatedUser;
-    const orderUserId = populatedUser._id ? populatedUser._id.toString() : order.user.toString();
+    const orderUserId = populatedUser._id
+      ? populatedUser._id.toString()
+      : order.user.toString();
 
-    if (
-      orderUserId !== req.user?.id &&
-      req.user?.role !== "admin"
-    ) {
+    if (orderUserId !== req.user?.id && req.user?.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "No autorizado para ver este pedido",

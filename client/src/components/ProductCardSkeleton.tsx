@@ -1,5 +1,3 @@
-
-
 /**
  * Skeleton loader que imita la estructura de ProductCard
  * Usado durante la carga de productos para evitar layout shift

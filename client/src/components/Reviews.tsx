@@ -50,7 +50,11 @@ interface ReviewsProps {
   onProductUpdate?: (product: Product) => void;
 }
 
-const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) => {
+const Reviews = ({
+  productId,
+  initialProduct,
+  onProductUpdate,
+}: ReviewsProps) => {
   const { user, isAuthenticated } = useAuth();
   const [product, setProduct] = useState<Product>(initialProduct);
   const [formVisible, setFormVisible] = useState(false);
@@ -61,8 +65,6 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setProduct(initialProduct), [initialProduct]);
-
-
 
   const myReview = (product?.reviews || []).find(
     (r) =>
@@ -130,9 +132,7 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
     if (!window.confirm("¿Eliminar tu valoración?")) return;
     try {
       const id = rev._id || rev.id;
-      const res = await api.delete(
-        `/products/${productId}/reviews/${id}`,
-      );
+      const res = await api.delete(`/products/${productId}/reviews/${id}`);
       if (res.data?.product) {
         setProduct(res.data.product);
         if (onProductUpdate) onProductUpdate(res.data.product);
@@ -330,10 +330,11 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
                                     onClick={() =>
                                       setForm((s) => ({ ...s, rating: n }))
                                     }
-                                    className={`text-2xl ${n <= form.rating
-                                      ? "text-yellow-400"
-                                      : "text-gray-300 dark:text-gray-600"
-                                      }`}
+                                    className={`text-2xl ${
+                                      n <= form.rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-300 dark:text-gray-600"
+                                    }`}
                                     aria-label={`Puntuar ${n}`}
                                   >
                                     ★
@@ -420,10 +421,11 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
                       key={n}
                       type="button"
                       onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-2xl ${n <= form.rating
-                        ? "text-yellow-400"
-                        : "text-gray-300 dark:text-gray-600"
-                        }`}
+                      className={`text-2xl ${
+                        n <= form.rating
+                          ? "text-yellow-400"
+                          : "text-gray-300 dark:text-gray-600"
+                      }`}
                       aria-label={`Puntuar ${n}`}
                     >
                       ★

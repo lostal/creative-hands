@@ -169,16 +169,16 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 ### Productos (`/api/products`)
 
-| Método | Endpoint       | Descripción         | Acceso  |
-| ------ | -------------- | ------------------- | ------- |
-| GET    | `/`            | Listar productos    | Público |
-| GET    | `/:id`                 | Obtener producto    | Público |
-| POST   | `/`                    | Crear producto      | Admin   |
-| PUT    | `/:id`                 | Actualizar producto | Admin   |
-| DELETE | `/:id`                 | Eliminar producto   | Admin   |
-| POST   | `/:id/reviews`         | Añadir reseña       | Privado |
-| PUT    | `/:id/reviews/:rid`    | Editar reseña       | Privado |
-| DELETE | `/:id/reviews/:rid`    | Eliminar reseña     | Privado |
+| Método | Endpoint            | Descripción         | Acceso  |
+| ------ | ------------------- | ------------------- | ------- |
+| GET    | `/`                 | Listar productos    | Público |
+| GET    | `/:id`              | Obtener producto    | Público |
+| POST   | `/`                 | Crear producto      | Admin   |
+| PUT    | `/:id`              | Actualizar producto | Admin   |
+| DELETE | `/:id`              | Eliminar producto   | Admin   |
+| POST   | `/:id/reviews`      | Añadir reseña       | Privado |
+| PUT    | `/:id/reviews/:rid` | Editar reseña       | Privado |
+| DELETE | `/:id/reviews/:rid` | Eliminar reseña     | Privado |
 
 ### Pedidos (`/api/orders`)
 

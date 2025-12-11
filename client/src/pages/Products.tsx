@@ -7,7 +7,7 @@ import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import ProductModal from "../components/ProductModal";
 import { useCategories } from "../hooks/useCategories";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { Product } from "../types";
 import { MotionDiv, MotionButton } from "../lib/motion";
 
@@ -65,9 +65,7 @@ const Products = () => {
       let data;
 
       if (selectedCategorySlug) {
-        const res = await api.get(
-          `/products/category/${selectedCategorySlug}`,
-        );
+        const res = await api.get(`/products/category/${selectedCategorySlug}`);
         data = res.data;
       } else {
         const res = await api.get("/products");
@@ -171,11 +169,12 @@ const Products = () => {
                     navigate("/products");
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] ${selectedCategorySlug === category.slug ||
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] ${
+                  selectedCategorySlug === category.slug ||
                   (selectedCategorySlug === "" && category.name === "Todas")
-                  ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                  : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                  }`}
+                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                    : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+                }`}
               >
                 {category.name}
               </MotionButton>

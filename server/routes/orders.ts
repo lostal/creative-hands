@@ -29,6 +29,12 @@ router.get("/myorders", protect, orderController.getMyOrders);
 router.get("/:id", validateObjectId(), protect, orderController.getOrderById);
 
 // PUT /api/orders/:id/deliver - Marcar como entregado
-router.put("/:id/deliver", validateObjectId(), protect, adminOnly, orderController.deliverOrder);
+router.put(
+  "/:id/deliver",
+  validateObjectId(),
+  protect,
+  adminOnly,
+  orderController.deliverOrder,
+);
 
 export default router;

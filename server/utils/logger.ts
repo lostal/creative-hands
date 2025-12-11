@@ -6,7 +6,15 @@
 const isDev = process.env.NODE_ENV !== "production";
 
 /** Tipo para argumentos de log - incluye unknown para errores capturados */
-type LogArg = string | number | boolean | object | Error | null | undefined | unknown;
+type LogArg =
+  | string
+  | number
+  | boolean
+  | object
+  | Error
+  | null
+  | undefined
+  | unknown;
 
 const logger = {
   /**

@@ -1,103 +1,178 @@
 /* Fuentes Google: Poppins como fuente moderna y estética para el cuerpo */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap")
+layer(base);
 
 /* Copernicus Bold - fuente personalizada para subtítulos
    Archivo: public/fonts/CopernicusBold.woff2 */
-@font-face {
-  font-family: "Copernicus-Bold";
-  src: url("/fonts/CopernicusBold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary-50: #f9ede8;
+  --color-primary-100: #f3dcd3;
+  --color-primary-200: #e9bca9;
+  --color-primary-300: #df9c7f;
+  --color-primary-400: #d57c55;
+  --color-primary-500: #cb6843;
+  --color-primary-600: #a85336;
+  --color-primary-700: #7d3e28;
+  --color-primary-800: #53291b;
+  --color-primary-900: #29150d;
+  --color-primary: #cb6843;
+
+  --color-dark-50: #4a4a46;
+  --color-dark-100: #3f3f3d;
+  --color-dark-200: #343432;
+  --color-dark-300: #2e2e2c;
+  --color-dark-400: #262624;
+  --color-dark-500: #1e1e1c;
+  --color-dark-600: #161614;
+  --color-dark-700: #0e0e0d;
+  --color-dark-800: #060605;
+  --color-dark-900: #000000;
+  --color-dark: #262624;
+
+  --color-light-50: #ffffff;
+  --color-light-100: #fefefe;
+  --color-light-200: #fcfcfb;
+  --color-light-300: #f9f9f8;
+  --color-light-400: #f7f7f6;
+  --color-light-500: #f5f5f4;
+  --color-light-600: #e8e8e6;
+  --color-light-700: #dbdbd8;
+  --color-light-800: #cececa;
+  --color-light-900: #c1c1bc;
+  --color-light: #f5f5f4;
+
+  --font-sans:
+    Poppins, -apple-system, BlinkMacSystemFont, SF Pro Display, Segoe UI,
+    Roboto, Helvetica, Arial, sans-serif;
+
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.4s ease-out;
+  --animate-slide-down: slideDown 0.4s ease-out;
+  --animate-scale-in: scaleIn 0.3s ease-out;
+  --animate-float: float 3s ease-in-out infinite;
+
+  --backdrop-blur-xs: 2px;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes slideDown {
+    0% {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes scaleIn {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 }
 
-/* Variante condensada para el título/logo (110) */
-@font-face {
-  font-family: "Copernicus-Cond-110";
-  src: url("/fonts/CopernicusNewCondTrial110.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
+@utility copernicus {
+  /* Clase utilitaria para el título de marca */
   font-family:
-    "Poppins",
+    "Copernicus-Bold",
+    "Inter",
     -apple-system,
     BlinkMacSystemFont,
-    "SF Pro Display",
     "Segoe UI",
-    "Roboto",
+    Roboto,
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* opcional: ajustar espaciado entre letras si se desea */
+  letter-spacing: 0.02em;
 }
-
-/* Clase utilitaria para el título de marca */
-@layer components {
-  /* Clase utilitaria para el título de marca */
-  .copernicus {
-    font-family:
-      "Copernicus-Bold",
-      "Inter",
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif;
-    /* opcional: ajustar espaciado entre letras si se desea */
-    letter-spacing: 0.02em;
-  }
-
+@utility subtitle {
   /* Clase para subtítulos que usarán Copernicus Bold */
-  .subtitle {
-    font-family:
-      "Copernicus-Bold",
-      "Copernicus New Condensed Trial",
-      Poppins,
-      system-ui,
-      -apple-system,
-      "Segoe UI",
-      Roboto,
-      sans-serif;
-    font-weight: 700;
-    /* tamaño un poco más destacado en pantallas grandes */
-    font-size: 1.125rem;
-    /* 18px base */
-    line-height: 1.35;
-  }
-
-  .copernicus-110 {
-    font-family:
-      "Copernicus-Cond-110",
-      "Copernicus New Condensed Trial",
-      Inter,
-      system-ui,
-      -apple-system,
-      "Segoe UI",
-      Roboto,
-      sans-serif;
-  }
-
+  font-family:
+    "Copernicus-Bold",
+    "Copernicus New Condensed Trial",
+    Poppins,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-weight: 700;
+  /* tamaño un poco más destacado en pantallas grandes */
+  font-size: 1.125rem;
+  /* 18px base */
+  line-height: 1.35;
+}
+@utility copernicus-110 {
+  font-family:
+    "Copernicus-Cond-110",
+    "Copernicus New Condensed Trial",
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+@utility brand-title {
   /* sólo se mantiene la variante 110 (usada en el hero) */
 
   /* Navbar brand underline animation */
-  .brand-title {
-    position: relative;
-    display: inline-block;
-  }
+  position: relative;
+  display: inline-block;
 
-  .brand-title::after {
+  &::after {
     content: "";
     position: absolute;
     left: 0;
@@ -108,35 +183,33 @@ body {
     transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .brand-title:hover::after {
+  &:hover::after {
     width: 100%;
   }
-
+}
+@utility glass {
   /* Glassmorphism component: base + dark override (se usan selectores .dark para compatibilidad con darkMode: 'class') */
-  .glass {
-    background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  .dark & {
+    background: rgba(38, 38, 36, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
-
-  .dark .glass {
+}
+@utility dark {
+  & .glass {
     background: rgba(38, 38, 36, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Gradient background component */
-  .gradient-bg {
-    background: linear-gradient(
-      135deg,
-      rgba(203, 104, 67, 0.1) 0%,
-      rgba(213, 124, 85, 0.1) 100%
-    );
-  }
-
-  .dark .gradient-bg {
+  & .gradient-bg {
     background: linear-gradient(
       135deg,
       rgba(38, 38, 36, 0.95) 0%,
@@ -144,89 +217,174 @@ body {
     );
   }
 
-  .skeleton {
-    @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s ease-in-out infinite;
-  }
-
-  .dark .skeleton {
+  & .skeleton {
     @apply from-gray-700 via-gray-600 to-gray-700;
   }
 
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: none;
-  }
-
-  .dark .glass-nav {
+  & .glass-nav {
     background: rgba(20, 20, 18, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: none;
   }
+  & .text-gray-900 {
+    color: #ffffff !important;
+  }
 
+  & .text-gray-800 {
+    color: #f8fafc !important;
+  }
+
+  & .text-gray-700 {
+    color: #d1d5db !important;
+  }
+
+  & .text-gray-600 {
+    color: #9ca3af !important;
+  }
+
+  & .text-gray-500 {
+    color: #6b7280 !important;
+  }
+}
+@utility gradient-bg {
+  /* Gradient background component */
+  background: linear-gradient(
+    135deg,
+    rgba(203, 104, 67, 0.1) 0%,
+    rgba(213, 124, 85, 0.1) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(38, 38, 36, 0.95) 0%,
+      rgba(30, 30, 28, 0.95) 100%
+    );
+  }
+}
+@utility skeleton {
+  @apply bg-linear-to-r from-gray-200 via-gray-300 to-gray-200;
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+
+  .dark & {
+    @apply from-gray-700 via-gray-600 to-gray-700;
+  }
+}
+@utility glass-nav {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+
+  .dark & {
+    background: rgba(20, 20, 18, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+  }
+}
+@utility page-container {
   /* Contenedor de página estándar - evita cadenas largas de clases */
-  .page-container {
-    @apply min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8;
-    @apply bg-gradient-to-br from-light-500 via-primary-50 to-light-500;
-    @apply dark:from-dark-500 dark:via-dark-400 dark:to-dark-600;
-  }
-
+  @apply min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8;
+  @apply bg-linear-to-br from-light-500 via-primary-50 to-light-500;
+  @apply dark:from-dark-500 dark:via-dark-400 dark:to-dark-600;
+}
+@utility btn-primary {
   /* Botón primario reutilizable */
-  .btn-primary {
-    @apply px-4 sm:px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600;
-    @apply text-white rounded-xl font-semibold shadow-lg;
-    @apply hover:shadow-xl transition-all duration-200;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
+  @apply px-4 sm:px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600;
+  @apply text-white rounded-xl font-semibold shadow-lg;
+  @apply hover:shadow-xl transition-all duration-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+@utility btn-secondary {
   /* Botón secundario (glass) */
-  .btn-secondary {
-    @apply px-4 py-3 glass rounded-xl font-semibold;
-    @apply text-gray-700 dark:text-gray-300;
-    @apply hover:shadow-md transition-shadow duration-200;
-  }
-
+  @apply px-4 py-3 glass rounded-xl font-semibold;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:shadow-md transition-shadow duration-200;
+}
+@utility input-field {
   /* Input estándar */
-  .input-field {
-    @apply w-full px-4 py-3 bg-white dark:bg-gray-800;
-    @apply border border-gray-300 dark:border-gray-700 rounded-xl;
-    @apply focus:ring-2 focus:ring-primary-500;
-    @apply text-gray-900 dark:text-white;
-  }
-
+  @apply w-full px-4 py-3 bg-white dark:bg-gray-800;
+  @apply border border-gray-300 dark:border-gray-700 rounded-xl;
+  @apply focus:ring-2 focus:ring-primary-500;
+  @apply text-gray-900 dark:text-white;
+}
+@utility card-glass {
   /* Card container glass */
-  .card-glass {
-    @apply glass rounded-2xl p-6 shadow-lg;
-  }
+  @apply glass rounded-2xl p-6 shadow-lg;
 }
 
 /* Asegurar colores de texto legibles en modo oscuro para utilidades heredadas
    Algunas clases pueden haberse definido sólo para modo claro; aquí añadimos
    un pequeño override para que esos textos también sean legibles en .dark. */
-@layer components {
-  .dark .text-gray-900 {
+@utility text-gray-900 {
+  .dark & {
     color: #ffffff !important;
   }
-
-  .dark .text-gray-800 {
+}
+@utility text-gray-800 {
+  .dark & {
     color: #f8fafc !important;
   }
-
-  .dark .text-gray-700 {
+}
+@utility text-gray-700 {
+  .dark & {
     color: #d1d5db !important;
   }
-
-  .dark .text-gray-600 {
+}
+@utility text-gray-600 {
+  .dark & {
     color: #9ca3af !important;
   }
-
-  .dark .text-gray-500 {
+}
+@utility text-gray-500 {
+  .dark & {
     color: #6b7280 !important;
   }
+}
+
+@layer base {
+  @font-face {
+    font-family: "Copernicus-Bold";
+    src: url("/fonts/CopernicusBold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Copernicus-Cond-110";
+    src: url("/fonts/CopernicusNewCondTrial110.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+}
+
+/* Variante condensada para el título/logo (110) */
+
+@layer utilities {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family:
+      "Poppins",
+      -apple-system,
+      BlinkMacSystemFont,
+      "SF Pro Display",
+      "Segoe UI",
+      "Roboto",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Clase utilitaria para el título de marca */
 }
 
 /* Variable global de color de texto para elementos sin utilidades específicas */
@@ -278,7 +436,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  @apply ring-2 ring-primary-500 ring-opacity-50;
+  @apply ring-2 ring-primary-500/50;
 }
 
 /* Button animations */

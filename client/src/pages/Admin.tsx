@@ -10,7 +10,7 @@ import {
 import api from "../utils/axios";
 import logger from "../utils/logger";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import ProductCard from "../components/ProductCard";
 import AdminChat from "../components/AdminChat";
 import AdminOrders from "../components/AdminOrders";
@@ -89,7 +89,10 @@ const Admin = () => {
     setEditingProduct(null);
   };
 
-  const handleProductSaved = (product: Product, action: "create" | "update") => {
+  const handleProductSaved = (
+    product: Product,
+    action: "create" | "update",
+  ) => {
     if (action === "create") {
       setProducts([product, ...products]);
     } else {
@@ -166,30 +169,33 @@ const Admin = () => {
         >
           <button
             onClick={() => setActiveTab("products")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "products"
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+              activeTab === "products"
                 ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-              }`}
+            }`}
           >
             <Package className="w-5 h-5" />
             <span>Productos</span>
           </button>
           <button
             onClick={() => setActiveTab("chat")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "chat"
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+              activeTab === "chat"
                 ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-              }`}
+            }`}
           >
             <MessageSquare className="w-5 h-5" />
             <span>Conversaciones</span>
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "orders"
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+              activeTab === "orders"
                 ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-              }`}
+            }`}
           >
             <ShoppingCart className="w-5 h-5" />
             <span>Pedidos</span>

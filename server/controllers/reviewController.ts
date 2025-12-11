@@ -68,7 +68,7 @@ export const addReview = async (req: AuthRequest, res: Response) => {
     }
 
     // Crear review
-    const review: Omit<IReview, 'createdAt'> = {
+    const review: Omit<IReview, "createdAt"> = {
       user: new Types.ObjectId(req.user?.id),
       title: String(title).trim(),
       comment: String(comment).trim(),
@@ -82,7 +82,12 @@ export const addReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Producto no encontrado tras actualizar",
+        });
     }
 
     res.status(201).json({
@@ -121,7 +126,8 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
 
     // Buscar review por ID
     const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
-    const review = reviews.id(reviewId) ||
+    const review =
+      reviews.id(reviewId) ||
       reviews.find((r) => r._id && r._id.toString() === reviewId);
 
     if (!review) {
@@ -154,7 +160,12 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Producto no encontrado tras actualizar",
+        });
     }
 
     res.json({
@@ -189,7 +200,8 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
     }
 
     const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
-    const review = reviews.id(reviewId) ||
+    const review =
+      reviews.id(reviewId) ||
       reviews.find((r) => r._id && r._id.toString() === reviewId);
 
     if (!review) {
@@ -214,7 +226,12 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Producto no encontrado tras actualizar",
+        });
     }
 
     res.json({

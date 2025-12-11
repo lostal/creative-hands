@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
@@ -54,8 +54,9 @@ const Navbar = () => {
     <MotionNav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "glass-nav shadow-lg" : "bg-transparent"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? "glass-nav shadow-lg" : "bg-transparent"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
@@ -86,10 +87,11 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/products"
-              className={`text-sm font-medium transition-colors ${isActive("/products")
-                ? "text-primary-500"
-                : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
-                }`}
+              className={`text-sm font-medium transition-colors ${
+                isActive("/products")
+                  ? "text-primary-500"
+                  : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
+              }`}
             >
               Productos
             </Link>
@@ -99,10 +101,11 @@ const Navbar = () => {
             {isAdmin && (
               <Link
                 to="/admin"
-                className={`text-sm font-medium transition-colors flex items-center space-x-1 ${isActive("/admin")
-                  ? "text-primary-500"
-                  : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
-                  }`}
+                className={`text-sm font-medium transition-colors flex items-center space-x-1 ${
+                  isActive("/admin")
+                    ? "text-primary-500"
+                    : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
+                }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
                 <span>Admin</span>

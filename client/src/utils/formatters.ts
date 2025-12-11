@@ -16,4 +16,5 @@ const currencyFormatter = new Intl.NumberFormat("es-ES", {
  * @param {number} value - Valor a formatear
  * @returns {string} Valor formateado (ej: "29,99 €")
  */
-export const formatCurrency = (value: number): string => currencyFormatter.format(value);
+export const formatCurrency = (value: number): string =>
+  currencyFormatter.format(value);
