@@ -78,7 +78,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       (response) => response,
       (error) => {
         const status = error?.response?.status;
-        if (status === 401) {
+        const requestUrl = error?.config?.url || "";
+
+        // No redirigir a login si el 401 viene de /auth/me (verificación inicial de sesión)
+        // ya que es normal que falle si no hay sesión activa
+        if (status === 401 && !requestUrl.includes("/auth/me")) {
           // Token inválido o expirado: limpiar estado y redirigir sin recargar
           clearAuthAndRedirect();
         }
