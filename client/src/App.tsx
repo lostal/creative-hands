@@ -1,4 +1,4 @@
-import { Suspense, lazy, ReactNode } from "react";
+import { Suspense, lazy, ReactNode, startTransition } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -97,6 +97,11 @@ function AppContent() {
       <Navbar />
       <CartDrawer />
       <ErrorBoundary>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <Loader className="w-12 h-12 text-primary-500 animate-spin" />
+          </div>
+        }>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -143,6 +148,7 @@ function AppContent() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </ErrorBoundary>
       <Suspense fallback={null}>
         <ChatWidget />
