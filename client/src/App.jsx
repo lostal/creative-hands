@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import { SocketProvider } from "./context/SocketContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
@@ -75,8 +76,8 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-light-500 dark:bg-dark-500 transition-colors duration-300">
-    <Navbar />
-    <CartDrawer />
+      <Navbar />
+      <CartDrawer />
       <ErrorBoundary>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -119,9 +120,11 @@ function App() {
     <Router>
       <ThemeProvider>
         <AuthProvider>
-          <SocketProvider>
-            <AppContent />
-          </SocketProvider>
+          <CartProvider>
+            <SocketProvider>
+              <AppContent />
+            </SocketProvider>
+          </CartProvider>
         </AuthProvider>
       </ThemeProvider>
     </Router>

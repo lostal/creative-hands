@@ -22,11 +22,19 @@ router.post("/", protect, async (req, res) => {
         .json({ success: false, message: "Dirección de envío incompleta" });
     }
 
-    // Calcular precio total y actualizar stock
+    // Obtener todos los productos en una sola consulta (evita N+1)
+    const productIds = orderItems.map((item) => item.product);
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    // Crear mapa para acceso rápido
+    const productMap = new Map(products.map((p) => [p._id.toString(), p]));
+
+    // Validar stock y calcular precio total
     let totalPrice = 0;
+    const stockUpdates = [];
 
     for (const item of orderItems) {
-      const product = await Product.findById(item.product);
+      const product = productMap.get(item.product.toString());
 
       if (!product) {
         return res
@@ -34,21 +42,27 @@ router.post("/", protect, async (req, res) => {
           .json({ success: false, message: `Producto ${item.product} no encontrado` });
       }
 
-      // Verificar que hay suficiente stock
       if (product.stock < item.quantity) {
         return res
           .status(400)
           .json({ success: false, message: `Stock insuficiente para ${product.name}` });
       }
 
-      totalPrice += item.price * item.quantity;
+      // Usar precio de la BD, no del cliente (seguridad)
+      totalPrice += product.price * item.quantity;
 
-      // Actualizar stock del producto
-      await Product.findByIdAndUpdate(
-        item.product,
-        { $inc: { stock: -item.quantity } },
-        { new: true }
-      );
+      // Preparar actualización de stock para bulkWrite
+      stockUpdates.push({
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { stock: -item.quantity } },
+        },
+      });
+    }
+
+    // Actualizar stock de todos los productos en una sola operación
+    if (stockUpdates.length > 0) {
+      await Product.bulkWrite(stockUpdates);
     }
 
     // Crear el pedido

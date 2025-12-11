@@ -139,6 +139,41 @@ body {
     -webkit-backdrop-filter: blur(8px);
     border: none;
   }
+
+  /* Contenedor de página estándar - evita cadenas largas de clases */
+  .page-container {
+    @apply min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8;
+    @apply bg-gradient-to-br from-light-500 via-primary-50 to-light-500;
+    @apply dark:from-dark-500 dark:via-dark-400 dark:to-dark-600;
+  }
+
+  /* Botón primario reutilizable */
+  .btn-primary {
+    @apply px-4 sm:px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600;
+    @apply text-white rounded-xl font-semibold shadow-lg;
+    @apply hover:shadow-xl transition-all duration-200;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Botón secundario (glass) */
+  .btn-secondary {
+    @apply px-4 py-3 glass rounded-xl font-semibold;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Input estándar */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white dark:bg-gray-800;
+    @apply border border-gray-300 dark:border-gray-700 rounded-xl;
+    @apply focus:ring-2 focus:ring-primary-500;
+    @apply text-gray-900 dark:text-white;
+  }
+
+  /* Card container glass */
+  .card-glass {
+    @apply glass rounded-2xl p-6 shadow-lg;
+  }
 }
 
 /* Asegurar colores de texto legibles en modo oscuro para utilidades heredadas

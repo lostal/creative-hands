@@ -72,4 +72,8 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
+// Índices para consultas frecuentes
+orderSchema.index({ user: 1, createdAt: -1 }); // "Mis pedidos" ordenados por fecha
+orderSchema.index({ isDelivered: 1 }); // Filtrar pedidos pendientes/entregados
+
 module.exports = mongoose.model("Order", orderSchema);

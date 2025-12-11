@@ -9,6 +9,19 @@ const connectDB = require("./config/db");
 const User = require("./models/User");
 const Message = require("./models/Message");
 const jwt = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
+
+// Rate limiter para rutas de autenticación (previene ataques de fuerza bruta)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // 5 intentos por ventana
+  message: {
+    success: false,
+    message: "Demasiados intentos de autenticación. Intenta de nuevo en 15 minutos.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const app = express();
 const server = http.createServer(app);
@@ -37,8 +50,8 @@ const createDefaultAdmin = async () => {
         role: "admin",
       });
       console.log("✅ Administrador creado exitosamente");
-      console.log(`   Email: ${process.env.ADMIN_EMAIL}`);
-      console.log(`   Password: ${process.env.ADMIN_PASSWORD}`);
+      console.log(`   Email: ${process.env.ADMIN_EMAIL || "admin@creativehands.com"}`);
+      console.log("   Password: ********** (ver variables de entorno)");
     }
   } catch (error) {
     console.error("Error al crear administrador:", error);
@@ -65,6 +78,9 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
+// Aplicar rate limiting a rutas de autenticación sensibles
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/categories", require("./routes/categories"));
@@ -88,7 +104,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Socket.IO - Manejo de conexiones en tiempo real
-const connectedUsers = new Map();
+// Usamos Set de socketIds por usuario para soportar múltiples pestañas
+const connectedUsers = new Map(); // userId -> Set<socketId>
 
 // Middleware para autenticar socket
 io.use(async (socket, next) => {
@@ -120,8 +137,11 @@ io.use(async (socket, next) => {
 io.on("connection", (socket) => {
   console.log(`✅ Usuario conectado: ${socket.userName} (${socket.userId})`);
 
-  // Guardar conexión del usuario
-  connectedUsers.set(socket.userId, socket.id);
+  // Guardar conexión del usuario (soporta múltiples pestañas)
+  if (!connectedUsers.has(socket.userId)) {
+    connectedUsers.set(socket.userId, new Set());
+  }
+  connectedUsers.get(socket.userId).add(socket.id);
 
   // Actualizar estado online
   User.findByIdAndUpdate(socket.userId, { isOnline: true }).exec();
@@ -228,19 +248,28 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log(`❌ Usuario desconectado: ${socket.userName}`);
 
-    connectedUsers.delete(socket.userId);
+    // Remover solo este socket del Set del usuario
+    const userSockets = connectedUsers.get(socket.userId);
+    if (userSockets) {
+      userSockets.delete(socket.id);
 
-    // Actualizar estado offline
-    await User.findByIdAndUpdate(socket.userId, {
-      isOnline: false,
-      lastSeen: new Date(),
-    });
+      // Solo marcar offline si no quedan más sockets de este usuario
+      if (userSockets.size === 0) {
+        connectedUsers.delete(socket.userId);
 
-    // Notificar a todos
-    io.emit("user:status", {
-      userId: socket.userId,
-      isOnline: false,
-    });
+        // Actualizar estado offline
+        await User.findByIdAndUpdate(socket.userId, {
+          isOnline: false,
+          lastSeen: new Date(),
+        });
+
+        // Notificar a todos
+        io.emit("user:status", {
+          userId: socket.userId,
+          isOnline: false,
+        });
+      }
+    }
   });
 });
 

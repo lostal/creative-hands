@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useMemo } from "react";
 
 const CartContext = createContext();
 
@@ -87,13 +87,16 @@ export const CartProvider = ({ children }) => {
   const closeCart = () => setIsCartOpen(false);
   const toggleCart = () => setIsCartOpen((s) => !s);
 
-  // Calcular número total de items
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Calcular número total de items (memoizado)
+  const totalItems = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems]
+  );
 
-  // Calcular precio total
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
+  // Calcular precio total (memoizado)
+  const totalPrice = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+    [cartItems]
   );
 
   const value = {

@@ -35,12 +35,12 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("connect", () => {
-        console.log("✅ Socket conectado");
+        if (import.meta.env.DEV) console.log("✅ Socket conectado");
         setConnected(true);
       });
 
       newSocket.on("disconnect", () => {
-        console.log("❌ Socket desconectado");
+        if (import.meta.env.DEV) console.log("❌ Socket desconectado");
         setConnected(false);
       });
 
