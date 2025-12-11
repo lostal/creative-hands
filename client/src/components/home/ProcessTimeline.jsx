@@ -3,108 +3,94 @@ import { Paintbrush, Package, Truck, Sparkles } from 'lucide-react';
 
 /**
  * ProcessTimeline Component - v2 Design System
- * Visual timeline showing the craft process
+ * Clean horizontal timeline without overlapping elements
  */
 
 const steps = [
     {
         icon: Paintbrush,
         title: 'Diseño',
-        description: 'Cada pieza comienza con una idea única, bocetada a mano.',
-        number: '01',
+        description: 'Cada pieza comienza con una idea única.',
     },
     {
         icon: Sparkles,
         title: 'Creación',
-        description: 'Artesanos expertos dan vida a cada diseño con técnicas tradicionales.',
-        number: '02',
+        description: 'Artesanos dan vida al diseño.',
     },
     {
         icon: Package,
         title: 'Empaquetado',
-        description: 'Cuidamos cada detalle del embalaje para una experiencia premium.',
-        number: '03',
+        description: 'Cuidamos cada detalle del embalaje.',
     },
     {
         icon: Truck,
         title: 'Envío',
-        description: 'Tu pieza llega a casa protegida y lista para disfrutar.',
-        number: '04',
+        description: 'Tu pieza llega protegida a casa.',
     },
 ];
 
 const ProcessTimeline = () => {
     return (
-        <section className="section bg-background-secondary">
-            <div className="container-page">
+        <section className="py-20 md:py-28 bg-surface">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-center mb-12 md:mb-16"
+                    className="text-center mb-16"
                 >
-                    <span className="inline-block px-3 py-1 text-xs font-mono font-medium 
-                         text-primary-500 bg-primary-100 dark:bg-primary-500/15 
-                         rounded-full uppercase tracking-wider mb-4">
-                        Proceso
-                    </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                         Del taller a tu hogar
                     </h2>
-                    <p className="text-foreground-secondary max-w-2xl mx-auto">
+                    <p className="text-foreground-secondary max-w-xl mx-auto">
                         Un viaje cuidado en cada paso, desde la primera pincelada hasta tu puerta.
                     </p>
                 </motion.div>
 
-                {/* Timeline */}
-                <div className="relative">
-                    {/* Connection Line */}
-                    <div className="hidden md:block absolute top-1/2 left-0 right-0 h-px bg-border -translate-y-1/2" />
+                {/* Timeline Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {steps.map((step, index) => (
+                        <motion.div
+                            key={step.title}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            className="relative"
+                        >
+                            {/* Card */}
+                            <div className="bg-background border border-border-subtle rounded-xl p-6
+                            hover:border-border hover:shadow-md transition-all duration-300">
+                                {/* Step Number */}
+                                <span className="inline-block text-xs font-semibold text-primary-500 
+                               bg-primary-100 dark:bg-primary-500/10 
+                               px-2 py-0.5 rounded mb-4">
+                                    Paso {index + 1}
+                                </span>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4">
-                        {steps.map((step, index) => (
-                            <motion.div
-                                key={step.number}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: '-50px' }}
-                                transition={{ duration: 0.5, delay: index * 0.15 }}
-                                className="relative"
-                            >
-                                {/* Card */}
-                                <div className="relative z-10 bg-surface border border-border-subtle rounded-xl p-6
-                              hover:border-border hover:shadow-lg transition-all duration-fast">
-                                    {/* Number */}
-                                    <span className="absolute -top-3 -left-2 font-mono text-5xl font-bold 
-                                 text-primary-100 dark:text-primary-900/30 select-none">
-                                        {step.number}
-                                    </span>
-
-                                    {/* Icon */}
-                                    <div className="relative mb-4">
-                                        <div className="inline-flex items-center justify-center w-12 h-12 
-                                  bg-primary-100 dark:bg-primary-500/15 rounded-lg">
-                                            <step.icon className="w-6 h-6 text-primary-500" />
-                                        </div>
-                                    </div>
-
-                                    {/* Content */}
-                                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                                        {step.title}
-                                    </h3>
-                                    <p className="text-sm text-foreground-secondary leading-relaxed">
-                                        {step.description}
-                                    </p>
+                                {/* Icon */}
+                                <div className="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-500/10
+                              flex items-center justify-center mb-4">
+                                    <step.icon className="w-5 h-5 text-primary-500" />
                                 </div>
 
-                                {/* Dot on line (desktop) */}
-                                <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                              w-4 h-4 bg-background border-2 border-primary-500 rounded-full z-20" />
-                            </motion.div>
-                        ))}
-                    </div>
+                                {/* Content */}
+                                <h3 className="text-lg font-semibold text-foreground mb-2">
+                                    {step.title}
+                                </h3>
+                                <p className="text-sm text-foreground-secondary leading-relaxed">
+                                    {step.description}
+                                </p>
+                            </div>
+
+                            {/* Connector Line (not on last item, hidden on mobile) */}
+                            {index < steps.length - 1 && (
+                                <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-px bg-border" />
+                            )}
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>

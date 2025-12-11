@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, X, Loader2, Package, Grid3X3, LayoutList } from 'lucide-react';
+import { Search, X, Loader2, Package, Grid3X3, List } from 'lucide-react';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Badge } from '../components/ui';
 
 /**
  * Products Page - v2 Design System
- * Precision Craft: Vercel/Apple + Teenage Engineering
+ * Clean layout with properly aligned controls
  */
 
 const Products = () => {
@@ -21,7 +20,7 @@ const Products = () => {
   const [categoriesList, setCategoriesList] = useState([]);
   const [nameToSlug, setNameToSlug] = useState({});
   const [selectedCategorySlug, setSelectedCategorySlug] = useState('');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const [viewMode, setViewMode] = useState('grid');
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const location = useLocation();
@@ -36,7 +35,6 @@ const Products = () => {
     fetchProducts();
   }, [selectedCategorySlug]);
 
-  // Initialize selectedCategorySlug from URL
   useEffect(() => {
     const { slug } = params || {};
     if (slug) {
@@ -92,7 +90,6 @@ const Products = () => {
       ]);
     } catch (error) {
       console.error('Error cargando categorías:', error);
-      // Fallback
       setCategoriesList([
         { name: 'Todas', slug: '' },
         { name: 'Joyería artesanal', slug: 'joyeria-artesanal' },
@@ -121,75 +118,57 @@ const Products = () => {
     }
   };
 
-  const clearSearch = () => {
-    setSearchTerm('');
-  };
-
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const activeCategory = categoriesList.find(c => c.slug === selectedCategorySlug);
-
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
-      <div className="container-page">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-10"
+          className="mb-8"
         >
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-            <div>
-              <Badge variant="primary" className="mb-3">
-                Catálogo
-              </Badge>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-                Nuestros <span className="text-gradient">Productos</span>
-              </h1>
-              <p className="mt-2 text-foreground-secondary">
-                Descubre piezas únicas hechas con amor y dedicación
-              </p>
-            </div>
-
-            {/* Products count */}
-            <div className="flex items-center gap-2 text-sm font-mono text-foreground-tertiary">
-              <span className="w-1.5 h-1.5 rounded-full bg-success" />
-              <span>{filteredProducts.length} productos</span>
-            </div>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Nuestros Productos
+          </h1>
+          <p className="text-foreground-secondary">
+            Descubre piezas únicas hechas con amor y dedicación
+          </p>
         </motion.div>
 
         {/* Filters Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
+          transition={{ delay: 0.1 }}
           className="mb-8 space-y-4"
         >
           {/* Search & View Toggle */}
           <div className="flex items-center gap-4">
-            {/* Search Input */}
+            {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary" />
               <input
                 type="text"
                 placeholder="Buscar productos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input pl-12 pr-10"
+                className="w-full pl-10 pr-10 py-2.5 text-sm bg-surface 
+                         border border-border-subtle rounded-lg
+                         focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20
+                         transition-all"
               />
               {searchTerm && (
                 <button
-                  onClick={clearSearch}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md
-                           text-foreground-tertiary hover:text-foreground hover:bg-surface-hover
-                           transition-colors"
-                  aria-label="Limpiar búsqueda"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 
+                           text-foreground-tertiary hover:text-foreground transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -197,28 +176,33 @@ const Products = () => {
             </div>
 
             {/* View Toggle */}
-            <div className="hidden md:flex items-center border border-border rounded-lg p-1">
+            <div className="hidden sm:flex items-center gap-1 p-1 bg-surface border border-border-subtle rounded-lg">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
-                    ? 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400'
-                    : 'text-foreground-tertiary hover:text-foreground'
+                className={`p-2 rounded transition-colors ${viewMode === 'grid'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-foreground-secondary hover:text-foreground'
                   }`}
-                aria-label="Vista en grid"
+                aria-label="Vista cuadrícula"
               >
                 <Grid3X3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-md transition-colors ${viewMode === 'list'
-                    ? 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400'
-                    : 'text-foreground-tertiary hover:text-foreground'
+                className={`p-2 rounded transition-colors ${viewMode === 'list'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-foreground-secondary hover:text-foreground'
                   }`}
-                aria-label="Vista en lista"
+                aria-label="Vista lista"
               >
-                <LayoutList className="w-4 h-4" />
+                <List className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Product Count */}
+            <span className="hidden md:block text-sm text-foreground-tertiary whitespace-nowrap">
+              {filteredProducts.length} productos
+            </span>
           </div>
 
           {/* Category Pills */}
@@ -228,22 +212,19 @@ const Products = () => {
                 (selectedCategorySlug === '' && category.name === 'Todas');
 
               return (
-                <motion.button
+                <button
                   key={category.slug || category.name}
                   onClick={() => handleCategoryChange(category.slug)}
                   className={`
-                    px-4 py-2 rounded-full text-sm font-medium
-                    transition-all duration-fast
+                    px-4 py-2 text-sm font-medium rounded-full transition-all
                     ${isActive
-                      ? 'bg-foreground text-background shadow-sm'
+                      ? 'bg-foreground text-background'
                       : 'bg-surface border border-border-subtle text-foreground-secondary hover:border-border hover:text-foreground'
                     }
                   `}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                 >
                   {category.name}
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -253,16 +234,16 @@ const Products = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
-            <p className="text-sm font-mono text-foreground-tertiary">Cargando productos...</p>
+            <p className="text-sm text-foreground-tertiary">Cargando productos...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="text-center py-24"
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-surface-hover rounded-2xl mb-4">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-hover 
+                          flex items-center justify-center">
               <Package className="w-8 h-8 text-foreground-tertiary" />
             </div>
             <h3 className="text-xl font-semibold text-foreground mb-2">
@@ -279,7 +260,8 @@ const Products = () => {
                   setSearchTerm('');
                   handleCategoryChange('');
                 }}
-                className="btn btn-secondary"
+                className="px-4 py-2 text-sm font-medium border border-border-subtle
+                         rounded-lg hover:border-border transition-colors"
               >
                 Ver todos los productos
               </button>
@@ -294,27 +276,31 @@ const Products = () => {
               grid gap-6
               ${viewMode === 'grid'
                 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'grid-cols-1 max-w-3xl mx-auto'
+                : 'grid-cols-1 max-w-3xl'
               }
             `}
           >
-            {filteredProducts.map((product, index) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(index * 0.05, 0.3) }}
-              >
-                <ProductCard
-                  product={product}
-                  onDelete={handleDelete}
-                  isAdmin={false}
-                  onEdit={(p) => navigate(`/products/${p._id}/edit`)}
-                  onViewDetails={(p) => setSelectedProduct(p)}
-                  viewMode={viewMode}
-                />
-              </motion.div>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: Math.min(index * 0.03, 0.2) }}
+                  layout
+                >
+                  <ProductCard
+                    product={product}
+                    onDelete={handleDelete}
+                    isAdmin={false}
+                    onEdit={(p) => navigate(`/products/${p._id}/edit`)}
+                    onViewDetails={(p) => setSelectedProduct(p)}
+                    viewMode={viewMode}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </motion.div>
         )}
       </div>
