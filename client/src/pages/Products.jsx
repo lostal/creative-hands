@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Loader, Package } from "lucide-react";
+import { Search, Package } from "lucide-react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
+import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import ProductModal from "../components/ProductModal";
 import { useAuth } from "../context/AuthContext";
+import { useCategories } from "../hooks/useCategories";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Products = () => {
@@ -12,18 +14,22 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoriesList, setCategoriesList] = useState([]);
-  const [nameToSlug, setNameToSlug] = useState({});
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
 
-  // categoriesList will be fetched from the API; we keep a 'Todas' pseudo-category at the start
+  // Usar hook de categorías mejorado
+  const { categoriesWithAll, nameToSlug } = useCategories();
 
+  // Debounce para búsqueda (300ms)
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchProducts();
@@ -50,7 +56,6 @@ const Products = () => {
         setSelectedCategorySlug(cat);
       }
     }
-    // only run on mount / when search changes
   }, [location.search, params?.slug, nameToSlug]);
 
   const fetchProducts = async () => {
@@ -76,43 +81,6 @@ const Products = () => {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const { data } = await axios.get("/api/categories");
-      // build name->slug map for robust mapping from legacy name queries
-      const map = {};
-      data.categories.forEach((c) => {
-        map[c.name] = c.slug;
-      });
-      setNameToSlug(map);
-      // prepend 'Todas' as a pseudo-category
-      setCategoriesList([
-        { name: "Todas", slug: "" },
-        ...data.categories.map((c) => ({ name: c.name, slug: c.slug })),
-      ]);
-    } catch (error) {
-      console.error(
-        "Error cargando categorías, usando lista por defecto:",
-        error
-      );
-      setNameToSlug({
-        "Joyería artesanal": "joyeria-artesanal",
-        "Velas y aromáticos": "velas-y-aromaticos",
-        "Textiles y ropa": "textiles-y-ropa",
-        "Cerámica y arcilla": "ceramica-y-arcilla",
-        "Arte hecho a mano": "arte-hecho-a-mano",
-      });
-      setCategoriesList([
-        { name: "Todas", slug: "" },
-        { name: "Joyería artesanal", slug: "joyeria-artesanal" },
-        { name: "Velas y aromáticos", slug: "velas-y-aromaticos" },
-        { name: "Textiles y ropa", slug: "textiles-y-ropa" },
-        { name: "Cerámica y arcilla", slug: "ceramica-y-arcilla" },
-        { name: "Arte hecho a mano", slug: "arte-hecho-a-mano" },
-      ]);
-    }
-  };
-
   const handleDelete = async (id) => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
@@ -133,11 +101,21 @@ const Products = () => {
 
   const handleCloseModal = () => setSelectedProduct(null);
 
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Usar debouncedSearch para filtrar
+  const filteredProducts = useMemo(
+    () =>
+      products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          product.description
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase())
+      ),
+    [products, debouncedSearch]
   );
+
+  // Skeletons para carga
+  const skeletonCount = 6;
 
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
@@ -176,9 +154,8 @@ const Products = () => {
           </div>
 
           {/* Categories */}
-                    {/* Categories */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-2">
-            {categoriesList.map((category) => (
+            {categoriesWithAll.map((category) => (
               <motion.button
                 key={category.slug || category.name}
                 whileHover={{ scale: 1.05 }}
@@ -193,12 +170,11 @@ const Products = () => {
                     navigate("/products");
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] ${
-                  selectedCategorySlug === category.slug ||
-                  (selectedCategorySlug === "" && category.name === "Todas")
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] ${selectedCategorySlug === category.slug ||
+                    (selectedCategorySlug === "" && category.name === "Todas")
                     ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                     : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                }`}
+                  }`}
               >
                 {category.name}
               </motion.button>
@@ -208,8 +184,11 @@ const Products = () => {
 
         {/* Products Grid */}
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader className="w-12 h-12 text-primary-500 animate-spin" />
+          // Skeleton Loaders
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            {Array.from({ length: skeletonCount }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
           </div>
         ) : filteredProducts.length === 0 ? (
           <motion.div
@@ -222,7 +201,7 @@ const Products = () => {
               No se encontraron productos
             </h3>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              {searchTerm
+              {debouncedSearch
                 ? "Intenta con otro término de búsqueda"
                 : "Aún no hay productos en esta categoría"}
             </p>
@@ -269,3 +248,4 @@ const Products = () => {
 };
 
 export default Products;
+

@@ -1,8 +1,17 @@
 /**
  * Custom hook para gestión de categorías
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import * as categoryService from "../services/categoryService";
+
+// Fallback de categorías por defecto (usado si la API falla)
+const DEFAULT_CATEGORIES = [
+    { name: "Joyería artesanal", slug: "joyeria-artesanal" },
+    { name: "Velas y aromáticos", slug: "velas-y-aromaticos" },
+    { name: "Textiles y ropa", slug: "textiles-y-ropa" },
+    { name: "Cerámica y arcilla", slug: "ceramica-y-arcilla" },
+    { name: "Arte hecho a mano", slug: "arte-hecho-a-mano" },
+];
 
 /**
  * Hook para obtener y gestionar categorías
@@ -23,6 +32,8 @@ export const useCategories = ({ autoFetch = true } = {}) => {
         } catch (err) {
             setError(err.response?.data?.message || "Error al cargar categorías");
             console.error("Error fetching categories:", err);
+            // Usar categorías por defecto como fallback
+            setCategories(DEFAULT_CATEGORIES);
         } finally {
             setLoading(false);
         }
@@ -34,8 +45,28 @@ export const useCategories = ({ autoFetch = true } = {}) => {
         }
     }, [fetchCategories, autoFetch]);
 
+    // Mapa nombre -> slug para convertir query params legacy
+    const nameToSlug = useMemo(() => {
+        const map = {};
+        categories.forEach((c) => {
+            map[c.name] = c.slug;
+        });
+        return map;
+    }, [categories]);
+
+    // Lista con "Todas" prepended para filtros UI
+    const categoriesWithAll = useMemo(
+        () => [
+            { name: "Todas", slug: "" },
+            ...categories.map((c) => ({ name: c.name, slug: c.slug })),
+        ],
+        [categories]
+    );
+
     return {
         categories,
+        categoriesWithAll,
+        nameToSlug,
         loading,
         error,
         refetch: fetchCategories,

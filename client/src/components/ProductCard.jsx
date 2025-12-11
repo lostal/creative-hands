@@ -1,5 +1,18 @@
 import { motion } from "framer-motion";
 import { Edit, Trash2, Package, Star } from "lucide-react";
+import { formatCurrency } from "../utils/formatters";
+
+/**
+ * Calcula el rating promedio de un producto
+ * @param {Object} product - Producto con reviews o avgRating
+ * @returns {number|null} Rating promedio o null si no hay reviews
+ */
+const getAverageRating = (product) => {
+  if (product.avgRating) return product.avgRating;
+  if (!product.reviews?.length) return null;
+  const sum = product.reviews.reduce((s, r) => s + (r.rating || 0), 0);
+  return Math.round((sum / product.reviews.length) * 10) / 10;
+};
 
 const ProductCard = ({
   product,
@@ -9,12 +22,8 @@ const ProductCard = ({
   onViewDetails,
   hideDetails,
 }) => {
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
-  };
+  const avgRating = getAverageRating(product);
+  const reviewsCount = product.reviewsCount ?? product.reviews?.length ?? 0;
 
   return (
     <motion.div
@@ -33,6 +42,7 @@ const ProductCard = ({
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             decoding="async"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -79,26 +89,13 @@ const ProductCard = ({
             {product.name}
           </h3>
 
-          {/* Media compacta: icono hueco (Star) + número (solo si hay valoraciones) */}
-          {(product.reviewsCount ??
-            (product.reviews ? product.reviews.length : 0)) > 0 ? (
+          {/* Media compacta: icono + rating (solo si hay valoraciones) */}
+          {reviewsCount > 0 && avgRating !== null && (
             <div className="flex items-center flex-shrink-0 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
               <Star className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-yellow-400 mr-1" />
-              <span className="font-medium">
-                {product.avgRating ??
-                  (product.reviews && product.reviews.length
-                    ? Math.round(
-                        (product.reviews.reduce(
-                          (s, r) => s + (r.rating || 0),
-                          0
-                        ) /
-                          product.reviews.length) *
-                          10
-                      ) / 10
-                    : "")}
-              </span>
+              <span className="font-medium">{avgRating}</span>
             </div>
-          ) : null}
+          )}
         </div>
 
         <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
@@ -108,7 +105,7 @@ const ProductCard = ({
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xl sm:text-2xl font-bold text-primary-500">
-              {formatPrice(product.price)}
+              {formatCurrency(product.price)}
             </p>
             {product.stock > 0 ? (
               <p className="text-xs text-green-600 dark:text-green-400 mt-1">

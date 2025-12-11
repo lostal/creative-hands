@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
+import { formatCurrency } from "../utils/formatters";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } =
@@ -79,6 +80,7 @@ const Cart = () => {
                     src={item.product.images?.[0] || "/placeholder.png"}
                     alt={item.product.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
 
@@ -90,10 +92,7 @@ const Cart = () => {
                   <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                     Precio unitario:{" "}
                     <span className="font-medium">
-                      {new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(item.product.price)}
+                      {formatCurrency(item.product.price)}
                     </span>
                   </p>
 
@@ -106,7 +105,8 @@ const Cart = () => {
                           Math.max(1, item.quantity - 1)
                         )
                       }
-                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white"
+                      disabled={item.quantity <= 1}
+                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       -
                     </button>
@@ -138,10 +138,7 @@ const Cart = () => {
                       Subtotal
                     </p>
                     <p className="text-xl font-bold text-primary-500">
-                      {new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(item.product.price * item.quantity)}
+                      {formatCurrency(item.product.price * item.quantity)}
                     </p>
                   </div>
                   <button
@@ -166,12 +163,7 @@ const Cart = () => {
               <div className="space-y-3 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between text-gray-700 dark:text-gray-300">
                   <span>Subtotal:</span>
-                  <span>
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(totalPrice)}
-                  </span>
+                  <span>{formatCurrency(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700 dark:text-gray-300">
                   <span>Envío:</span>
@@ -189,10 +181,7 @@ const Cart = () => {
                 <div className="flex justify-between items-baseline">
                   <span className="text-gray-700 dark:text-gray-300">Total:</span>
                   <span className="text-2xl font-bold text-primary-500">
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(totalPrice)}
+                    {formatCurrency(totalPrice)}
                   </span>
                 </div>
               </div>
