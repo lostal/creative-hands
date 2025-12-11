@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import * as orderService from "../services/orderService";
 import { Order } from "../types";
+import { getApiErrorMessage } from "../utils/errors";
 
 interface UseMyOrdersReturn {
   orders: Order[];
@@ -26,8 +27,8 @@ export const useMyOrders = (): UseMyOrdersReturn => {
     try {
       const data = await orderService.getMyOrders();
       setOrders(data.orders || []);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error al cargar pedidos");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
       console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
@@ -69,8 +70,8 @@ export const useOrder = (orderId: string): UseOrderReturn => {
     try {
       const data = await orderService.getOrderById(orderId);
       setOrder(data.order);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error al cargar pedido");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
       console.error("Error fetching order:", err);
     } finally {
       setLoading(false);

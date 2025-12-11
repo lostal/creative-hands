@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import * as productService from "../services/productService";
 import { Product } from "../types";
+import { getApiErrorMessage } from "../utils/errors";
 
 interface UseProductsOptions {
   categorySlug?: string | null;
@@ -38,8 +39,8 @@ export const useProducts = ({ categorySlug = null, autoFetch = true }: UseProduc
         ? await productService.getProductsByCategory(categorySlug)
         : await productService.getProducts();
       setProducts(data.products || []);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error al cargar productos");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
       console.error("Error fetching products:", err);
     } finally {
       setLoading(false);
@@ -85,8 +86,8 @@ export const useProduct = (productId: string): UseProductReturn => {
     try {
       const data = await productService.getProductById(productId);
       setProduct(data.product);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error al cargar producto");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
       console.error("Error fetching product:", err);
     } finally {
       setLoading(false);

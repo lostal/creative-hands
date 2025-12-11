@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import logger from "../utils/logger";
+import { getErrorMessage } from "../utils/errors";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -9,13 +11,25 @@ export interface AuthRequest extends Request {
   };
 }
 
-// Middleware para proteger rutas (verifica JWT en header Authorization o cookies)
+/**
+ * Payload esperado del JWT decodificado
+ */
+interface JwtPayload {
+  id: string;
+  iat?: number;
+  exp?: number;
+}
+
+/**
+ * Middleware para proteger rutas
+ * Verifica JWT en header Authorization o cookies
+ */
 export const protect = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {
-  let token;
+  let token: string | undefined;
 
   if (
     req.headers.authorization &&
@@ -32,11 +46,16 @@ export const protect = async (
       .json({ success: false, message: "No autorizado, token faltante" });
   }
 
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    logger.error("JWT_SECRET no está configurado");
+    return res
+      .status(500)
+      .json({ success: false, message: "Error de configuración del servidor" });
+  }
+
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-    ) as jwt.JwtPayload;
+    const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -45,10 +64,10 @@ export const protect = async (
         .json({ success: false, message: "Usuario no encontrado" });
     }
 
-    req.user = { id: (user._id as any).toString(), role: user.role };
+    req.user = { id: user._id.toString(), role: user.role };
     next();
-  } catch (error: any) {
-    console.error("Middleware protect error:", error.message);
+  } catch (error: unknown) {
+    logger.error("Middleware protect error:", getErrorMessage(error));
     return res.status(401).json({ success: false, message: "Token inválido" });
   }
 };

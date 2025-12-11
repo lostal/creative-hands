@@ -1,7 +1,11 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export interface IUser extends Document {
+/**
+ * Interfaz base de usuario (sin métodos de Document)
+ * Útil para crear usuarios o tipar datos de entrada
+ */
+export interface IUserBase {
   name: string;
   email: string;
   password?: string;
@@ -9,6 +13,14 @@ export interface IUser extends Document {
   avatar?: string;
   isOnline: boolean;
   lastSeen: Date;
+}
+
+/**
+ * Interfaz del documento de Mongoose
+ * Incluye _id tipado correctamente y métodos de instancia
+ */
+export interface IUser extends IUserBase, Document {
+  _id: Types.ObjectId;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 

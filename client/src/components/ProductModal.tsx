@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight, Star, ShoppingCart } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { getErrorMessage } from "../utils/errors";
 import Reviews from "./Reviews";
 
 import { Product } from "../types";
@@ -96,8 +97,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
       try {
         const { data } = await axios.get<{ product: Product }>(`/api/products/${product._id}`);
         if (mounted && data?.product) setDetailedProduct(data.product);
-      } catch (err: any) {
-        console.warn("No se pudo cargar detalles del producto:", err.message);
+      } catch (err: unknown) {
+        console.warn("No se pudo cargar detalles del producto:", getErrorMessage(err));
       }
     };
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
+import { getApiErrorMessage } from "../utils/errors";
 import { ArrowLeft, Loader } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -79,12 +80,9 @@ const Checkout = () => {
           state: { order: data.order },
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al crear pedido:", err);
-      setError(
-        err.response?.data?.message ||
-        "Error al procesar el pedido. Intenta de nuevo.",
-      );
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

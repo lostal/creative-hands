@@ -49,7 +49,7 @@ export const register = async (req: Request, res: Response) => {
       role: "user",
     });
 
-    const token = generateToken((user._id as any).toString());
+    const token = generateToken(user._id.toString());
 
     res.status(201).json({
       success: true,
@@ -101,7 +101,7 @@ export const login = async (req: Request, res: Response) => {
     user.lastSeen = new Date();
     await user.save();
 
-    const token = generateToken((user._id as any).toString());
+    const token = generateToken(user._id.toString());
 
     res.json({
       success: true,

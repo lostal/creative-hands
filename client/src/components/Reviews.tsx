@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { getApiErrorMessage } from "../utils/errors";
 import { Trash2, Edit3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -120,8 +121,8 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
         setEditingId(null);
         setFormVisible(false);
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error enviando valoración");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -138,8 +139,8 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
         setProduct(res.data.product);
         if (onProductUpdate) onProductUpdate(res.data.product);
       }
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Error eliminando valoración");
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err));
     }
   };
 
@@ -160,8 +161,8 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
         setEditingId(null);
         setForm({ title: "", comment: "", rating: 5 });
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error guardando valoración");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     } finally {
       setSubmitting(false);
     }

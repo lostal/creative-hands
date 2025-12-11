@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
+import { getApiErrorMessage } from "../utils/errors";
 
 const Perfil = () => {
   const { user, refreshUser } = useAuth();
@@ -18,7 +19,7 @@ const Perfil = () => {
     setError(null);
 
     try {
-      const payload: any = {};
+      const payload: { name?: string; password?: string; currentPassword?: string } = {};
       if (name && name !== user?.name) payload.name = name;
       if (newPassword) {
         payload.password = newPassword;
@@ -41,8 +42,8 @@ const Perfil = () => {
       } else {
         setError(data?.message || "No se pudo actualizar el perfil");
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error actualizando perfil");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

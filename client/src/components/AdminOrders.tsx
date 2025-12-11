@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../utils/axios";
+import { getApiErrorMessage } from "../utils/errors";
 import {
   Loader,
   CheckCircle2,
@@ -32,9 +33,9 @@ const AdminOrders = () => {
       if (data.success) {
         setOrders(data.orders);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al cargar pedidos:", err);
-      setError(err.response?.data?.message || "Error al cargar los pedidos");
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -51,9 +52,9 @@ const AdminOrders = () => {
           ),
         );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al marcar como entregado:", err);
-      setError(err.response?.data?.message || "Error al procesar la entrega");
+      setError(getApiErrorMessage(err));
     } finally {
       setDelivering(null);
     }
