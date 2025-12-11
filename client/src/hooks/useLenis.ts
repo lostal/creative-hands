@@ -3,7 +3,7 @@ import Lenis from "lenis";
 
 declare global {
   interface Window {
-    lenis: Lenis;
+    lenis?: Lenis;
   }
 }
 
@@ -57,8 +57,7 @@ export function useLenis() {
     return () => {
       lenis.destroy();
       lenisRef.current = null;
-      // @ts-ignore
-      delete window.lenis;
+      window.lenis = undefined;
     };
   }, []);
 

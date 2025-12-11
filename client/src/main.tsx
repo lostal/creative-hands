@@ -14,11 +14,12 @@ registerSW({
     }
   },
   onOfflineReady() {
-    console.log("App lista para trabajar sin conexión");
+    if (import.meta.env.DEV) {
+      console.log("App lista para trabajar sin conexión");
+    }
   },
   onRegistered(registration) {
-    // @ts-ignore
-    updateSW = registration?.update;
+    updateSW = registration?.update?.bind(registration);
   },
 });
 

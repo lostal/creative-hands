@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv, MotionButton } from "../../lib/motion";
 import { X, Save, Loader, Upload, GripVertical, Star } from "lucide-react";
 import api from "../../utils/axios";
 import { Category, Product } from "../../types";
@@ -80,10 +81,6 @@ const ProductFormModal = ({
   const draggedIdRef = useRef<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Aliases for framer-motion components
-  const MotionDiv = motion.div as any;
-  const MotionButton = motion.button as any;
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -128,7 +125,7 @@ const ProductFormModal = ({
         }
 
         const response = await api.put(
-          `/api/products/${editingProduct._id}`,
+          `/products/${editingProduct._id}`,
           fd,
           { headers: { "Content-Type": "multipart/form-data" } },
         );
@@ -138,7 +135,7 @@ const ProductFormModal = ({
           if (it.type === "new" && it.file) fd.append("images", it.file);
         }
 
-        const response = await api.post("/api/products", fd, {
+        const response = await api.post("/products", fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         onProductSaved(response.data.product, "create");
@@ -252,7 +249,7 @@ const ProductFormModal = ({
 
       try {
         const { data } = await api.delete(
-          `/api/products/${editingProduct._id}/images`,
+          `/products/${editingProduct._id}/images`,
           { data: { image: item.url } },
         );
         if (data?.success) {

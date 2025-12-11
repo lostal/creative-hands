@@ -9,7 +9,7 @@ import {
   Calendar,
   MapPin,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "../lib/motion";
 import { Order } from "../types";
 
 const MyOrders = () => {
@@ -19,9 +19,6 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-
-  // Cast motion.div to any to avoid strict type checking
-  const MotionDiv = motion.div as any;
 
   // Si es admin, redirigir al admin panel
   useEffect(() => {

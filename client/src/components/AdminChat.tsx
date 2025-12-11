@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { Send, Loader, User as UserIcon } from "lucide-react";
 import { useSocket } from "../context/SocketContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { User } from "../types";
+import { MotionDiv, MotionButton } from "../lib/motion";
 
 interface Message {
   _id: string;
@@ -139,10 +139,6 @@ const AdminChat = () => {
       </div>
     );
   }
-
-  // Cast motion components to any to avoid strict type checking
-  const MotionButton = motion.button as any;
-  const MotionDiv = motion.div as any;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-300px)]">

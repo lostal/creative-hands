@@ -4,10 +4,15 @@
  */
 import { Response } from "express";
 import { Types } from "mongoose";
-import Product from "../models/Product";
+import Product, { IReview } from "../models/Product";
 import { enrichProductWithMetrics } from "../utils/reviewUtils";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
+
+/** Review con _id tipado para subdocumentos mongoose */
+interface ReviewSubdoc extends IReview {
+  _id: Types.ObjectId;
+}
 
 /**
  * Helper para poblar producto con reviews
@@ -52,7 +57,7 @@ export const addReview = async (req: AuthRequest, res: Response) => {
 
     // Evitar duplicados del mismo usuario
     const existing = (product.reviews || []).find(
-      (r: any) => r.user && r.user.toString() === req.user?.id.toString(),
+      (r) => r.user && r.user.toString() === req.user?.id.toString(),
     );
     if (existing) {
       return res.status(400).json({
@@ -63,18 +68,18 @@ export const addReview = async (req: AuthRequest, res: Response) => {
     }
 
     // Crear review
-    const review = {
-      user: req.user?.id,
+    const review: Omit<IReview, 'createdAt'> = {
+      user: new Types.ObjectId(req.user?.id),
       title: String(title).trim(),
       comment: String(comment).trim(),
       rating: numericRating,
     };
 
     product.reviews = product.reviews || [];
-    product.reviews.push(review as any);
+    product.reviews.push(review as IReview);
     await product.save();
 
-    const updated = await populateProduct((product._id as any).toString());
+    const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
@@ -82,7 +87,7 @@ export const addReview = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json({
       success: true,
-      product: enrichProductWithMetrics(updated as any),
+      product: enrichProductWithMetrics(updated),
     });
   } catch (error) {
     logger.error("Error al añadir review:", error);
@@ -107,10 +112,10 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
         .json({ success: false, message: "Producto no encontrado" });
     }
 
-    // Cast reviews to any to access mongoose methods if needed, or just find manually
-    const reviews = product.reviews as any;
+    // Buscar review por ID
+    const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
     const review = reviews.id(req.params.reviewId) ||
-      reviews.find((r: any) => r._id && r._id.toString() === req.params.reviewId);
+      reviews.find((r) => r._id && r._id.toString() === req.params.reviewId);
 
     if (!review) {
       return res
@@ -139,7 +144,7 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
 
     await product.save();
 
-    const updated = await populateProduct((product._id as any).toString());
+    const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
@@ -147,7 +152,7 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
 
     res.json({
       success: true,
-      product: enrichProductWithMetrics(updated as any),
+      product: enrichProductWithMetrics(updated),
     });
   } catch (error) {
     logger.error("Error al editar review:", error);
@@ -168,9 +173,9 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
         .json({ success: false, message: "Producto no encontrado" });
     }
 
-    const reviews = product.reviews as any;
+    const reviews = product.reviews as Types.DocumentArray<ReviewSubdoc>;
     const review = reviews.id(req.params.reviewId) ||
-      reviews.find((r: any) => r._id && r._id.toString() === req.params.reviewId);
+      reviews.find((r) => r._id && r._id.toString() === req.params.reviewId);
 
     if (!review) {
       return res
@@ -191,7 +196,7 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
 
     await product.save();
 
-    const updated = await populateProduct((product._id as any).toString());
+    const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Producto no encontrado tras actualizar" });
@@ -199,7 +204,7 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
 
     res.json({
       success: true,
-      product: enrichProductWithMetrics(updated as any),
+      product: enrichProductWithMetrics(updated),
     });
   } catch (error) {
     logger.error("Error al eliminar review:", error);

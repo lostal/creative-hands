@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { getApiErrorMessage } from "../utils/errors";
 import { ArrowLeft, Loader } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "../lib/motion";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -13,9 +13,6 @@ const Checkout = () => {
   const { user, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Cast motion components
-  const MotionDiv = motion.div as any;
 
   // Si es admin, redirigir al admin panel
   useEffect(() => {

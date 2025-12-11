@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Sparkles,
@@ -7,14 +5,16 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
+import {
+  MotionDiv,
+  MotionH1,
+  MotionP,
+  MotionButton,
+  MotionLink,
+} from "../lib/motion";
 
 const Home = () => {
-  const MotionLink = motion(Link) as any;
-  const MotionDiv = motion.div as any;
-  const MotionH1 = motion.h1 as any;
-  const MotionP = motion.p as any;
-  const MotionButton = motion.button as any;
-
   const ctaRef = useRef(null);
   const btnRef = useRef(null);
   return (

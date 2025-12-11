@@ -8,6 +8,7 @@ import {
   validate,
   registerSchema,
   loginSchema,
+  updateProfileSchema,
 } from "../validators/schemas";
 
 // Controlador
@@ -32,6 +33,6 @@ router.get("/me", protect, authController.getMe);
 router.post("/logout", protect, authController.logout);
 
 // PATCH /api/auth/me - Actualizar perfil
-router.patch("/me", protect, authController.updateProfile);
+router.patch("/me", protect, validate(updateProfileSchema), authController.updateProfile);
 
 export default router;

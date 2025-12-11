@@ -33,6 +33,20 @@ export const loginSchema = Joi.object({
   }),
 });
 
+// Esquema para actualizar perfil
+export const updateProfileSchema = Joi.object({
+  name: Joi.string().min(2).max(50).optional().messages({
+    "string.min": "El nombre debe tener al menos 2 caracteres",
+    "string.max": "El nombre no puede exceder 50 caracteres",
+  }),
+  currentPassword: Joi.string().optional(),
+  password: Joi.string().min(6).optional().messages({
+    "string.min": "La nueva contraseña debe tener al menos 6 caracteres",
+  }),
+}).with("password", "currentPassword").messages({
+  "object.with": "Se requiere la contraseña actual para cambiar la contraseña",
+});
+
 // Esquema para crear/actualizar producto
 export const productSchema = Joi.object({
   name: Joi.string().required().min(3).max(100).messages({

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv } from "../../lib/motion";
 import { X } from "lucide-react";
 import api from "../../utils/axios";
 import { Category } from "../../types";
@@ -30,12 +31,10 @@ const CategoryModal = ({
     description: "",
   });
 
-  const MotionDiv = motion.div as any;
-
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/api/categories", newCategory);
+      await api.post("/categories", newCategory);
       onCategoriesChange();
       setNewCategory({ name: "", slug: "", description: "" });
     } catch (error: unknown) {
@@ -52,7 +51,7 @@ const CategoryModal = ({
     )
       return;
     try {
-      await api.delete(`/api/categories/${id}`);
+      await api.delete(`/categories/${id}`);
       onCategoriesChange();
     } catch (error: unknown) {
       console.error("Error al eliminar categoría:", error);

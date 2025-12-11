@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
 import React from "react";
+import { MotionButton } from "../../lib/motion";
+import type { HTMLMotionProps } from "../../lib/motion";
 
-type ButtonProps = React.ComponentProps<typeof motion.button> & {
+type ButtonProps = HTMLMotionProps<"button"> & {
   variant?: "primary" | "secondary" | "danger" | "ghost";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
@@ -42,9 +43,6 @@ const Button = ({
     md: "px-4 sm:px-6 py-3 text-base min-h-[48px] space-x-2",
     lg: "px-6 sm:px-8 py-4 text-lg min-h-[56px] space-x-3",
   };
-
-  // Cast motion.button to any to avoid strict type checking on props like className
-  const MotionButton = motion.button as any;
 
   return (
     <MotionButton

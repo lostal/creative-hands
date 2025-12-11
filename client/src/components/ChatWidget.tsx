@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Loader } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import api from "../utils/axios";
+import { MotionButton, MotionDiv, MotionSpan } from "../lib/motion";
 
 const ChatWidget = () => {
   const { user, isAdmin } = useAuth();
@@ -31,11 +32,6 @@ const ChatWidget = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Cast motion components to any
-  const MotionButton = motion.button as any;
-  const MotionDiv = motion.div as any;
-  const MotionSpan = motion.span as any;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

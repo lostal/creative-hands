@@ -3,12 +3,14 @@
  * Contiene la lógica de negocio para operaciones CRUD de productos
  */
 import { Request, Response } from "express";
-import Product from "../models/Product";
+import { FilterQuery } from "mongoose";
+import Product, { IProduct } from "../models/Product";
 import Category from "../models/Category";
 import { cloudinary } from "../config/cloudinary";
 import { enrichProductWithMetrics } from "../utils/reviewUtils";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
+import { getErrorMessage } from "../utils/errors";
 
 // Fix: Allow files to be object or array to match Express.Request type compatibility
 interface MulterRequest extends AuthRequest {
@@ -22,10 +24,10 @@ interface MulterRequest extends AuthRequest {
 export const getProducts = async (req: Request, res: Response) => {
   try {
     const { search, sort = "-createdAt" } = req.query;
-    const query: any = {};
+    const query: FilterQuery<IProduct> = {};
 
     if (search) {
-      query.$text = { $search: search };
+      query.$text = { $search: search as string };
     }
 
     const products = await Product.find(query)
@@ -140,18 +142,18 @@ export const createProduct = async (req: MulterRequest, res: Response) => {
     let product = await Product.create(productData);
     product = (await Product.findById(product._id)
       .populate("createdBy", "name")
-      .populate("categoryId", "name slug")) as any;
+      .populate("categoryId", "name slug")) as typeof product;
 
     res.status(201).json({
       success: true,
       product,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al crear producto:", error);
     res.status(500).json({
       success: false,
       message: "Error al crear producto",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };
@@ -195,8 +197,8 @@ export const updateProduct = async (req: MulterRequest, res: Response) => {
           const publicId = matches[0].substring(1);
           await cloudinary.uploader.destroy(publicId);
         }
-      } catch (err: any) {
-        console.warn("Warning al borrar imagen de Cloudinary:", err.message);
+      } catch (err: unknown) {
+        logger.warn("Warning al borrar imagen de Cloudinary:", getErrorMessage(err));
       }
     }
 
@@ -254,7 +256,7 @@ export const updateProduct = async (req: MulterRequest, res: Response) => {
 
     product = (await Product.findById(product!._id)
       .populate("createdBy", "name")
-      .populate("categoryId", "name slug")) as any;
+      .populate("categoryId", "name slug")) as typeof product;
 
     res.json({
       success: true,
@@ -293,8 +295,8 @@ export const deleteProduct = async (req: Request, res: Response) => {
             const publicId = matches[0].substring(1);
             await cloudinary.uploader.destroy(publicId);
           }
-        } catch (err: any) {
-          console.warn("Warning al borrar imagen en delete:", err.message);
+        } catch (err: unknown) {
+          logger.warn("Warning al borrar imagen en delete:", getErrorMessage(err));
         }
       }
     }
@@ -347,8 +349,8 @@ export const deleteProductImage = async (req: Request, res: Response) => {
         const publicId = matches[0].substring(1);
         await cloudinary.uploader.destroy(publicId);
       }
-    } catch (err: any) {
-      console.warn("Warning al borrar imagen (del endpoint):", err.message);
+    } catch (err: unknown) {
+      logger.warn("Warning al borrar imagen (del endpoint):", getErrorMessage(err));
     }
 
     product.images = product.images.filter((u) => u !== image);

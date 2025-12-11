@@ -1,16 +1,28 @@
 /**
  * Utilidades para cálculo de métricas de reviews en productos
  */
+import { IProduct, IReview } from "../models/Product";
+import { Document } from "mongoose";
 
-interface Review {
-  rating?: number;
-  [key: string]: any;
+/**
+ * Producto que puede ser un documento de Mongoose o un objeto plano
+ */
+type ProductDocument = IProduct | (Document & IProduct);
+
+interface ProductPlain {
+  reviews?: IReview[];
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  images: string[];
 }
 
-interface ProductWithReviews {
-  reviews?: Review[];
-  toObject?: () => any;
-  [key: string]: any;
+type ProductInput = ProductDocument | ProductPlain;
+
+interface EnrichedProduct extends ProductPlain {
+  reviewsCount: number;
+  avgRating: number;
 }
 
 /**
@@ -19,7 +31,7 @@ interface ProductWithReviews {
  * @returns {{ reviewsCount: number, avgRating: number }}
  */
 export const calculateReviewMetrics = (
-  reviews: Review[] = [],
+  reviews: IReview[] = [],
 ): { reviewsCount: number; avgRating: number } => {
   const count = reviews.length;
   const avg = count
@@ -33,11 +45,12 @@ export const calculateReviewMetrics = (
 /**
  * Enriquece un producto con métricas de reviews
  * @param product - Producto de Mongoose (puede ser documento o objeto plano)
- * @returns {Object} - Producto con reviewsCount y avgRating añadidos
+ * @returns Producto con reviewsCount y avgRating añadidos
  */
-export const enrichProductWithMetrics = (product: ProductWithReviews): any => {
-  const obj =
-    typeof product.toObject === "function" ? product.toObject() : product;
+export const enrichProductWithMetrics = (product: ProductInput): EnrichedProduct => {
+  const obj = "toObject" in product && typeof product.toObject === "function"
+    ? product.toObject()
+    : product;
   const metrics = calculateReviewMetrics(obj.reviews);
   return { ...obj, ...metrics };
 };

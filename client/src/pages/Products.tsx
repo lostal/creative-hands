@@ -1,15 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Search, Package } from "lucide-react";
-import axios from "axios";
+import api from "../utils/axios";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import ProductModal from "../components/ProductModal";
 import { useCategories } from "../hooks/useCategories";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Product } from "../types";
+import { MotionDiv, MotionButton } from "../lib/motion";
 
 const Products = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -62,12 +64,12 @@ const Products = () => {
       let data;
 
       if (selectedCategorySlug) {
-        const res = await axios.get(
-          `/api/products/category/${selectedCategorySlug}`,
+        const res = await api.get(
+          `/products/category/${selectedCategorySlug}`,
         );
         data = res.data;
       } else {
-        const res = await axios.get("/api/products");
+        const res = await api.get("/products");
         data = res.data;
       }
 
@@ -83,7 +85,7 @@ const Products = () => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
     try {
-      await axios.delete(`/api/products/${id}`);
+      await api.delete(`/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -91,9 +93,9 @@ const Products = () => {
     }
   };
 
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleViewDetails = (product: any) => {
+  const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
   };
 
@@ -114,9 +116,6 @@ const Products = () => {
 
   // Skeletons para carga
   const skeletonCount = 6;
-
-  const MotionDiv = motion.div as any;
-  const MotionButton = motion.button as any;
 
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">

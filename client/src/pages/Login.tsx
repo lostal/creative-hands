@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { MotionDiv, MotionButton } from "../lib/motion";
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -38,9 +38,6 @@ const Login = () => {
 
     setLoading(false);
   };
-
-  const MotionDiv = motion.div as any;
-  const MotionButton = motion.button as any;
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 sm:py-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">

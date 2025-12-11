@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
 import { Trash2, Edit3 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv, MotionButton } from "../lib/motion";
 
 import { Product } from "../types";
 
@@ -59,9 +60,6 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
   const [error, setError] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Cast motion.div to any to avoid strict type checking
-  const MotionDiv = motion.div as any;
-
   useEffect(() => setProduct(initialProduct), [initialProduct]);
 
 
@@ -106,12 +104,12 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
       setSubmitting(true);
       let res;
       if (editingId) {
-        res = await axios.put(
-          `/api/products/${productId}/reviews/${editingId}`,
+        res = await api.put(
+          `/products/${productId}/reviews/${editingId}`,
           form,
         );
       } else {
-        res = await axios.post(`/api/products/${productId}/reviews`, form);
+        res = await api.post(`/products/${productId}/reviews`, form);
       }
 
       if (res.data?.product) {
@@ -132,8 +130,8 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
     if (!window.confirm("¿Eliminar tu valoración?")) return;
     try {
       const id = rev._id || rev.id;
-      const res = await axios.delete(
-        `/api/products/${productId}/reviews/${id}`,
+      const res = await api.delete(
+        `/products/${productId}/reviews/${id}`,
       );
       if (res.data?.product) {
         setProduct(res.data.product);
@@ -151,8 +149,8 @@ const Reviews = ({ productId, initialProduct, onProductUpdate }: ReviewsProps) =
     if (!isAuthenticated) return setError("Debes iniciar sesión para editar");
     try {
       setSubmitting(true);
-      const res = await axios.put(
-        `/api/products/${productId}/reviews/${editingId}`,
+      const res = await api.put(
+        `/products/${productId}/reviews/${editingId}`,
         form,
       );
       if (res.data?.product) {

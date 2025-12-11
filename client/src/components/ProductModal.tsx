@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Star, ShoppingCart } from "lucide-react";
-import axios from "axios";
+import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { getErrorMessage } from "../utils/errors";
 import Reviews from "./Reviews";
+import { MotionDiv, MotionButton, MotionImg } from "../lib/motion";
 
 import { Product } from "../types";
 
@@ -95,7 +95,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
     let mounted = true;
     const fetchDetails = async () => {
       try {
-        const { data } = await axios.get<{ product: Product }>(`/api/products/${product._id}`);
+        const { data } = await api.get<{ product: Product }>(`/products/${product._id}`);
         if (mounted && data?.product) setDetailedProduct(data.product);
       } catch (err: unknown) {
         console.warn("No se pudo cargar detalles del producto:", getErrorMessage(err));
@@ -146,10 +146,6 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
     touchStartX.current = null;
     touchEndX.current = null;
   };
-
-  // Cast motion components to any to avoid strict type issues with className/src
-  const MotionDiv = motion.div as any;
-  const MotionImg = motion.img as any;
 
   return (
     <MotionDiv

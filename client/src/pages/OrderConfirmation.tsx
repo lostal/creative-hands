@@ -8,7 +8,7 @@ import {
   DollarSign,
   ArrowRight,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "../lib/motion";
 import { Order } from "../types";
 
 const OrderConfirmation = () => {
@@ -16,9 +16,6 @@ const OrderConfirmation = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
-
-  // Cast motion.div to any to avoid strict type checking
-  const MotionDiv = motion.div as any;
 
   // Si es admin, redirigir al admin panel
   useEffect(() => {

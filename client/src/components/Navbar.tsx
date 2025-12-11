@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionNav, MotionButton, MotionDiv } from "../lib/motion";
 import {
   Sun,
   Moon,
@@ -25,10 +26,6 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  const MotionNav = motion.nav as any;
-  const MotionButton = motion.button as any;
-  const MotionDiv = motion.div as any;
 
   useEffect(() => {
     let ticking = false;

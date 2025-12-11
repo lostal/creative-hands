@@ -3,6 +3,7 @@
 <div align="center">
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 ![React](https://img.shields.io/badge/React_18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -171,20 +172,32 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 | Método | Endpoint       | Descripción         | Acceso  |
 | ------ | -------------- | ------------------- | ------- |
 | GET    | `/`            | Listar productos    | Público |
-| GET    | `/:id`         | Obtener producto    | Público |
-| POST   | `/`            | Crear producto      | Admin   |
-| PUT    | `/:id`         | Actualizar producto | Admin   |
-| DELETE | `/:id`         | Eliminar producto   | Admin   |
-| POST   | `/:id/reviews` | Añadir reseña       | Privado |
+| GET    | `/:id`                 | Obtener producto    | Público |
+| POST   | `/`                    | Crear producto      | Admin   |
+| PUT    | `/:id`                 | Actualizar producto | Admin   |
+| DELETE | `/:id`                 | Eliminar producto   | Admin   |
+| POST   | `/:id/reviews`         | Añadir reseña       | Privado |
+| PUT    | `/:id/reviews/:rid`    | Editar reseña       | Privado |
+| DELETE | `/:id/reviews/:rid`    | Eliminar reseña     | Privado |
 
 ### Pedidos (`/api/orders`)
 
-| Método | Endpoint      | Descripción       | Acceso  |
-| ------ | ------------- | ----------------- | ------- |
-| POST   | `/`           | Crear pedido      | Usuario |
-| GET    | `/my-orders`  | Mis pedidos       | Usuario |
-| GET    | `/`           | Todos los pedidos | Admin   |
-| PATCH  | `/:id/status` | Cambiar estado    | Admin   |
+| Método | Endpoint       | Descripción       | Acceso  |
+| ------ | -------------- | ----------------- | ------- |
+| POST   | `/`            | Crear pedido      | Usuario |
+| GET    | `/myorders`    | Mis pedidos       | Usuario |
+| GET    | `/:id`         | Obtener pedido    | Privado |
+| GET    | `/`            | Todos los pedidos | Admin   |
+| PUT    | `/:id/deliver` | Marcar entregado  | Admin   |
+
+### Categorías (`/api/categories`)
+
+| Método | Endpoint | Descripción          | Acceso  |
+| ------ | -------- | -------------------- | ------- |
+| GET    | `/`      | Listar categorías    | Público |
+| POST   | `/`      | Crear categoría      | Admin   |
+| PUT    | `/:id`   | Actualizar categoría | Admin   |
+| DELETE | `/:id`   | Eliminar categoría   | Admin   |
 
 ---
 

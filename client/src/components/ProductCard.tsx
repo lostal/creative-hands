@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import { Edit, Trash2, Package, Star } from "lucide-react";
 import { formatCurrency } from "../utils/formatters";
+import { MotionDiv, MotionButton } from "../lib/motion";
 
 import { Product } from "../types";
 
@@ -33,10 +33,6 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const avgRating = getAverageRating(product);
   const reviewsCount = product.numReviews ?? product.reviews?.length ?? 0;
-
-  // Cast motion components to any
-  const MotionButton = motion.button as any;
-  const MotionDiv = motion.div as any;
 
   return (
     <MotionDiv

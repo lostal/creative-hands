@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "../lib/motion";
 import { formatCurrency } from "../utils/formatters";
 
 const Cart = () => {
@@ -10,9 +10,6 @@ const Cart = () => {
     useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  // Cast motion.div to any
-  const MotionDiv = motion.div as any;
 
   const handleCheckout = () => {
     if (!user) {

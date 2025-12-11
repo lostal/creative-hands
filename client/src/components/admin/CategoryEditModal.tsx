@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv } from "../../lib/motion";
 import { X } from "lucide-react";
 import api from "../../utils/axios";
 import { Category } from "../../types";
@@ -27,8 +28,6 @@ const CategoryEditModal = ({
     description: "",
   });
 
-  const MotionDiv = motion.div as any;
-
   useEffect(() => {
     if (category) {
       setFormData({
@@ -42,7 +41,7 @@ const CategoryEditModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.put(`/api/categories/${category?._id}`, formData);
+      await api.put(`/categories/${category?._id}`, formData);
       onCategorySaved();
     } catch (error: unknown) {
       console.error("Error al actualizar categoría:", error);

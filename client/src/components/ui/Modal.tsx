@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv } from "../../lib/motion";
 import { X } from "lucide-react";
 
 /**
@@ -31,8 +32,6 @@ const Modal = ({
   };
 
   if (!show) return null;
-
-  const MotionDiv = motion.div as any;
 
   return (
     <AnimatePresence>

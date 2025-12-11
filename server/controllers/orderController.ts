@@ -3,10 +3,27 @@
  * Contiene la lógica de negocio para gestión de pedidos
  */
 import { Response } from "express";
-import Order from "../models/Order";
+import { Types } from "mongoose";
+import Order, { IOrderItem } from "../models/Order";
 import Product from "../models/Product";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
+import { getErrorMessage } from "../utils/errors";
+
+/** Tipo para items del pedido en el request body */
+interface OrderItemInput {
+  product: string;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+/** Tipo para usuario populado */
+interface PopulatedUser {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+}
 
 /**
  * Crear nuevo pedido
@@ -14,18 +31,21 @@ import logger from "../utils/logger";
  */
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
-    const { orderItems, shippingAddress } = req.body;
+    const { orderItems, shippingAddress } = req.body as {
+      orderItems: OrderItemInput[];
+      shippingAddress: { address: string; city: string; postalCode: string; phone: string };
+    };
 
     // Obtener todos los productos en una sola consulta (evita N+1)
-    const productIds = orderItems.map((item: any) => item.product);
+    const productIds = orderItems.map((item) => item.product);
     const products = await Product.find({ _id: { $in: productIds } });
 
     // Crear mapa para acceso rápido
-    const productMap = new Map(products.map((p) => [(p._id as any).toString(), p]));
+    const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
     // Validar stock y calcular precio total
     let totalPrice = 0;
-    const stockUpdates = [];
+    const stockUpdates: { updateOne: { filter: { _id: string }; update: { $inc: { stock: number } } } }[] = [];
 
     for (const item of orderItems) {
       const product = productMap.get(item.product.toString());
@@ -58,7 +78,6 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
     // Actualizar stock en una sola operación
     if (stockUpdates.length > 0) {
-      // @ts-ignore - BulkWrite types can be complex with Mongoose versions
       await Product.bulkWrite(stockUpdates);
     }
 
@@ -80,12 +99,12 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       success: true,
       order,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al crear pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al crear el pedido",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };
@@ -104,12 +123,12 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
       success: true,
       orders,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al obtener pedidos:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };
@@ -129,12 +148,12 @@ export const getAllOrders = async (req: AuthRequest, res: Response) => {
       success: true,
       orders,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al obtener todos los pedidos:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };
@@ -157,8 +176,8 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
     }
 
     // Verificar autorización
-    // @ts-ignore - user is populated so it might be an object
-    const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+    const populatedUser = order.user as unknown as PopulatedUser;
+    const orderUserId = populatedUser._id ? populatedUser._id.toString() : order.user.toString();
 
     if (
       orderUserId !== req.user?.id &&
@@ -174,12 +193,12 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
       success: true,
       order,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al obtener pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al obtener el pedido",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };
@@ -209,12 +228,12 @@ export const deliverOrder = async (req: AuthRequest, res: Response) => {
       success: true,
       order,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Error al entregar pedido:", error);
     res.status(500).json({
       success: false,
       message: "Error al entregar el pedido",
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 };

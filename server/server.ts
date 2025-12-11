@@ -112,17 +112,21 @@ const createRateLimiters = () => {
 };
 
 /**
+ * Obtener origen permitido para CORS según entorno
+ */
+const getCorsOrigin = (): string => {
+    return process.env.NODE_ENV === "production"
+        ? (process.env.CLIENT_URL || "")
+        : "http://localhost:5173";
+};
+
+/**
  * Configurar middleware de Express
  */
 const configureMiddleware = (app: Express): void => {
-    const corsOrigin =
-        process.env.NODE_ENV === "production"
-            ? process.env.CLIENT_URL
-            : "http://localhost:5173";
-
     app.use(
         cors({
-            origin: corsOrigin,
+            origin: getCorsOrigin(),
             credentials: true,
         })
     );
@@ -189,14 +193,9 @@ const configureErrorHandler = (app: Express): void => {
  * Crear y configurar instancia de Socket.IO
  */
 const createSocketServer = (server: http.Server): Server => {
-    const corsOrigin =
-        process.env.NODE_ENV === "production"
-            ? process.env.CLIENT_URL
-            : "http://localhost:5173";
-
     return new Server(server, {
         cors: {
-            origin: corsOrigin,
+            origin: getCorsOrigin(),
             credentials: true,
         },
     });

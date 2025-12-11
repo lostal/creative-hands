@@ -9,7 +9,8 @@ import {
   DollarSign,
   ChevronDown,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { MotionDiv } from "../lib/motion";
 import { Order } from "../types";
 
 const AdminOrders = () => {
@@ -18,9 +19,6 @@ const AdminOrders = () => {
   const [error, setError] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [delivering, setDelivering] = useState<string | null>(null);
-
-  // Cast motion.div to any to avoid strict type checking
-  const MotionDiv = motion.div as any;
 
   useEffect(() => {
     fetchOrders();

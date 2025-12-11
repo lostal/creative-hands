@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import {
   Plus,
   MessageSquare,
@@ -19,6 +19,7 @@ import {
   CategoryEditModal,
 } from "../components/admin";
 import { Product, Category } from "../types";
+import { MotionDiv, MotionButton } from "../lib/motion";
 
 /**
  * Panel de administración
@@ -44,10 +45,6 @@ const Admin = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingFromList, setEditingFromList] = useState(false);
 
-  // Cast motion components to any to avoid strict type checking
-  const MotionDiv = motion.div as any;
-  const MotionButton = motion.button as any;
-
   useEffect(() => {
     if (!isAdmin) {
       navigate("/products");
@@ -60,7 +57,7 @@ const Admin = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get<{ products: Product[] }>("/api/products");
+      const { data } = await api.get<{ products: Product[] }>("/products");
       setProducts(data.products);
     } catch (error) {
       console.error("Error al cargar productos:", error);
@@ -71,7 +68,7 @@ const Admin = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await api.get<{ categories: Category[] }>("/api/categories");
+      const { data } = await api.get<{ categories: Category[] }>("/categories");
       setCategoriesList(data.categories || []);
     } catch (error) {
       console.error("Error cargando categorías:", error);
@@ -109,7 +106,7 @@ const Admin = () => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
     try {
-      await api.delete(`/api/products/${id}`);
+      await api.delete(`/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
       console.error("Error al eliminar producto:", error);

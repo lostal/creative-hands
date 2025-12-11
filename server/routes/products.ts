@@ -15,7 +15,11 @@ import * as reviewController from "../controllers/reviewController";
 const router = express.Router();
 
 // Configuración de Multer para subida de imágenes
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   if (allowed.includes(file.mimetype)) cb(null, true);
   else cb(new Error("Tipo de archivo no permitido. Solo JPEG/PNG/WebP/GIF."));
