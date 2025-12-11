@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { protect } = require("../middleware/auth");
+const { validate, registerSchema, loginSchema } = require("../validators/schemas");
 
 // Generar JWT
 const generateToken = (id) => {
@@ -14,17 +15,10 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @desc    Registrar nuevo usuario
 // @access  Public
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
-    // Validar campos
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Por favor, completa todos los campos",
-      });
-    }
+    // La validación de campos ya está hecha por Joi
 
     // Verificar si el usuario ya existe
     const userExists = await User.findOne({ email });
@@ -68,17 +62,10 @@ router.post("/register", async (req, res) => {
 // @route   POST /api/auth/login
 // @desc    Iniciar sesión
 // @access  Public
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Validar campos
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Por favor, ingresa email y contraseña",
-      });
-    }
+    // La validación de campos ya está hecha por Joi
 
     // Buscar usuario y incluir contraseña para comparar
     const user = await User.findOne({ email }).select("+password");

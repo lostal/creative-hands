@@ -2,25 +2,15 @@ const express = require("express");
 const { protect, adminOnly } = require("../middleware/auth");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const { validate, orderSchema } = require("../validators/schemas");
 
 const router = express.Router();
 
 // POST /api/orders - Crear un nuevo pedido (protegido)
-router.post("/", protect, async (req, res) => {
+router.post("/", protect, validate(orderSchema), async (req, res) => {
   try {
     const { orderItems, shippingAddress } = req.body;
-
-    if (!orderItems || orderItems.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "El pedido debe contener al menos un producto" });
-    }
-
-    if (!shippingAddress || !shippingAddress.address || !shippingAddress.city || !shippingAddress.postalCode || !shippingAddress.phone) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Dirección de envío incompleta" });
-    }
+    // La validación de campos ya está hecha por Joi
 
     // Obtener todos los productos en una sola consulta (evita N+1)
     const productIds = orderItems.map((item) => item.product);

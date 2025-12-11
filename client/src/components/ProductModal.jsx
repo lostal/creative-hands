@@ -23,6 +23,7 @@ const panelVariants = {
 };
 
 const ProductModal = ({ product, onClose }) => {
+  // Todos los hooks deben llamarse antes de cualquier return condicional
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = next, -1 = prev
   const [prevIndex, setPrevIndex] = useState(null);
@@ -33,10 +34,20 @@ const ProductModal = ({ product, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [ctaMessage, setCtaMessage] = useState("");
+  const [detailedProduct, setDetailedProduct] = useState(product);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("details");
 
   const { addToCart } = useCart();
+  const { user, isAuthenticated } = useAuth();
+
+  const images =
+    product?.images && product.images.length > 0
+      ? product.images
+      : ["/placeholder.png"];
 
   useEffect(() => {
+    if (!product) return;
     const handleKey = (e) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight") {
@@ -62,26 +73,15 @@ const ProductModal = ({ product, onClose }) => {
       document.removeEventListener("keydown", handleKey);
       prevActive?.focus?.();
     };
-  }, [onClose, product.images, index]);
+  }, [onClose, product, index]);
 
   useEffect(() => {
     // mark that the modal has mounted at least once; used to prevent image entry animation on first open
     isFirstMount.current = false;
   }, []);
 
+  // Early return DESPUÉS de todos los hooks
   if (!product) return null;
-
-  const { user, isAuthenticated } = useAuth();
-
-  // detailedProduct: fetched product with reviews
-  const [detailedProduct, setDetailedProduct] = useState(product);
-  const [loadingDetails, setLoadingDetails] = useState(false);
-
-  const images =
-    product.images && product.images.length > 0
-      ? product.images
-      : ["/placeholder.png"];
-  const [selectedTab, setSelectedTab] = useState("details");
 
   // Fetch detailed product (with reviews) when modal opens or product changes
   useEffect(() => {
@@ -276,9 +276,8 @@ const ProductModal = ({ product, onClose }) => {
                     setDirection(i > index ? 1 : -1);
                     setIndex(i);
                   }}
-                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${
-                    i === index ? "border-primary-500" : "border-transparent"
-                  } min-w-[64px] min-h-[64px]`}
+                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${i === index ? "border-primary-500" : "border-transparent"
+                    } min-w-[64px] min-h-[64px]`}
                 >
                   <img
                     src={img}
@@ -333,21 +332,19 @@ const ProductModal = ({ product, onClose }) => {
               <div className="flex gap-1 sm:gap-2">
                 <button
                   onClick={() => setSelectedTab("details")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
-                    selectedTab === "details"
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${selectedTab === "details"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
-                  }`}
+                    }`}
                 >
                   Detalles
                 </button>
                 <button
                   onClick={() => setSelectedTab("reviews")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
-                    selectedTab === "reviews"
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${selectedTab === "reviews"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
-                  }`}
+                    }`}
                 >
                   Valoraciones ({detailedProduct?.reviewsCount ?? 0})
                 </button>
@@ -437,13 +434,12 @@ const ProductModal = ({ product, onClose }) => {
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={product.stock === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${
-                        product.stock === 0
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${product.stock === 0
                           ? "bg-gray-400 cursor-not-allowed"
                           : addedToCart
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                      }`}
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                        }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>{addedToCart ? "Añadido" : "Añadir"}</span>

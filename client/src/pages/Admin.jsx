@@ -12,7 +12,7 @@ import {
   Star,
   ShoppingCart,
 } from "lucide-react";
-import axios from "axios";
+import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
@@ -71,7 +71,7 @@ const Admin = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("/api/products");
+      const { data } = await api.get("/api/products");
       setProducts(data.products);
     } catch (error) {
       console.error("Error al cargar productos:", error);
@@ -97,10 +97,10 @@ const Admin = () => {
       setImageList(
         product.images && product.images.length > 0
           ? product.images.map((url, idx) => ({
-              id: `e-${idx}-${Date.now()}`,
-              type: "existing",
-              url,
-            }))
+            id: `e-${idx}-${Date.now()}`,
+            type: "existing",
+            url,
+          }))
           : []
       );
     } else {
@@ -185,7 +185,7 @@ const Admin = () => {
       }
 
       if (editingProduct) {
-        response = await axios.put(`/api/products/${editingProduct._id}`, fd, {
+        response = await api.put(`/api/products/${editingProduct._id}`, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         setProducts(
@@ -194,7 +194,7 @@ const Admin = () => {
           )
         );
       } else {
-        response = await axios.post("/api/products", fd, {
+        response = await api.post("/api/products", fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         setProducts([response.data.product, ...products]);
@@ -309,7 +309,7 @@ const Admin = () => {
 
       (async () => {
         try {
-          const { data } = await axios.delete(
+          const { data } = await api.delete(
             `/api/products/${editingProduct._id}/images`,
             {
               data: { image: item.url },
@@ -375,7 +375,7 @@ const Admin = () => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
     try {
-      await axios.delete(`/api/products/${id}`);
+      await api.delete(`/api/products/${id}`);
       setProducts(products.filter((p) => p._id !== id));
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -392,7 +392,7 @@ const Admin = () => {
     e.preventDefault();
     try {
       const payload = { ...newCategory };
-      const { data } = await axios.post("/api/categories", payload);
+      const { data } = await api.post("/api/categories", payload);
       // refresh categories
       fetchCategories();
       setShowCategoryModal(false);
@@ -410,7 +410,7 @@ const Admin = () => {
     )
       return;
     try {
-      await axios.delete(`/api/categories/${id}`);
+      await api.delete(`/api/categories/${id}`);
       fetchCategories();
     } catch (error) {
       console.error("Error al eliminar categoría:", error);
@@ -451,7 +451,7 @@ const Admin = () => {
   const saveEditCategory = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(
+      await api.put(
         `/api/categories/${editingCategoryId}`,
         editingCategoryData
       );
@@ -465,7 +465,7 @@ const Admin = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get("/api/categories");
+      const { data } = await api.get("/api/categories");
       setCategoriesList(data.categories || []);
     } catch (error) {
       console.error(
@@ -508,33 +508,30 @@ const Admin = () => {
         >
           <button
             onClick={() => setActiveTab("products")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
-              activeTab === "products"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-            }`}
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "products"
+              ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+              : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+              }`}
           >
             <Package className="w-5 h-5" />
             <span>Productos</span>
           </button>
           <button
             onClick={() => setActiveTab("chat")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
-              activeTab === "chat"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-            }`}
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "chat"
+              ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+              : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+              }`}
           >
             <MessageSquare className="w-5 h-5" />
             <span>Conversaciones</span>
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
-              activeTab === "orders"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-            }`}
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${activeTab === "orders"
+              ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+              : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+              }`}
           >
             <ShoppingCart className="w-5 h-5" />
             <span>Pedidos</span>
@@ -868,11 +865,10 @@ const Admin = () => {
                       onDragOver={onDragOver}
                       onDragLeave={onDragLeave}
                       onDrop={onDrop}
-                      className={`w-full cursor-pointer rounded-xl border-2 border-dashed p-4 flex items-center gap-4 ${
-                        dragActive
-                          ? "border-primary-500 bg-primary-50/40 dark:bg-primary-900/20"
-                          : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-                      }`}
+                      className={`w-full cursor-pointer rounded-xl border-2 border-dashed p-4 flex items-center gap-4 ${dragActive
+                        ? "border-primary-500 bg-primary-50/40 dark:bg-primary-900/20"
+                        : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                        }`}
                     >
                       <div className="p-3 rounded-lg bg-primary-50 dark:bg-gray-700 text-primary-600 dark:text-white">
                         <Upload className="w-5 h-5" />

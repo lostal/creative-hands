@@ -75,5 +75,9 @@ const productSchema = new mongoose.Schema(
 
 // Índice para búsquedas
 productSchema.index({ name: "text", description: "text" });
+// Índices para consultas frecuentes
+productSchema.index({ categoryId: 1 });
+productSchema.index({ createdBy: 1 });
+productSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model("Product", productSchema);

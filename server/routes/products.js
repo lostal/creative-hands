@@ -5,6 +5,8 @@ const { protect, adminOnly } = require("../middleware/auth");
 const Category = require("../models/Category");
 const multer = require("multer");
 const { cloudinary, storage } = require("../config/cloudinary");
+const { enrichProductWithMetrics } = require("../utils/reviewUtils");
+const { validate, productSchema, reviewSchema } = require("../validators/schemas");
 
 // Validación y límites: solo imágenes, max 2MB por archivo
 const fileFilter = (req, file, cb) => {
@@ -38,16 +40,8 @@ router.get("/", async (req, res) => {
       .populate("createdBy", "name")
       .populate("categoryId", "name slug");
 
-    const enriched = products.map((p) => {
-      const reviews = p.reviews || [];
-      const count = reviews.length;
-      const avg = count
-        ? Math.round(
-            (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / count) * 10
-          ) / 10
-        : 0;
-      return { ...p.toObject(), reviewsCount: count, avgRating: avg };
-    });
+    // Usar utilidad DRY para enriquecer con métricas de reviews
+    const enriched = products.map(enrichProductWithMetrics);
 
     res.json({
       success: true,
@@ -75,6 +69,14 @@ router.get("/category/:slug", async (req, res) => {
     const { slug } = req.params;
     const category = await Category.findOne({ slug });
 
+    // Verificación null para evitar crash
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Categoría no encontrada",
+      });
+    }
+
     // Buscar por categoryId (ya no usamos el campo legacy `category`)
     const query = { categoryId: category._id };
 
@@ -82,17 +84,8 @@ router.get("/category/:slug", async (req, res) => {
       .populate("createdBy", "name")
       .populate("categoryId", "name slug");
 
-    // Añadir métricas de reviews (avg y count) a cada producto
-    const enriched = products.map((p) => {
-      const reviews = p.reviews || [];
-      const count = reviews.length;
-      const avg = count
-        ? Math.round(
-            (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / count) * 10
-          ) / 10
-        : 0;
-      return { ...p.toObject(), reviewsCount: count, avgRating: avg };
-    });
+    // Usar utilidad DRY para enriquecer con métricas de reviews
+    const enriched = products.map(enrichProductWithMetrics);
 
     res.json({ success: true, count: products.length, products: enriched });
   } catch (error) {
@@ -118,18 +111,10 @@ router.get("/:id", async (req, res) => {
       });
     }
 
-    // calcular avg y count
-    const reviews = product.reviews || [];
-    const reviewsCount = reviews.length;
-    const avgRating = reviewsCount
-      ? Math.round(
-          (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewsCount) * 10
-        ) / 10
-      : 0;
-
+    // Usar utilidad DRY para enriquecer con métricas de reviews
     res.json({
       success: true,
-      product: { ...product.toObject(), reviewsCount, avgRating },
+      product: enrichProductWithMetrics(product),
     });
   } catch (error) {
     console.error("Error al obtener producto:", error);
@@ -143,19 +128,10 @@ router.get("/:id", async (req, res) => {
 // @route   POST /api/products/:id/reviews
 // @desc    Añadir una valoración/review a un producto (title, comment, rating)
 // @access  Private (usuarios autenticados, no admin)
-router.post("/:id/reviews", protect, async (req, res) => {
+router.post("/:id/reviews", protect, validate(reviewSchema), async (req, res) => {
   try {
     const { title, comment, rating } = req.body;
-
-    // Validación básica
-    if (!title || !comment || rating === undefined) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Faltan campos: title, comment o rating",
-        });
-    }
+    // La validación de campos ya está hecha por Joi
 
     const numericRating = parseInt(rating, 10);
     if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
@@ -216,19 +192,11 @@ router.post("/:id/reviews", protect, async (req, res) => {
       .populate("categoryId", "name slug")
       .populate("reviews.user", "name email");
 
-    const reviews = updated.reviews || [];
-    const reviewsCount = reviews.length;
-    const avgRating = reviewsCount
-      ? Math.round(
-          (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewsCount) * 10
-        ) / 10
-      : 0;
-
     res
       .status(201)
       .json({
         success: true,
-        product: { ...updated.toObject(), reviewsCount, avgRating },
+        product: enrichProductWithMetrics(updated),
       });
   } catch (error) {
     console.error("Error al añadir review:", error);
@@ -290,17 +258,9 @@ router.put("/:id/reviews/:reviewId", protect, async (req, res) => {
       .populate("categoryId", "name slug")
       .populate("reviews.user", "name email");
 
-    const reviews = updated.reviews || [];
-    const reviewsCount = reviews.length;
-    const avgRating = reviewsCount
-      ? Math.round(
-          (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewsCount) * 10
-        ) / 10
-      : 0;
-
     res.json({
       success: true,
-      product: { ...updated.toObject(), reviewsCount, avgRating },
+      product: enrichProductWithMetrics(updated),
     });
   } catch (error) {
     console.error("Error editing review:", error);
@@ -349,17 +309,9 @@ router.delete("/:id/reviews/:reviewId", protect, async (req, res) => {
       .populate("categoryId", "name slug")
       .populate("reviews.user", "name email");
 
-    const reviews = updated.reviews || [];
-    const reviewsCount = reviews.length;
-    const avgRating = reviewsCount
-      ? Math.round(
-          (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewsCount) * 10
-        ) / 10
-      : 0;
-
     res.json({
       success: true,
-      product: { ...updated.toObject(), reviewsCount, avgRating },
+      product: enrichProductWithMetrics(updated),
     });
   } catch (error) {
     console.error("Error deleting review:", error);
