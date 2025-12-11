@@ -39,6 +39,7 @@ body {
 
 /* Clase utilitaria para el título de marca */
 @layer components {
+
   /* Clase utilitaria para el título de marca */
   .copernicus {
     font-family: "Copernicus-Bold", "Inter", -apple-system,
@@ -53,7 +54,8 @@ body {
       system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-weight: 700;
     /* tamaño un poco más destacado en pantallas grandes */
-    font-size: 1.125rem; /* 18px base */
+    font-size: 1.125rem;
+    /* 18px base */
     line-height: 1.35;
   }
 
@@ -61,6 +63,7 @@ body {
     font-family: "Copernicus-Cond-110", "Copernicus New Condensed Trial", Inter,
       system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
+
   /* sólo se mantiene la variante 110 (usada en el hero) */
 
   /* Navbar brand underline animation */
@@ -101,19 +104,15 @@ body {
 
   /* Gradient background component */
   .gradient-bg {
-    background: linear-gradient(
-      135deg,
-      rgba(203, 104, 67, 0.1) 0%,
-      rgba(213, 124, 85, 0.1) 100%
-    );
+    background: linear-gradient(135deg,
+        rgba(203, 104, 67, 0.1) 0%,
+        rgba(213, 124, 85, 0.1) 100%);
   }
 
   .dark .gradient-bg {
-    background: linear-gradient(
-      135deg,
-      rgba(38, 38, 36, 0.95) 0%,
-      rgba(30, 30, 28, 0.95) 100%
-    );
+    background: linear-gradient(135deg,
+        rgba(38, 38, 36, 0.95) 0%,
+        rgba(30, 30, 28, 0.95) 100%);
   }
 
   .skeleton {
@@ -180,17 +179,33 @@ body {
    Algunas clases pueden haberse definido sólo para modo claro; aquí añadimos
    un pequeño override para que esos textos también sean legibles en .dark. */
 @layer components {
-  .dark .text-gray-900 { color: #ffffff !important; }
-  .dark .text-gray-800 { color: #f8fafc !important; }
-  .dark .text-gray-700 { color: #d1d5db !important; }
-  .dark .text-gray-600 { color: #9ca3af !important; }
-  .dark .text-gray-500 { color: #6b7280 !important; }
+  .dark .text-gray-900 {
+    color: #ffffff !important;
+  }
+
+  .dark .text-gray-800 {
+    color: #f8fafc !important;
+  }
+
+  .dark .text-gray-700 {
+    color: #d1d5db !important;
+  }
+
+  .dark .text-gray-600 {
+    color: #9ca3af !important;
+  }
+
+  .dark .text-gray-500 {
+    color: #6b7280 !important;
+  }
 }
 
 /* Variable global de color de texto para elementos sin utilidades específicas */
 :root {
-  --text-default: #111827; /* gray-900 */
+  --text-default: #111827;
+  /* gray-900 */
 }
+
 .dark :root,
 .dark body,
 .dark .dark-text-fallback {
@@ -247,6 +262,7 @@ button:active {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -258,10 +274,12 @@ button:active {
 }
 
 @keyframes subtle-bounce {
+
   0%,
   100% {
     transform: var(--tx) translateY(0);
   }
+
   50% {
     transform: var(--tx) translateY(-5px);
   }
@@ -281,7 +299,8 @@ button:active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem; /* 48px */
+  width: 3rem;
+  /* 48px */
   height: 3rem;
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.92);
@@ -309,11 +328,13 @@ button:active {
 
 /* Loading dots */
 @keyframes bounce {
+
   0%,
   80%,
   100% {
     transform: scale(0);
   }
+
   40% {
     transform: scale(1);
   }
@@ -335,6 +356,7 @@ button:active {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -353,11 +375,9 @@ button:active {
 
 /* Gradient backgrounds */
 .gradient-bg {
-  background: linear-gradient(
-    135deg,
-    rgba(203, 104, 67, 0.1) 0%,
-    rgba(213, 124, 85, 0.1) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(203, 104, 67, 0.1) 0%,
+      rgba(213, 124, 85, 0.1) 100%);
 }
 
 /* Product modal image wrapper: force a natural landscape aspect on desktop while
@@ -366,8 +386,96 @@ button:active {
 @media (min-width: 768px) {
   .product-modal__image-wrapper {
     aspect-ratio: 4 / 3;
-    height: auto !important; /* override any lg:h-* utilities */
-    max-height: calc(80vh - 4rem); /* keep it within modal height */
+    height: auto !important;
+    /* override any lg:h-* utilities */
+    max-height: calc(80vh - 4rem);
+    /* keep it within modal height */
     width: 100%;
   }
+}
+
+/* ============================================
+   FILM GRAIN OVERLAY
+   ============================================ */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.25;
+  /* Reducido para balancear visibilidad */
+  mix-blend-mode: overlay;
+  overflow: hidden;
+}
+
+.dark .noise-overlay {
+  opacity: 0.2;
+  /* Reducido para balancear visibilidad */
+}
+
+.noise-overlay svg {
+  position: absolute;
+  left: -100%;
+  /* Centrado para width 300% */
+  top: -100%;
+  /* Centrado para height 300% */
+  width: 300%;
+  height: 300%;
+  animation: noise-shift 0.25s steps(3) infinite;
+}
+
+@keyframes noise-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  33% {
+    transform: translate(5%, 5%);
+  }
+
+  66% {
+    transform: translate(-5%, 2%);
+  }
+
+  100% {
+    transform: translate(2%, -5%);
+  }
+}
+
+/* Reduced motion: desactivar animación */
+@media (prefers-reduced-motion: reduce) {
+  .noise-overlay svg {
+    animation: none;
+  }
+}
+
+/* Touch devices: ocultar completamente (backup CSS) */
+@media (hover: none) and (pointer: coarse) {
+  .noise-overlay {
+    display: none;
+  }
+}
+
+/* ============================================
+   LENIS SMOOTH SCROLL - Overrides necesarios
+   ============================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }

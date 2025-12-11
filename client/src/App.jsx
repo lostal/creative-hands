@@ -12,6 +12,8 @@ import { SocketProvider } from "./context/SocketContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
 import CartDrawer from "./components/CartDrawer";
+import NoiseOverlay from "./components/NoiseOverlay";
+import useLenis from "./hooks/useLenis";
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
@@ -61,6 +63,9 @@ function AppContent() {
   const { loading } = useAuth();
   const location = useLocation();
 
+  // Inicializar Lenis smooth scroll
+  useLenis();
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
@@ -76,6 +81,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-light-500 dark:bg-dark-500 transition-colors duration-300">
+      <NoiseOverlay />
       <Navbar />
       <CartDrawer />
       <ErrorBoundary>
