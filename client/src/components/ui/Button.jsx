@@ -1,80 +1,98 @@
-import { motion } from "framer-motion";
+import { forwardRef } from 'react';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 /**
- * Componente Button reutilizable
- * Abstrae estilos comunes de botones con variantes
+ * Button Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
  */
-const Button = ({
-    children,
-    variant = "primary",
-    size = "md",
-    className = "",
-    disabled = false,
-    loading = false,
-    icon: Icon = null,
-    onClick,
-    type = "button",
-    ...props
-}) => {
-    const baseClasses =
-        "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
 
-    const variants = {
-        primary:
-            "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl",
-        secondary:
-            "glass text-gray-700 dark:text-gray-300 hover:shadow-md",
-        danger:
-            "bg-red-500 text-white shadow-lg hover:shadow-xl hover:bg-red-600",
-        ghost:
-            "bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
-    };
-
-    const sizes = {
-        sm: "px-3 py-2 text-sm min-h-[36px] space-x-1.5",
-        md: "px-4 sm:px-6 py-3 text-base min-h-[48px] space-x-2",
-        lg: "px-6 sm:px-8 py-4 text-lg min-h-[56px] space-x-3",
-    };
-
-    return (
-        <motion.button
-            whileHover={disabled ? {} : { scale: 1.02 }}
-            whileTap={disabled ? {} : { scale: 0.98 }}
-            type={type}
-            disabled={disabled || loading}
-            onClick={onClick}
-            className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
-            style={{ willChange: "transform" }}
-            {...props}
-        >
-            {loading ? (
-                <svg
-                    className="w-5 h-5 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                >
-                    <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                    />
-                    <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                </svg>
-            ) : (
-                <>
-                    {Icon && <Icon className="w-5 h-5" />}
-                    {children && <span>{children}</span>}
-                </>
-            )}
-        </motion.button>
-    );
+const variants = {
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
+    accent: 'btn-accent',
+    danger: 'bg-error text-white hover:bg-error/90',
 };
+
+const sizes = {
+    sm: 'btn-sm',
+    md: '', // default
+    lg: 'btn-lg',
+};
+
+const Button = forwardRef(
+    (
+        {
+            children,
+            variant = 'primary',
+            size = 'md',
+            loading = false,
+            disabled = false,
+            icon: Icon,
+            iconPosition = 'left',
+            className = '',
+            as: Component = 'button',
+            animate = true,
+            ...props
+        },
+        ref
+    ) => {
+        const isDisabled = disabled || loading;
+
+        const baseClasses = `
+      btn
+      ${variants[variant] || variants.primary}
+      ${sizes[size] || ''}
+      ${className}
+    `.trim().replace(/\s+/g, ' ');
+
+        const content = (
+            <>
+                {loading && (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+                {!loading && Icon && iconPosition === 'left' && (
+                    <Icon className="w-4 h-4" />
+                )}
+                {children && <span>{children}</span>}
+                {!loading && Icon && iconPosition === 'right' && (
+                    <Icon className="w-4 h-4" />
+                )}
+            </>
+        );
+
+        // Use motion.button for animated version
+        if (animate && Component === 'button') {
+            return (
+                <motion.button
+                    ref={ref}
+                    className={baseClasses}
+                    disabled={isDisabled}
+                    whileHover={!isDisabled ? { scale: 1.02 } : undefined}
+                    whileTap={!isDisabled ? { scale: 0.98 } : undefined}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    {...props}
+                >
+                    {content}
+                </motion.button>
+            );
+        }
+
+        // Non-animated or custom component
+        return (
+            <Component
+                ref={ref}
+                className={baseClasses}
+                disabled={Component === 'button' ? isDisabled : undefined}
+                {...props}
+            >
+                {content}
+            </Component>
+        );
+    }
+);
+
+Button.displayName = 'Button';
 
 export default Button;

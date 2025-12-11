@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
-import { useTheme } from "../context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sun,
   Moon,
@@ -14,25 +14,37 @@ import {
   Menu,
   X,
   LayoutDashboard,
-} from "lucide-react";
+  ChevronDown,
+} from 'lucide-react';
+import { IndicatorDot } from './ui';
+
+/**
+ * Navbar Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
+ */
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
   const { totalItems, openCart } = useCart();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isDark } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setUserMenuOpen(false);
+  }, [location.pathname]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -42,163 +54,220 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+    }
+  };
+
+  const navLinks = [
+    { path: '/products', label: 'Productos' },
+  ];
+
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "glass-nav shadow-lg" : "bg-transparent"
-      }`}
+      transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+      className={`
+        fixed top-0 left-0 right-0 z-fixed
+        transition-all duration-normal
+        ${scrolled
+          ? 'navbar-glass shadow-sm'
+          : 'bg-transparent'
+        }
+      `}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
+      <div className="container-page">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link
             to="/"
-            onClick={(e) => {
-              // Smooth scroll to top even when already on home
-              e.preventDefault();
-              if (location.pathname === "/") {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              } else {
-                navigate("/");
-                setTimeout(
-                  () => window.scrollTo({ top: 0, behavior: "smooth" }),
-                  120
-                );
-              }
-            }}
-            className="flex items-center space-x-2 group ml-3 lg:ml-0"
+            onClick={handleLogoClick}
+            className="flex items-center gap-3 group"
           >
-            <span className="text-2xl lg:text-2xl font-bold copernicus copernicus-110 uppercase text-primary-500 transition-colors brand-title">
-              creative hands
+            {/* LED Indicator */}
+            <IndicatorDot status="active" pulse className="hidden sm:block" />
+
+            <span className="text-xl md:text-2xl font-brand uppercase text-primary-500 tracking-wide
+                           transition-all duration-fast group-hover:text-primary-400">
+              Creative Hands
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/products"
-              className={`text-sm font-medium transition-colors ${
-                isActive("/products")
-                  ? "text-primary-500"
-                  : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
-              }`}
-            >
-              Productos
-            </Link>
+          <div className="hidden md:flex items-center gap-8">
+            {/* Nav Links */}
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`
+                  relative text-sm font-medium transition-colors duration-fast
+                  ${isActive(link.path)
+                    ? 'text-foreground'
+                    : 'text-foreground-secondary hover:text-foreground'
+                  }
+                `}
+              >
+                {link.label}
+                {isActive(link.path) && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-500 rounded-full"
+                  />
+                )}
+              </Link>
+            ))}
 
-            {/* 'Sobre' eliminado por petición de diseño para mantener la navegación limpia */}
-
+            {/* Admin Link */}
             {isAdmin && (
               <Link
                 to="/admin"
-                className={`text-sm font-medium transition-colors flex items-center space-x-1 ${
-                  isActive("/admin")
-                    ? "text-primary-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
-                }`}
+                className={`
+                  flex items-center gap-2 text-sm font-medium transition-colors duration-fast
+                  ${isActive('/admin')
+                    ? 'text-foreground'
+                    : 'text-foreground-secondary hover:text-foreground'
+                  }
+                `}
               >
                 <LayoutDashboard className="w-4 h-4" />
-                <span>Admin</span>
+                Admin
               </Link>
             )}
 
-            {/* Carrito - solo usuarios autenticados que NO sean admin */}
+            {/* Divider */}
+            <div className="w-px h-6 bg-border" />
+
+            {/* Cart Button (non-admin users only) */}
             {user && !isAdmin && (
               <button
                 onClick={openCart}
-                className="relative text-sm font-medium transition-colors text-gray-700 dark:text-gray-300 hover:text-primary-500 flex items-center space-x-1"
+                className="relative p-2 rounded-lg text-foreground-secondary 
+                         hover:text-foreground hover:bg-surface-hover
+                         transition-colors duration-fast"
                 aria-label="Abrir carrito"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {totalItems}
-                  </span>
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 flex items-center justify-center
+                             w-5 h-5 bg-accent text-white text-xs font-mono font-bold
+                             rounded-full"
+                  >
+                    {totalItems > 9 ? '9+' : totalItems}
+                  </motion.span>
                 )}
               </button>
             )}
 
             {/* Theme Toggle */}
             <motion.button
-              whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle theme"
+              className="p-2 rounded-lg text-foreground-secondary 
+                       hover:text-foreground hover:bg-surface-hover
+                       transition-colors duration-fast"
+              whileTap={{ scale: 0.95 }}
+              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
-              {theme === "light" ? (
-                <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-              ) : (
-                <Sun className="w-5 h-5 text-gray-300" />
-              )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {isDark ? (
+                    <Sun className="w-5 h-5" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </motion.button>
 
-            {/* User Menu */}
+            {/* User Menu / Auth */}
             {user ? (
               <div className="relative">
                 <motion.button
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-start space-x-2 px-2 py-2 rounded-full glass hover:shadow-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg
+                           bg-surface border border-border-subtle
+                           hover:border-border hover:shadow-sm
+                           transition-all duration-fast"
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="w-7 h-7 flex-shrink-0 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center overflow-hidden">
-                    <span className="text-white text-sm font-semibold">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full
+                                bg-gradient-to-br from-primary-500 to-primary-600">
+                    <span className="text-white text-xs font-semibold">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div className="flex items-center h-7">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {user.name}
-                    </span>
-                  </div>
+                  <span className="text-sm font-medium text-foreground max-w-[100px] truncate">
+                    {user.name}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-foreground-tertiary transition-transform
+                                         ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </motion.button>
 
                 <AnimatePresence>
                   {userMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-48 glass rounded-xl shadow-xl overflow-hidden"
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      className="absolute right-0 mt-2 w-56 bg-surface border border-border-subtle
+                               rounded-lg shadow-lg overflow-hidden z-dropdown"
                     >
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-border-subtle">
+                        <p className="text-xs text-foreground-tertiary font-mono truncate">
+                          {user.email}
+                        </p>
+                        <p className="mt-1 text-xs text-primary-500 font-medium">
+                          {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                        </p>
+                      </div>
+
+                      {/* Menu Items */}
                       <div className="py-1">
-                        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {user.email}
-                          </p>
-                          <p className="text-xs text-primary-500 font-medium mt-1">
-                            {user.role === "admin"
-                              ? "Administrador"
-                              : "Usuario"}
-                          </p>
-                        </div>
                         <Link
                           to="/perfil"
                           onClick={() => setUserMenuOpen(false)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground-secondary
+                                   hover:text-foreground hover:bg-surface-hover transition-colors"
                         >
                           <User className="w-4 h-4" />
-                          <span>Perfil</span>
+                          Perfil
                         </Link>
 
                         {!isAdmin && (
                           <Link
                             to="/my-orders"
                             onClick={() => setUserMenuOpen(false)}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground-secondary
+                                     hover:text-foreground hover:bg-surface-hover transition-colors"
                           >
                             <Package className="w-4 h-4" />
-                            <span>Mis Pedidos</span>
+                            Mis Pedidos
                           </Link>
                         )}
 
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground-secondary
+                                   hover:text-error hover:bg-error-muted transition-colors"
                         >
                           <LogOut className="w-4 h-4" />
-                          <span>Cerrar sesión</span>
+                          Cerrar sesión
                         </button>
                       </div>
                     </motion.div>
@@ -206,16 +275,17 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500 transition-colors"
+                  className="text-sm font-medium text-foreground-secondary hover:text-foreground
+                           transition-colors duration-fast"
                 >
                   Iniciar sesión
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-medium rounded-full hover:shadow-lg transition-all"
+                  className="btn btn-primary btn-sm"
                 >
                   Registrarse
                 </Link>
@@ -223,15 +293,18 @@ const Navbar = () => {
             )}
           </div>
 
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-3.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-w-[52px] min-h-[52px] flex items-center justify-center"
-            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            className="md:hidden p-2 rounded-lg text-foreground-secondary
+                     hover:text-foreground hover:bg-surface-hover
+                     transition-colors duration-fast"
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
           >
             {mobileMenuOpen ? (
-              <X className="w-8 h-8 text-gray-700 dark:text-gray-300" />
+              <X className="w-6 h-6" />
             ) : (
-              <Menu className="w-8 h-8 text-gray-700 dark:text-gray-300" />
+              <Menu className="w-6 h-6" />
             )}
           </button>
         </div>
@@ -242,115 +315,130 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="md:hidden bg-surface border-t border-border-subtle overflow-hidden"
           >
-            <div className="px-3 py-4 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
-              <Link
-                to="/products"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
-              >
-                Productos
-              </Link>
-
-              {/* link a 'Sobre' removido del menú móvil */}
+            <div className="container-page py-4 space-y-2">
+              {/* Nav Links */}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`
+                    flex items-center px-4 py-3 rounded-lg text-base font-medium
+                    transition-colors duration-fast
+                    ${isActive(link.path)
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-400'
+                      : 'text-foreground-secondary hover:bg-surface-hover hover:text-foreground'
+                    }
+                  `}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
               {isAdmin && (
                 <Link
                   to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium
+                           text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                           transition-colors duration-fast"
                 >
+                  <LayoutDashboard className="w-5 h-5" />
                   Panel Admin
                 </Link>
               )}
 
+              {/* Theme Toggle */}
               <button
-                onClick={() => {
-                  toggleTheme();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                onClick={toggleTheme}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-base font-medium
+                         text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                         transition-colors duration-fast"
               >
-                {theme === "light" ? (
-                  <Moon className="w-4 h-4" />
-                ) : (
-                  <Sun className="w-4 h-4" />
-                )}
-                <span>Cambiar tema</span>
+                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                Cambiar tema
               </button>
 
+              <div className="divider my-2" />
+
+              {/* User Section */}
               {user ? (
                 <>
-                  <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 mt-2 pt-4">
-                    <p className="text-base font-medium text-gray-900 dark:text-white truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {user.email}
-                    </p>
+                  <div className="px-4 py-3">
+                    <p className="font-medium text-foreground">{user.name}</p>
+                    <p className="text-sm text-foreground-tertiary font-mono">{user.email}</p>
                   </div>
+
                   <Link
                     to="/perfil"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium
+                             text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                             transition-colors duration-fast"
                   >
                     <User className="w-5 h-5" />
-                    <span>Perfil</span>
+                    Perfil
                   </Link>
 
                   {!isAdmin && (
-                    <Link
-                      to="/my-orders"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
-                    >
-                      <Package className="w-5 h-5" />
-                      <span>Mis Pedidos</span>
-                    </Link>
-                  )}
+                    <>
+                      <Link
+                        to="/my-orders"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium
+                                 text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                                 transition-colors duration-fast"
+                      >
+                        <Package className="w-5 h-5" />
+                        Mis Pedidos
+                      </Link>
 
-                  {user && !isAdmin && (
-                    <button
-                      onClick={() => {
-                        openCart();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px] relative"
-                    >
-                      <ShoppingBag className="w-5 h-5" />
-                      <span>Carrito</span>
-                      {totalItems > 0 && (
-                        <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                          {totalItems}
-                        </span>
-                      )}
-                    </button>
+                      <button
+                        onClick={() => {
+                          openCart();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-base font-medium
+                                 text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                                 transition-colors duration-fast"
+                      >
+                        <div className="flex items-center gap-3">
+                          <ShoppingBag className="w-5 h-5" />
+                          Carrito
+                        </div>
+                        {totalItems > 0 && (
+                          <span className="flex items-center justify-center w-6 h-6 
+                                         bg-accent text-white text-xs font-mono font-bold rounded-full">
+                            {totalItems}
+                          </span>
+                        )}
+                      </button>
+                    </>
                   )}
 
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-base font-medium
+                             text-error hover:bg-error-muted transition-colors duration-fast"
                   >
                     <LogOut className="w-5 h-5" />
-                    <span>Cerrar sesión</span>
+                    Cerrar sesión
                   </button>
                 </>
               ) : (
-                <div className="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700 mt-2">
+                <div className="space-y-2 pt-2">
                   <Link
                     to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
+                    className="flex items-center justify-center w-full px-4 py-3 rounded-lg
+                             text-base font-medium border border-border
+                             text-foreground-secondary hover:bg-surface-hover hover:text-foreground
+                             transition-colors duration-fast"
                   >
                     Iniciar sesión
                   </Link>
                   <Link
                     to="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 text-center bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:shadow-lg transition-all text-base font-medium min-h-[44px]"
+                    className="btn btn-primary w-full justify-center"
                   >
                     Registrarse
                   </Link>

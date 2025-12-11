@@ -1,53 +1,65 @@
+import { forwardRef } from 'react';
+
 /**
- * Componente Textarea reutilizable
- * Abstrae estilos comunes de textareas
+ * Textarea Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
  */
-const Textarea = ({
-    label,
-    name,
-    value,
-    onChange,
-    placeholder = "",
-    required = false,
-    rows = 3,
-    error = "",
-    className = "",
-    ...props
-}) => {
-    const baseClasses =
-        "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-none text-gray-900 dark:text-white transition-colors resize-none";
 
-    const borderClasses = error
-        ? "border-red-500 dark:border-red-400"
-        : "border-gray-300 dark:border-gray-700";
+const Textarea = forwardRef(
+    (
+        {
+            label,
+            error,
+            hint,
+            rows = 4,
+            resize = 'vertical',
+            className = '',
+            containerClassName = '',
+            ...props
+        },
+        ref
+    ) => {
+        const hasError = Boolean(error);
 
-    return (
-        <div className={className}>
-            {label && (
-                <label
-                    htmlFor={name}
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                    {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-            )}
-            <textarea
-                id={name}
-                name={name}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                required={required}
-                rows={rows}
-                className={`${baseClasses} ${borderClasses}`}
-                {...props}
-            />
-            {error && (
-                <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>
-            )}
-        </div>
-    );
-};
+        const resizeClasses = {
+            none: 'resize-none',
+            vertical: 'resize-y',
+            horizontal: 'resize-x',
+            both: 'resize',
+        };
+
+        const textareaClasses = `
+      input
+      ${resizeClasses[resize] || resizeClasses.vertical}
+      ${hasError ? 'input-error' : ''}
+      ${className}
+    `.trim().replace(/\s+/g, ' ');
+
+        return (
+            <div className={`space-y-2 ${containerClassName}`}>
+                {label && (
+                    <label className="block text-sm font-medium text-foreground">
+                        {label}
+                    </label>
+                )}
+
+                <textarea
+                    ref={ref}
+                    rows={rows}
+                    className={textareaClasses}
+                    {...props}
+                />
+
+                {(error || hint) && (
+                    <p className={`text-sm ${hasError ? 'text-error' : 'text-foreground-tertiary'}`}>
+                        {error || hint}
+                    </p>
+                )}
+            </div>
+        );
+    }
+);
+
+Textarea.displayName = 'Textarea';
 
 export default Textarea;

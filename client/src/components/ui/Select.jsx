@@ -1,58 +1,81 @@
+import { forwardRef } from 'react';
+import { ChevronDown } from 'lucide-react';
+
 /**
- * Componente Select reutilizable
- * Abstrae estilos comunes de selects
+ * Select Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
  */
-const Select = ({
-    label,
-    name,
-    value,
-    onChange,
-    options = [],
-    placeholder = "-- Seleccionar --",
-    required = false,
-    error = "",
-    className = "",
-    ...props
-}) => {
-    const baseClasses =
-        "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-none text-gray-900 dark:text-white transition-colors";
 
-    const borderClasses = error
-        ? "border-red-500 dark:border-red-400"
-        : "border-gray-300 dark:border-gray-700";
+const Select = forwardRef(
+    (
+        {
+            label,
+            error,
+            hint,
+            options = [],
+            placeholder = 'Seleccionar...',
+            className = '',
+            containerClassName = '',
+            ...props
+        },
+        ref
+    ) => {
+        const hasError = Boolean(error);
 
-    return (
-        <div className={className}>
-            {label && (
-                <label
-                    htmlFor={name}
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                    {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-            )}
-            <select
-                id={name}
-                name={name}
-                value={value}
-                onChange={onChange}
-                required={required}
-                className={`${baseClasses} ${borderClasses}`}
-                {...props}
-            >
-                <option value="">{placeholder}</option>
-                {options.map((option) => (
-                    <option key={option.value || option.id} value={option.value || option.id}>
-                        {option.label || option.name}
-                    </option>
-                ))}
-            </select>
-            {error && (
-                <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>
-            )}
-        </div>
-    );
-};
+        const selectClasses = `
+      input
+      pr-10
+      cursor-pointer
+      appearance-none
+      ${hasError ? 'input-error' : ''}
+      ${className}
+    `.trim().replace(/\s+/g, ' ');
+
+        return (
+            <div className={`space-y-2 ${containerClassName}`}>
+                {label && (
+                    <label className="block text-sm font-medium text-foreground">
+                        {label}
+                    </label>
+                )}
+
+                <div className="relative">
+                    <select
+                        ref={ref}
+                        className={selectClasses}
+                        {...props}
+                    >
+                        {placeholder && (
+                            <option value="" disabled>
+                                {placeholder}
+                            </option>
+                        )}
+                        {options.map((option) => (
+                            <option
+                                key={option.value}
+                                value={option.value}
+                                disabled={option.disabled}
+                            >
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <ChevronDown className="w-5 h-5 text-foreground-tertiary" />
+                    </div>
+                </div>
+
+                {(error || hint) && (
+                    <p className={`text-sm ${hasError ? 'text-error' : 'text-foreground-tertiary'}`}>
+                        {error || hint}
+                    </p>
+                )}
+            </div>
+        );
+    }
+);
+
+Select.displayName = 'Select';
 
 export default Select;

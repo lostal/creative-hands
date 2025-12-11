@@ -1,49 +1,129 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { IndicatorDot } from './ui';
+
+/**
+ * Footer Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
+ * Minimal, technical, grid-based layout
+ */
 
 const Footer = () => {
-  return (
-    <footer className="bg-gradient-to-t from-gray-50 via-white to-transparent dark:from-gray-900 dark:via-gray-900" role="contentinfo">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/*
-          Responsive layout:
-          - mobile: 2 rows (first: Brand | Information side by side, second: Phrase centered)
-          - md and up: 3 columns (Brand | Phrase | Information) all in one row
-        */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 items-center">
-          {/* Brand - Left */}
-          <div className="text-left col-span-1">
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Creative Hands</h4>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm">Tienda de artesanía y productos hechos a mano. Calidad y cariño en cada pieza.</p>
-          </div>
+  const currentYear = new Date().getFullYear();
 
-          {/* Phrase: centered, full width on mobile (below Brand/Info), middle column on md+ */}
-          <div className="flex justify-center col-span-2 md:col-span-1 order-3 md:order-2">
-            <div className="text-center text-sm text-gray-700 dark:text-gray-200">
-              <div className="inline-flex items-center gap-2 justify-center px-4 py-2 rounded-xl bg-white/8 dark:bg-gray-800/60 backdrop-blur-md shadow-sm border border-white/6 dark:border-white/10">
-                <span className="font-medium">© {new Date().getFullYear()} Álvaro Lostal</span>
-                <span className="opacity-50">·</span>
-                <span aria-hidden="true" className="text-red-400">♥</span>
-                <span className="opacity-50">·</span>
-                <span className="font-medium">Creative Hands</span>
+  const links = {
+    info: [
+      { label: 'Quiénes somos', path: '/about' },
+      { label: 'Envíos y Devoluciones', path: '/envios' },
+      { label: 'Privacidad', path: '/privacidad' },
+    ],
+    shop: [
+      { label: 'Todos los productos', path: '/products' },
+      { label: 'Joyería', path: '/products/category/joyeria-artesanal' },
+      { label: 'Cerámica', path: '/products/category/ceramica-y-arcilla' },
+    ],
+  };
+
+  return (
+    <footer className="border-t border-border-subtle bg-background-secondary" role="contentinfo">
+      <div className="container-page py-12 md:py-16">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          {/* Brand Column */}
+          <div className="md:col-span-5 lg:col-span-4">
+            <div className="flex items-center gap-2 mb-4">
+              <IndicatorDot status="active" size="sm" />
+              <span className="font-brand uppercase text-lg text-primary-500">
+                Creative Hands
+              </span>
+            </div>
+            <p className="text-sm text-foreground-secondary leading-relaxed max-w-sm">
+              Artesanía de calidad, creada con pasión y cuidado.
+              Cada pieza cuenta una historia única.
+            </p>
+
+            {/* Status Indicators (Teenage Engineering style) */}
+            <div className="mt-6 flex items-center gap-6 text-xs font-mono text-foreground-tertiary">
+              <div className="flex items-center gap-2">
+                <IndicatorDot status="on" size="sm" />
+                <span>ONLINE</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="opacity-50">v2.0</span>
               </div>
             </div>
           </div>
 
-          {/* Information - Right */}
-          <div className="flex justify-end col-span-1 order-2 md:order-3">
-            <div>
-              <h5 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Información</h5>
-              <ul className="space-y-1 text-sm text-left">
-                <li>
-                  <Link to="/about" className="text-gray-600 dark:text-gray-300 hover:text-primary-500">Quiénes somos</Link>
+          {/* Links Columns */}
+          <div className="md:col-span-3 lg:col-span-2">
+            <h4 className="text-xs font-mono font-semibold text-foreground-tertiary uppercase tracking-wider mb-4">
+              Tienda
+            </h4>
+            <ul className="space-y-3">
+              {links.shop.map((link) => (
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-foreground-secondary hover:text-foreground
+                             transition-colors duration-fast"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
-                <li>
-                  <Link to="/envios" className="text-gray-600 dark:text-gray-300 hover:text-primary-500">Envíos y Devoluciones</Link>
+              ))}
+            </ul>
+          </div>
+
+          <div className="md:col-span-3 lg:col-span-2">
+            <h4 className="text-xs font-mono font-semibold text-foreground-tertiary uppercase tracking-wider mb-4">
+              Información
+            </h4>
+            <ul className="space-y-3">
+              {links.info.map((link) => (
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-foreground-secondary hover:text-foreground
+                             transition-colors duration-fast"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
-                <li>
-                  <Link to="/privacidad" className="text-gray-600 dark:text-gray-300 hover:text-primary-500">Privacidad & Términos</Link>
-                </li>
-              </ul>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact/Social Column */}
+          <div className="md:col-span-1 lg:col-span-4 md:text-right">
+            <h4 className="text-xs font-mono font-semibold text-foreground-tertiary uppercase tracking-wider mb-4">
+              Contacto
+            </h4>
+            <a
+              href="mailto:hola@creativehands.es"
+              className="text-sm text-foreground-secondary hover:text-primary-500
+                       transition-colors duration-fast"
+            >
+              hola@creativehands.es
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-6 border-t border-border-subtle">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-foreground-tertiary">
+            <div className="flex items-center gap-2 font-mono">
+              <span>© {currentYear}</span>
+              <span className="opacity-50">·</span>
+              <span>Álvaro Lostal</span>
+              <span className="opacity-50">·</span>
+              <span className="text-primary-500">Creative Hands</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="font-mono opacity-50">
+                Hecho con
+                <span className="mx-1 text-error">♥</span>
+                en España
+              </span>
             </div>
           </div>
         </div>

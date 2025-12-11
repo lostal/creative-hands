@@ -1,53 +1,73 @@
+import { forwardRef } from 'react';
+
 /**
- * Componente Input reutilizable
- * Abstrae estilos comunes de inputs de formulario
+ * Input Component - v2 Design System
+ * Precision Craft: Vercel/Apple + Teenage Engineering
  */
-const Input = ({
-    label,
-    name,
-    type = "text",
-    value,
-    onChange,
-    placeholder = "",
-    required = false,
-    error = "",
-    className = "",
-    ...props
-}) => {
-    const baseInputClasses =
-        "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-none text-gray-900 dark:text-white transition-colors";
 
-    const borderClasses = error
-        ? "border-red-500 dark:border-red-400"
-        : "border-gray-300 dark:border-gray-700";
+const Input = forwardRef(
+    (
+        {
+            label,
+            error,
+            hint,
+            icon: Icon,
+            iconPosition = 'left',
+            className = '',
+            containerClassName = '',
+            ...props
+        },
+        ref
+    ) => {
+        const hasIcon = Boolean(Icon);
+        const hasError = Boolean(error);
 
-    return (
-        <div className={className}>
-            {label && (
-                <label
-                    htmlFor={name}
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                    {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-            )}
-            <input
-                id={name}
-                name={name}
-                type={type}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                required={required}
-                className={`${baseInputClasses} ${borderClasses}`}
-                {...props}
-            />
-            {error && (
-                <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>
-            )}
-        </div>
-    );
-};
+        const inputClasses = `
+      input
+      ${hasIcon && iconPosition === 'left' ? 'pl-11' : ''}
+      ${hasIcon && iconPosition === 'right' ? 'pr-11' : ''}
+      ${hasError ? 'input-error' : ''}
+      ${className}
+    `.trim().replace(/\s+/g, ' ');
+
+        return (
+            <div className={`space-y-2 ${containerClassName}`}>
+                {label && (
+                    <label className="block text-sm font-medium text-foreground">
+                        {label}
+                    </label>
+                )}
+
+                <div className="relative">
+                    {Icon && iconPosition === 'left' && (
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <Icon className="w-5 h-5 text-foreground-tertiary" />
+                        </div>
+                    )}
+
+                    <input
+                        ref={ref}
+                        className={inputClasses}
+                        {...props}
+                    />
+
+                    {Icon && iconPosition === 'right' && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <Icon className="w-5 h-5 text-foreground-tertiary" />
+                        </div>
+                    )}
+                </div>
+
+                {(error || hint) && (
+                    <p className={`text-sm ${hasError ? 'text-error' : 'text-foreground-tertiary'}`}>
+                        {error || hint}
+                    </p>
+                )}
+            </div>
+        );
+    }
+);
+
+Input.displayName = 'Input';
 
 export default Input;
