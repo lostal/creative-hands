@@ -45,7 +45,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
     // Validar stock y calcular precio total
     let totalPrice = 0;
-    const stockUpdates: { updateOne: { filter: { _id: string }; update: { $inc: { stock: number } } } }[] = [];
+    const stockUpdates: { updateOne: { filter: { _id: Types.ObjectId }; update: { $inc: { stock: number } } } }[] = [];
 
     for (const item of orderItems) {
       const product = productMap.get(item.product.toString());
@@ -70,7 +70,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       // Preparar actualización de stock para bulkWrite
       stockUpdates.push({
         updateOne: {
-          filter: { _id: item.product },
+          filter: { _id: new Types.ObjectId(item.product) },
           update: { $inc: { stock: -item.quantity } },
         },
       });
