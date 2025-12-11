@@ -31,27 +31,45 @@
 }
 
 body {
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "Segoe UI", "Roboto", sans-serif;
+  font-family:
+    "Poppins",
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    "Roboto",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Clase utilitaria para el título de marca */
 @layer components {
-
   /* Clase utilitaria para el título de marca */
   .copernicus {
-    font-family: "Copernicus-Bold", "Inter", -apple-system,
-      BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+      "Copernicus-Bold",
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     /* opcional: ajustar espaciado entre letras si se desea */
     letter-spacing: 0.02em;
   }
 
   /* Clase para subtítulos que usarán Copernicus Bold */
   .subtitle {
-    font-family: "Copernicus-Bold", "Copernicus New Condensed Trial", Poppins,
-      system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:
+      "Copernicus-Bold",
+      "Copernicus New Condensed Trial",
+      Poppins,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     font-weight: 700;
     /* tamaño un poco más destacado en pantallas grandes */
     font-size: 1.125rem;
@@ -60,8 +78,15 @@ body {
   }
 
   .copernicus-110 {
-    font-family: "Copernicus-Cond-110", "Copernicus New Condensed Trial", Inter,
-      system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:
+      "Copernicus-Cond-110",
+      "Copernicus New Condensed Trial",
+      Inter,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
   }
 
   /* sólo se mantiene la variante 110 (usada en el hero) */
@@ -104,15 +129,19 @@ body {
 
   /* Gradient background component */
   .gradient-bg {
-    background: linear-gradient(135deg,
-        rgba(203, 104, 67, 0.1) 0%,
-        rgba(213, 124, 85, 0.1) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(203, 104, 67, 0.1) 0%,
+      rgba(213, 124, 85, 0.1) 100%
+    );
   }
 
   .dark .gradient-bg {
-    background: linear-gradient(135deg,
-        rgba(38, 38, 36, 0.95) 0%,
-        rgba(30, 30, 28, 0.95) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(38, 38, 36, 0.95) 0%,
+      rgba(30, 30, 28, 0.95) 100%
+    );
   }
 
   .skeleton {
@@ -217,8 +246,11 @@ body {
 }
 
 .smooth-transition {
-  transition: color 0.25s ease, background-color 0.25s ease,
-    box-shadow 0.25s ease, transform 0.25s ease;
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
 
 /* Gradient text */
@@ -231,7 +263,9 @@ body {
 
 /* Hover lift effect */
 .hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .hover-lift:hover {
@@ -274,7 +308,6 @@ button:active {
 }
 
 @keyframes subtle-bounce {
-
   0%,
   100% {
     transform: var(--tx) translateY(0);
@@ -307,7 +340,9 @@ button:active {
   box-shadow: 0 10px 20px rgba(2, 6, 23, 0.12);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .hero-scroll-btn:hover {
@@ -328,7 +363,6 @@ button:active {
 
 /* Loading dots */
 @keyframes bounce {
-
   0%,
   80%,
   100% {
@@ -364,7 +398,8 @@ button:active {
 
 /* Card hover effect */
 .card-hover {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -375,9 +410,11 @@ button:active {
 
 /* Gradient backgrounds */
 .gradient-bg {
-  background: linear-gradient(135deg,
-      rgba(203, 104, 67, 0.1) 0%,
-      rgba(213, 124, 85, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(203, 104, 67, 0.1) 0%,
+    rgba(213, 124, 85, 0.1) 100%
+  );
 }
 
 /* Product modal image wrapper: force a natural landscape aspect on desktop while
