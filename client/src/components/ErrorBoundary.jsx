@@ -1,62 +1,58 @@
-import React from "react";
+/**
+ * ErrorBoundary - Catches React errors gracefully
+ */
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, info: null };
-  }
+import { Component } from 'react';
+import { Link } from 'react-router-dom';
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, info) {
-    this.setState({ error, info });
-    // También registrar en consola para diagnóstico
-    console.error("ErrorBoundary caught an error:", error, info);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center p-6">
-          <div className="max-w-3xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Se ha producido un error
-            </h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-              La aplicación encontró un error al renderizar esta página. Mira la
-              consola para más detalles.
-            </p>
-            <details className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap max-h-48 overflow-auto p-2 bg-gray-50 dark:bg-gray-900 rounded">
-              {String(this.state.error)}
-              {this.state.info && this.state.info.componentStack
-                ? "\n\n" + this.state.info.componentStack
-                : ""}
-            </details>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-primary-500 text-white rounded"
-              >
-                Recargar
-              </button>
-              <button
-                onClick={() => {
-                  this.setState({ hasError: false, error: null, info: null });
-                }}
-                className="px-4 py-2 glass rounded"
-              >
-                Intentar ignorar
-              </button>
-            </div>
-          </div>
-        </div>
-      );
+class ErrorBoundary extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
     }
 
-    return this.props.children;
-  }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error('ErrorBoundary caught:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-background p-4">
+                    <div className="text-center max-w-md">
+                        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-error-muted flex items-center justify-center">
+                            <svg className="w-8 h-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <h1 className="font-brand text-2xl text-foreground mb-4">
+                            Algo salió mal
+                        </h1>
+                        <p className="text-foreground-secondary mb-6">
+                            Ha ocurrido un error inesperado. Por favor, intenta recargar la página.
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="btn btn-primary"
+                            >
+                                Recargar página
+                            </button>
+                            <Link to="/" className="btn btn-ghost">
+                                Volver al inicio
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
 }
 
 export default ErrorBoundary;

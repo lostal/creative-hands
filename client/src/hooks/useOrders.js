@@ -74,4 +74,38 @@ export const useOrder = (orderId) => {
     };
 };
 
+/**
+ * Hook para obtener todos los pedidos (admin)
+ */
+export const useOrders = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const fetchOrders = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await orderService.getAllOrders();
+            setOrders(data.orders || []);
+        } catch (err) {
+            setError(err.response?.data?.message || "Error al cargar pedidos");
+            console.error("Error fetching all orders:", err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
+
+    return {
+        orders,
+        loading,
+        error,
+        refetch: fetchOrders,
+    };
+};
+
 export default useMyOrders;

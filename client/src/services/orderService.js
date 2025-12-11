@@ -50,3 +50,14 @@ export const markAsDelivered = async (id) => {
     const { data } = await api.put(`/orders/${id}/deliver`);
     return data;
 };
+
+/**
+ * Actualizar estado del pedido (requiere admin)
+ * @param {string} id - ID del pedido
+ * @param {Object} updates - {isPaid, isDelivered}
+ * @returns {Promise<{success: boolean, order: Object}>}
+ */
+export const updateOrderStatus = async (id, updates) => {
+    const { data } = await api.patch(`/orders/${id}/status`, updates);
+    return data;
+};

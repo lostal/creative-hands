@@ -11,7 +11,8 @@ import * as categoryService from "../services/categoryService";
  */
 export const useCategories = ({ autoFetch = true } = {}) => {
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // Start loading as true when autoFetch to prevent flash of "no categories" 
+    const [loading, setLoading] = useState(autoFetch);
     const [error, setError] = useState(null);
 
     const fetchCategories = useCallback(async () => {

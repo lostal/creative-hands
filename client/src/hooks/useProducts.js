@@ -13,7 +13,8 @@ import * as productService from "../services/productService";
  */
 export const useProducts = ({ categorySlug = null, autoFetch = true } = {}) => {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // Start loading as true when autoFetch to prevent flash of "no products"
+    const [loading, setLoading] = useState(autoFetch);
     const [error, setError] = useState(null);
 
     const fetchProducts = useCallback(async () => {
@@ -53,7 +54,8 @@ export const useProducts = ({ categorySlug = null, autoFetch = true } = {}) => {
  */
 export const useProduct = (productId) => {
     const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(false);
+    // Start loading as true when we have a productId to prevent flash of empty state
+    const [loading, setLoading] = useState(!!productId);
     const [error, setError] = useState(null);
 
     const fetchProduct = useCallback(async () => {
