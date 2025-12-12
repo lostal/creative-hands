@@ -167,7 +167,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
   return (
     <MotionDiv
       key={product._id}
-      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 lg:p-0"
+      className="fixed inset-0 z-modal flex items-center justify-center p-0 sm:p-4 lg:p-0"
       variants={backdropVariants}
       initial="hidden"
       animate="visible"

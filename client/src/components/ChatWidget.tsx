@@ -156,7 +156,7 @@ const ChatWidget = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-primary-500/50 transition-shadow duration-200 z-50"
+            className="fixed bottom-6 right-6 w-14 h-14 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-primary-500/50 transition-shadow duration-200 z-popover"
             style={{ willChange: "transform" }}
           >
             <MessageCircle className="w-6 h-6" />
@@ -181,7 +181,7 @@ const ChatWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             /* Mobile: full width with small side margins. On sm+ use fixed size on the right. */
-            className="fixed bottom-3 left-3 right-3 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96 h-[60vh] sm:h-[500px] glass rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+            className="fixed bottom-3 left-3 right-3 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96 h-[60vh] sm:h-[500px] glass rounded-2xl shadow-2xl flex flex-col overflow-hidden z-popover"
           >
             {/* Header */}
             <div className="bg-linear-to-r from-primary-500 to-primary-600 p-4 flex items-center justify-between">
@@ -230,30 +230,31 @@ const ChatWidget = () => {
               ) : (
                 <>
                   {messages.map((message) => {
-                    const isOwn = message.sender._id === user._id;
+                    // user.id viene del backend (authController), user._id es el tipo del frontend
+                    const userId = user.id || user._id;
+                    // sender._id viene del populate de Mongoose (ObjectId) - convertir a string
+                    const senderId = message.sender._id?.toString?.() || message.sender._id;
+                    const isOwn = senderId === userId;
                     return (
                       <MotionDiv
                         key={message._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${
-                          isOwn ? "justify-end" : "justify-start"
-                        }`}
+                        className={`flex ${isOwn ? "justify-end" : "justify-start"
+                          }`}
                       >
                         <div
-                          className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                            isOwn
-                              ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
-                              : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                          }`}
+                          className={`max-w-[75%] rounded-2xl px-4 py-2 ${isOwn
+                            ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
+                            : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            }`}
                         >
                           <p className="text-sm">{message.content}</p>
                           <p
-                            className={`text-xs mt-1 ${
-                              isOwn
-                                ? "text-white/70"
-                                : "text-gray-500 dark:text-gray-400"
-                            }`}
+                            className={`text-xs mt-1 ${isOwn
+                              ? "text-white/70"
+                              : "text-gray-500 dark:text-gray-400"
+                              }`}
                           >
                             {new Date(message.createdAt).toLocaleTimeString(
                               "es-ES",
