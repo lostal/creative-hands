@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
 import logger from "../utils/logger";
 import { Loader, ShoppingBag, Calendar, MapPin } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { MotionDiv } from "../lib/motion";
 import { Order } from "../types";
 
@@ -161,11 +162,10 @@ const MyOrders = () => {
 
                       <div className="flex gap-2">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            order.isDelivered
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${order.isDelivered
                               ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                               : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                          }`}
+                            }`}
                         >
                           {order.isDelivered ? "Entregado" : "En preparación"}
                         </span>
@@ -178,74 +178,75 @@ const MyOrders = () => {
                 </div>
               </button>
 
-              {/* Detalles del pedido (expandible) */}
-              {expandedOrder === order._id && (
-                <MotionDiv
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 bg-gray-50 dark:bg-gray-700/50"
-                >
-                  {/* Items del pedido */}
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                      Productos
-                    </h3>
-                    <div className="space-y-2">
-                      {order.orderItems.map((item) => (
-                        <div
-                          key={item._id}
-                          className="flex justify-between items-center text-sm"
-                        >
-                          <div>
-                            <p className="text-gray-900 dark:text-white font-medium">
-                              {item.name}
-                            </p>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs">
-                              Cantidad: {item.quantity}
+              <AnimatePresence>
+                {expandedOrder === order._id && (
+                  <MotionDiv
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 bg-gray-50 dark:bg-gray-700/50"
+                  >
+                    {/* Items del pedido */}
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                        Productos
+                      </h3>
+                      <div className="space-y-2">
+                        {order.orderItems.map((item) => (
+                          <div
+                            key={item._id}
+                            className="flex justify-between items-center text-sm"
+                          >
+                            <div>
+                              <p className="text-gray-900 dark:text-white font-medium">
+                                {item.name}
+                              </p>
+                              <p className="text-gray-600 dark:text-gray-400 text-xs">
+                                Cantidad: {item.quantity}
+                              </p>
+                            </div>
+                            <p className="text-gray-900 dark:text-white font-semibold">
+                              {new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                              }).format(item.price * item.quantity)}
                             </p>
                           </div>
-                          <p className="text-gray-900 dark:text-white font-semibold">
-                            {new Intl.NumberFormat("es-ES", {
-                              style: "currency",
-                              currency: "EUR",
-                            }).format(item.price * item.quantity)}
-                          </p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Dirección de envío */}
-                  <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-600">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      Dirección de envío
-                    </h3>
-                    <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                      <p>{order.shippingAddress.address}</p>
-                      <p>
-                        {order.shippingAddress.city},{" "}
-                        {order.shippingAddress.postalCode}
-                      </p>
-                      <p>Teléfono: {order.shippingAddress.phone}</p>
+                    {/* Dirección de envío */}
+                    <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-600">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        Dirección de envío
+                      </h3>
+                      <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                        <p>{order.shippingAddress.address}</p>
+                        <p>
+                          {order.shippingAddress.city},{" "}
+                          {order.shippingAddress.postalCode}
+                        </p>
+                        <p>Teléfono: {order.shippingAddress.phone}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Resumen financiero */}
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-700 dark:text-gray-300">
-                      Total:
-                    </span>
-                    <span className="text-lg font-bold text-primary-500">
-                      {new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(order.totalPrice)}
-                    </span>
-                  </div>
-                </MotionDiv>
-              )}
+                    {/* Resumen financiero */}
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-700 dark:text-gray-300">
+                        Total:
+                      </span>
+                      <span className="text-lg font-bold text-primary-500">
+                        {new Intl.NumberFormat("es-ES", {
+                          style: "currency",
+                          currency: "EUR",
+                        }).format(order.totalPrice)}
+                      </span>
+                    </div>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
             </MotionDiv>
           ))}
         </div>

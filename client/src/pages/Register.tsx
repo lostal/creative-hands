@@ -150,6 +150,7 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   minLength={6}
+                  autoComplete="new-password"
                   className="w-full pl-10 pr-12 py-3 sm:py-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white transition-all text-base"
                   placeholder="Mínimo 6 caracteres"
                 />
@@ -183,6 +184,7 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
+                  autoComplete="new-password"
                   className="w-full pl-10 pr-4 py-3 sm:py-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white transition-all text-base"
                   placeholder="Repite tu contraseña"
                 />

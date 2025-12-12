@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import * as categoryService from "../services/categoryService";
 import { Category } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 
 // Fallback de categorías por defecto (usado si la API falla)
 const DEFAULT_CATEGORIES: Partial<Category>[] = [
@@ -49,7 +50,7 @@ export const useCategories = ({
       setCategories(data.categories || []);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
-      console.error("Error fetching categories:", err);
+      logger.error("Error fetching categories:", err);
       // Usar categorías por defecto como fallback
       setCategories(DEFAULT_CATEGORIES as Category[]);
     } finally {

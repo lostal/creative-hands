@@ -17,6 +17,7 @@ const ChatWidget = () => {
     sender: { _id: string };
     content: string;
     createdAt: string;
+    read?: boolean;
   }
 
   interface AdminInfo {
@@ -57,6 +58,15 @@ const ChatWidget = () => {
             `/chat/messages/${adminData.admin._id}`,
           );
           setMessages(messagesData.messages);
+
+          // Calcular mensajes no leídos iniciales
+          const userId = user?.id || user?._id;
+          const unread = messagesData.messages.filter(m => {
+            const senderId = m.sender._id?.toString?.() || m.sender._id;
+            // Contar si NO es mi mensaje y NO está leído
+            return senderId !== userId && !m.read;
+          }).length;
+          setUnreadCount(unread);
         } catch (error) {
           logger.error("Error al cargar datos:", error);
         } finally {
@@ -74,7 +84,12 @@ const ChatWidget = () => {
     socket.on("message:new", (message: Message) => {
       setMessages((prev) => [...prev, message]);
       if (!isOpen) {
-        setUnreadCount((prev) => prev + 1);
+        const userId = user?.id || user?._id;
+        const senderId = message.sender._id?.toString?.() || message.sender._id;
+        // Solo incrementar si el mensaje NO es mío
+        if (senderId !== userId) {
+          setUnreadCount((prev) => prev + 1);
+        }
       }
     });
 
@@ -140,6 +155,14 @@ const ChatWidget = () => {
   const handleOpen = () => {
     setIsOpen(true);
     setUnreadCount(0);
+
+    // Marcar mensajes como leídos en el servidor
+    if (socket && adminInfo && user) {
+      const userId = user.id || user._id;
+      // ID de conversación estándar: IDs ordenados alfabéticamente
+      const conversationId = [userId, adminInfo._id].sort().join('_');
+      socket.emit('messages:read', { conversationId });
+    }
   };
 
   if (!user || isAdmin) return null;

@@ -6,6 +6,7 @@ import {
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { useNavigate } from "react-router";
 import api from "../utils/axios";
@@ -64,6 +65,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const checkAuthRef = useRef(false);
 
   // Hook de navegación - siempre se llama (regla de hooks)
   const navigate = useNavigate();
@@ -102,6 +104,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Verificar usuario al cargar (la cookie se envía automáticamente)
   useEffect(() => {
+    if (checkAuthRef.current) return;
+    checkAuthRef.current = true;
+
     const checkAuth = async () => {
       try {
         // Intentar obtener usuario actual - si hay cookie válida, funcionará

@@ -88,6 +88,7 @@ const Perfil = () => {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                autoComplete="current-password"
                 className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-white"
                 placeholder="Contraseña actual"
               />
@@ -101,6 +102,7 @@ const Perfil = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
                 className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-white"
                 placeholder="Dejar vacío para mantener la misma contraseña"
                 minLength={6}

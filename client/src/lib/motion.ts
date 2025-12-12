@@ -33,7 +33,7 @@ export const MotionPath = motion.path;
 export const MotionCircle = motion.circle;
 
 // React Router Link with motion
-export const MotionLink = motion(Link);
+export const MotionLink = motion.create(Link);
 
 // Re-export types for convenience
 export type { HTMLMotionProps, SVGMotionProps };

@@ -66,15 +66,19 @@ const Reviews = ({
 
   useEffect(() => setProduct(initialProduct), [initialProduct]);
 
+  // user.id viene del backend (authController), user._id es el tipo del frontend
+  const userId = user?.id || user?._id;
+
   const myReview = (product?.reviews || []).find((r) => {
-    if (!r.user || !user) return false;
+    if (!r.user || !userId) return false;
     // Caso 1: user es un string (ID sin popular)
     if (typeof r.user === "string") {
-      return r.user === user._id;
+      return r.user === userId;
     }
     // Caso 2: user es un objeto populado
     const reviewUser = r.user as User;
-    return reviewUser._id === user._id || reviewUser.id === user._id;
+    const reviewUserId = reviewUser._id || reviewUser.id;
+    return reviewUserId === userId;
   });
 
   const openFormForNew = () => {
@@ -233,10 +237,10 @@ const Reviews = ({
                   {r.comment}
                 </p>
 
-                {user &&
+                {userId &&
                   (typeof r.user === "string"
-                    ? r.user === user._id
-                    : (r.user as User)?._id === user._id || (r.user as User)?.id === user._id) && (
+                    ? r.user === userId
+                    : ((r.user as User)?._id || (r.user as User)?.id) === userId) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
