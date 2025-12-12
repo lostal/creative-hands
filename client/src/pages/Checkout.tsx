@@ -98,7 +98,7 @@ const Checkout = () => {
           </p>
           <button
             onClick={() => openCart()}
-            className="inline-block px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
+            className="inline-block px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
           >
             Volver al carrito
           </button>
@@ -130,7 +130,7 @@ const Checkout = () => {
             <MotionDiv
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
             >
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Dirección de envío
@@ -260,7 +260,7 @@ const Checkout = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full mt-6 px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -280,7 +280,7 @@ const Checkout = () => {
             <MotionDiv
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 sticky top-24"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-24"
             >
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Resumen
@@ -355,3 +355,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

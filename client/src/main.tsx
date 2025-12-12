@@ -6,18 +6,22 @@ import { registerSW } from "virtual:pwa-register";
 import logger from "./utils/logger";
 
 // Registrar el service worker
-let updateSW: ((reloadPage?: boolean | undefined) => Promise<void>) | undefined;
+let updateSW: (() => Promise<void>) | undefined;
 registerSW({
   onNeedRefresh() {
     if (confirm("Nueva versión disponible. ¿Actualizar ahora?")) {
-      updateSW?.(true);
+      updateSW?.();
     }
   },
   onOfflineReady() {
     logger.pwa("App lista para trabajar sin conexión");
   },
   onRegistered(registration) {
-    updateSW = registration?.update?.bind(registration);
+    if (registration?.update) {
+      updateSW = async () => {
+        await registration.update();
+      };
+    }
   },
 });
 
@@ -26,3 +30,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <App />
   </React.StrictMode>,
 );
+

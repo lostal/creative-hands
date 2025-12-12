@@ -17,7 +17,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
+        <div className="absolute inset-0 bg-linear-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
           <div className="absolute inset-0 opacity-25 pointer-events-none">
             {[...Array(8)].map((_, i) => (
               <MotionDiv
@@ -55,7 +55,7 @@ const Home = () => {
               className="flex justify-center mb-8"
             >
               <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl flex items-center justify-center shadow-2xl rotate-12">
+                <div className="w-24 h-24 bg-linear-to-br from-primary-500 to-primary-600 rounded-3xl flex items-center justify-center shadow-2xl rotate-12">
                   <Palette className="w-12 h-12 text-white" />
                 </div>
                 <MotionDiv
@@ -108,7 +108,7 @@ const Home = () => {
                   <MotionButton
                     whileHover={{ y: -4 }}
                     transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                    className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-medium text-base sm:text-lg shadow-md hover:shadow-xl transition-shadow duration-200 bg-primary-500 dark:bg-primary-600 text-white min-h-[44px]"
+                    className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-medium text-base sm:text-lg shadow-md hover:shadow-xl transition-shadow duration-200 bg-primary-500 dark:bg-primary-600 text-white min-h-11"
                     style={{ willChange: "transform" }}
                   >
                     <span>Explorar Productos</span>
@@ -119,7 +119,7 @@ const Home = () => {
                   <MotionButton
                     whileHover={{ y: -3 }}
                     transition={{ type: "spring", stiffness: 200, damping: 26 }}
-                    className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 glass rounded-2xl font-medium text-base sm:text-lg text-gray-900 dark:text-white shadow-md hover:shadow-lg transition-shadow duration-200 min-h-[44px]"
+                    className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 glass rounded-2xl font-medium text-base sm:text-lg text-gray-900 dark:text-white shadow-md hover:shadow-lg transition-shadow duration-200 min-h-11"
                     style={{ willChange: "transform" }}
                   >
                     Regístrate ahora
@@ -200,7 +200,7 @@ const Home = () => {
                 style={{ willChange: "transform" }}
               >
                 <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                  <div className="w-full sm:w-20 h-48 sm:h-20 rounded-xl overflow-hidden flex-shrink-0">
+                  <div className="w-full sm:w-20 h-48 sm:h-20 rounded-xl overflow-hidden shrink-0">
                     <img
                       src={c.img}
                       alt={c.title}
@@ -227,7 +227,7 @@ const Home = () => {
                           stiffness: 200,
                           damping: 26,
                         }}
-                        className="inline-flex items-center px-4 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-medium hover:shadow-md hover:opacity-95 transition-shadow duration-200 min-h-[44px]"
+                        className="inline-flex items-center px-4 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-medium hover:shadow-md hover:opacity-95 transition-shadow duration-200 min-h-11"
                         style={{
                           willChange: "transform, opacity",
                           transitionProperty: "box-shadow, opacity",
@@ -252,3 +252,4 @@ const Home = () => {
 };
 
 export default Home;
+

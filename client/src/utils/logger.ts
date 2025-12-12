@@ -6,8 +6,9 @@
 
 const isDev = import.meta.env.DEV;
 
-/** Tipo para argumentos de log */
-type LogArg = string | number | boolean | object | Error | null | undefined;
+/** Tipo para argumentos de log - acepta cualquier valor */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LogArg = any;
 
 const logger = {
   /**

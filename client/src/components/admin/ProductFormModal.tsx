@@ -49,7 +49,7 @@ const ProductFormModal = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4"
         onClick={handleClose}
       >
         <MotionDiv
@@ -195,7 +195,7 @@ const ProductFormModal = ({
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={saving}
-                className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="flex-1 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 style={{ willChange: "transform" }}
               >
                 {saving ? (
@@ -225,3 +225,4 @@ const ProductFormModal = ({
 };
 
 export default ProductFormModal;
+

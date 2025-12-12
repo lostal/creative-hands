@@ -75,7 +75,7 @@ const OrderConfirmation = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6"
         >
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <Package className="w-5 h-5" />
@@ -124,7 +124,7 @@ const OrderConfirmation = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6"
         >
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <MapPin className="w-5 h-5" />
@@ -201,7 +201,7 @@ const OrderConfirmation = () => {
         >
           <button
             onClick={() => navigate("/my-orders")}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
           >
             <span>Ver Mis Pedidos</span>
             <ArrowRight className="w-4 h-4" />
@@ -219,3 +219,4 @@ const OrderConfirmation = () => {
 };
 
 export default OrderConfirmation;
+

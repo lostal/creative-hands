@@ -20,7 +20,7 @@ const Textarea: React.FC<TextareaProps> = ({
   ...props
 }) => {
   const baseClasses =
-    "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-none text-gray-900 dark:text-white transition-colors resize-none";
+    "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-hidden text-gray-900 dark:text-white transition-colors resize-none";
 
   const borderClasses = error
     ? "border-red-500 dark:border-red-400"
@@ -56,3 +56,4 @@ const Textarea: React.FC<TextareaProps> = ({
 };
 
 export default Textarea;
+

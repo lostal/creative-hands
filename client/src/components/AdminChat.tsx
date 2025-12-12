@@ -177,13 +177,13 @@ const AdminChat = () => {
                 onClick={() => selectConversation(conv)}
                 className={`w-full p-4 rounded-xl text-left transition-colors duration-200 ${
                   selectedConversation?.conversationId === conv.conversationId
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white"
+                    ? "bg-linear-to-r from-primary-500 to-primary-600 text-white"
                     : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                 }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary-400 to-primary-600 flex items-center justify-center">
                       <span className="text-white font-semibold">
                         {conv.user.name.charAt(0).toUpperCase()}
                       </span>
@@ -228,7 +228,7 @@ const AdminChat = () => {
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center space-x-3">
               <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-linear-to-br from-primary-400 to-primary-600 flex items-center justify-center">
                   <span className="text-white font-semibold text-lg">
                     {selectedConversation.user.name.charAt(0).toUpperCase()}
                   </span>
@@ -263,7 +263,7 @@ const AdminChat = () => {
                     <div
                       className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                         isOwn
-                          ? "bg-gradient-to-br from-primary-500 to-primary-600 text-white"
+                          ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
                           : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                       }`}
                     >
@@ -321,14 +321,14 @@ const AdminChat = () => {
                   value={newMessage}
                   onChange={handleTyping}
                   placeholder="Escribe un mensaje..."
-                  className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
+                  className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-hidden focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
                   disabled={!connected}
                 />
                 <MotionButton
                   whileTap={{ scale: 0.9 }}
                   type="submit"
                   disabled={!newMessage.trim() || !connected}
-                  className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-shadow duration-200"
+                  className="w-12 h-12 bg-linear-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-shadow duration-200"
                   style={{ willChange: "transform" }}
                 >
                   <Send className="w-5 h-5" />
@@ -352,3 +352,4 @@ const AdminChat = () => {
 };
 
 export default AdminChat;
+

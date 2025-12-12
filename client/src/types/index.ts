@@ -1,5 +1,7 @@
 export interface User {
   _id: string;
+  /** Alias para compatibilidad - algunos endpoints devuelven 'id' en lugar de '_id' */
+  id?: string;
   name: string;
   email: string;
   role: "admin" | "user";

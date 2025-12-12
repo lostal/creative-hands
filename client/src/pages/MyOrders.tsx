@@ -87,7 +87,7 @@ const MyOrders = () => {
             </p>
             <button
               onClick={() => navigate("/products")}
-              className="inline-block px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
+              className="inline-block px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
             >
               Ver productos
             </button>
@@ -113,7 +113,7 @@ const MyOrders = () => {
               key={order._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
             >
               {/* Header del pedido */}
               <button
@@ -255,3 +255,4 @@ const MyOrders = () => {
 };
 
 export default MyOrders;
+

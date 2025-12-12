@@ -156,7 +156,7 @@ const ChatWidget = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-primary-500/50 transition-shadow duration-200 z-50"
+            className="fixed bottom-6 right-6 w-14 h-14 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-primary-500/50 transition-shadow duration-200 z-50"
             style={{ willChange: "transform" }}
           >
             <MessageCircle className="w-6 h-6" />
@@ -184,7 +184,7 @@ const ChatWidget = () => {
             className="fixed bottom-3 left-3 right-3 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96 h-[60vh] sm:h-[500px] glass rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-4 flex items-center justify-between">
+            <div className="bg-linear-to-r from-primary-500 to-primary-600 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -243,7 +243,7 @@ const ChatWidget = () => {
                         <div
                           className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                             isOwn
-                              ? "bg-gradient-to-br from-primary-500 to-primary-600 text-white"
+                              ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                           }`}
                         >
@@ -307,14 +307,14 @@ const ChatWidget = () => {
                   value={newMessage}
                   onChange={handleTyping}
                   placeholder="Escribe un mensaje..."
-                  className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
+                  className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm focus:outline-hidden focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
                   disabled={!connected}
                 />
                 <MotionButton
                   whileTap={{ scale: 0.9 }}
                   type="submit"
                   disabled={!newMessage.trim() || !connected}
-                  className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-shadow duration-200"
+                  className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-shadow duration-200"
                   style={{ willChange: "transform" }}
                 >
                   <Send className="w-4 h-4" />
@@ -329,3 +329,4 @@ const ChatWidget = () => {
 };
 
 export default ChatWidget;
+

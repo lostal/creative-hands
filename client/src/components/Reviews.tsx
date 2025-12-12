@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
 import { Trash2, Edit3 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { MotionDiv, MotionButton } from "../lib/motion";
+import { MotionDiv } from "../lib/motion";
 
 import { Product, Review } from "../types";
 
@@ -188,7 +188,7 @@ const Reviews = ({
           {isAuthenticated && user?.role !== "admin" && !myReview && (
             <button
               onClick={openFormForNew}
-              className="px-3 py-2 bg-primary-500 text-white rounded text-sm"
+              className="px-3 py-2 bg-primary-500 text-white rounded-sm text-sm"
             >
               Escribir opinión
             </button>
@@ -208,7 +208,7 @@ const Reviews = ({
             .map((r) => (
               <article
                 key={r._id || r.createdAt}
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border relative"
+                className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xs border relative"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -236,7 +236,7 @@ const Reviews = ({
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
-                        className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="p-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         aria-label="Editar valoración"
                       >
                         <Edit3 className="w-4 h-4 text-primary-500" />
@@ -298,7 +298,7 @@ const Reviews = ({
                                   title: e.target.value,
                                 }))
                               }
-                              className="mt-1 w-full px-3 py-2 rounded border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
+                              className="mt-1 w-full px-3 py-2 rounded-sm border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
                             />
                           </div>
                           <div>
@@ -314,7 +314,7 @@ const Reviews = ({
                                 }))
                               }
                               rows={3}
-                              className="mt-1 w-full px-3 py-2 rounded border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
+                              className="mt-1 w-full px-3 py-2 rounded-sm border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
                             />
                           </div>
                           <div className="flex items-center gap-3">
@@ -354,14 +354,14 @@ const Reviews = ({
                                   });
                                   setError(null);
                                 }}
-                                className="px-3 py-2 border rounded text-sm text-gray-700 dark:text-gray-200"
+                                className="px-3 py-2 border rounded-sm text-sm text-gray-700 dark:text-gray-200"
                               >
                                 Cancelar
                               </button>
                               <button
                                 type="submit"
                                 disabled={submitting}
-                                className="px-4 py-2 bg-primary-500 text-white rounded text-sm"
+                                className="px-4 py-2 bg-primary-500 text-white rounded-sm text-sm"
                               >
                                 {submitting ? "Guardando…" : "Guardar"}
                               </button>
@@ -394,7 +394,7 @@ const Reviews = ({
                 onChange={(e) =>
                   setForm((s) => ({ ...s, title: e.target.value }))
                 }
-                className="mt-1 w-full px-3 py-2 rounded border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
+                className="mt-1 w-full px-3 py-2 rounded-sm border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
                 placeholder="Breve título"
               />
             </div>
@@ -408,7 +408,7 @@ const Reviews = ({
                   setForm((s) => ({ ...s, comment: e.target.value }))
                 }
                 rows={4}
-                className="mt-1 w-full px-3 py-2 rounded border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
+                className="mt-1 w-full px-3 py-2 rounded-sm border bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white"
                 placeholder="Cuenta tu experiencia"
               ></textarea>
             </div>
@@ -441,14 +441,14 @@ const Reviews = ({
                     setEditingId(null);
                     setForm({ title: "", comment: "", rating: 5 });
                   }}
-                  className="px-3 py-2 border rounded text-sm text-gray-700 dark:text-gray-200"
+                  className="px-3 py-2 border rounded-sm text-sm text-gray-700 dark:text-gray-200"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-primary-500 text-white rounded text-sm"
+                  className="px-4 py-2 bg-primary-500 text-white rounded-sm text-sm"
                 >
                   {submitting ? "Enviando…" : editingId ? "Guardar" : "Enviar"}
                 </button>
@@ -462,3 +462,4 @@ const Reviews = ({
 };
 
 export default Reviews;
+

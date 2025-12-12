@@ -150,7 +150,7 @@ const Navbar = () => {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-start space-x-2 px-2 py-2 rounded-full glass hover:shadow-lg transition-all"
                 >
-                  <div className="w-7 h-7 flex-shrink-0 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center overflow-hidden">
+                  <div className="w-7 h-7 shrink-0 rounded-full bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center overflow-hidden">
                     <span className="text-white text-sm font-semibold">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
@@ -223,7 +223,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-medium rounded-full hover:shadow-lg transition-all"
+                  className="px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white text-sm font-medium rounded-full hover:shadow-lg transition-all"
                 >
                   Registrarse
                 </Link>
@@ -258,7 +258,7 @@ const Navbar = () => {
               <Link
                 to="/products"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
+                className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-11"
               >
                 Productos
               </Link>
@@ -269,7 +269,7 @@ const Navbar = () => {
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
+                  className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-11"
                 >
                   Panel Admin
                 </Link>
@@ -280,7 +280,7 @@ const Navbar = () => {
                   toggleTheme();
                   setMobileMenuOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-11"
               >
                 {theme === "light" ? (
                   <Moon className="w-4 h-4" />
@@ -303,7 +303,7 @@ const Navbar = () => {
                   <Link
                     to="/perfil"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                    className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-11"
                   >
                     <User className="w-5 h-5" />
                     <span>Perfil</span>
@@ -313,7 +313,7 @@ const Navbar = () => {
                     <Link
                       to="/my-orders"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-11"
                     >
                       <Package className="w-5 h-5" />
                       <span>Mis Pedidos</span>
@@ -326,7 +326,7 @@ const Navbar = () => {
                         openCart();
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px] relative"
+                      className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-11 relative"
                     >
                       <ShoppingBag className="w-5 h-5" />
                       <span>Carrito</span>
@@ -340,7 +340,7 @@ const Navbar = () => {
 
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-[44px]"
+                    className="w-full text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-2 text-base font-medium min-h-11"
                   >
                     <LogOut className="w-5 h-5" />
                     <span>Cerrar sesión</span>
@@ -351,14 +351,14 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-[44px]"
+                    className="flex items-center justify-center px-4 py-3 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-base font-medium min-h-11"
                   >
                     Iniciar sesión
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 text-center bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:shadow-lg transition-all text-base font-medium min-h-[44px]"
+                    className="flex items-center justify-center px-4 py-3 text-center bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:shadow-lg transition-all text-base font-medium min-h-11"
                   >
                     Registrarse
                   </Link>
@@ -373,3 +373,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

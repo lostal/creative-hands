@@ -20,7 +20,7 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const baseInputClasses =
-    "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-none text-gray-900 dark:text-white transition-colors";
+    "w-full px-4 py-3 bg-white dark:bg-gray-800 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:outline-hidden text-gray-900 dark:text-white transition-colors";
 
   const borderClasses = error
     ? "border-red-500 dark:border-red-400"
@@ -56,3 +56,4 @@ const Input: React.FC<InputProps> = ({
 };
 
 export default Input;
+

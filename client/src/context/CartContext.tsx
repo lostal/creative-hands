@@ -167,3 +167,4 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
+

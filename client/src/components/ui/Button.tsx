@@ -31,7 +31,7 @@ const Button = ({
 
   const variants = {
     primary:
-      "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl",
+      "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl",
     secondary: "glass text-gray-700 dark:text-gray-300 hover:shadow-md",
     danger: "bg-red-500 text-white shadow-lg hover:shadow-xl hover:bg-red-600",
     ghost:
@@ -40,7 +40,7 @@ const Button = ({
 
   const sizes = {
     sm: "px-3 py-2 text-sm min-h-[36px] space-x-1.5",
-    md: "px-4 sm:px-6 py-3 text-base min-h-[48px] space-x-2",
+    md: "px-4 sm:px-6 py-3 text-base min-h-12 space-x-2",
     lg: "px-6 sm:px-8 py-4 text-lg min-h-[56px] space-x-3",
   };
 
@@ -82,3 +82,4 @@ const Button = ({
 };
 
 export default Button;
+

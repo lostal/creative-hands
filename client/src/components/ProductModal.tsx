@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { getErrorMessage } from "../utils/errors";
 import Reviews from "./Reviews";
-import { MotionDiv, MotionButton, MotionImg } from "../lib/motion";
+import { MotionDiv, MotionImg } from "../lib/motion";
 
 import { Product } from "../types";
 
@@ -20,7 +20,7 @@ const panelVariants = {
     y: 0,
     opacity: 1,
     scale: 1,
-    transition: { type: "spring", stiffness: 300, damping: 30 },
+    transition: { type: "spring" as const, stiffness: 300, damping: 30 },
   },
   exit: { y: 20, opacity: 0, scale: 0.995, transition: { duration: 0.18 } },
 };
@@ -89,11 +89,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
     isFirstMount.current = false;
   }, []);
 
-  // Early return DESPUÉS de todos los hooks
-  if (!product) return null;
-
   // Fetch detailed product (with reviews) when modal opens or product changes
   useEffect(() => {
+    if (!product) return;
+
     let mounted = true;
     const fetchDetails = async () => {
       try {
@@ -114,17 +113,22 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
     return () => {
       mounted = false;
     };
-  }, [product._id]);
+  }, [product]);
+
+  // Early return DESPUÉS de todos los hooks
+  if (!product) return null;
 
   // review handling moved to ReviewSection
 
   // touch/swipe handlers for mobile
   const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    const touch = e.touches[0];
+    if (touch) touchStartX.current = touch.clientX;
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
+    const touch = e.touches[0];
+    if (touch) touchEndX.current = touch.clientX;
   };
 
   const prevImage = () => {
@@ -168,7 +172,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
       onClick={onClose}
     >
       <MotionDiv
-        className="relative w-full h-full sm:h-auto sm:w-[95%] lg:w-[90%] sm:max-w-3xl lg:max-w-[1100px] rounded-none sm:rounded-2xl bg-white dark:bg-gray-900 shadow-2xl overflow-hidden"
+        className="relative w-full h-full sm:h-auto sm:w-[95%] lg:w-[90%] sm:max-w-3xl lg:max-w-275 rounded-none sm:rounded-2xl bg-white dark:bg-gray-900 shadow-2xl overflow-hidden"
         style={{ maxHeight: "100vh" }}
         variants={panelVariants}
         initial="hidden"
@@ -182,7 +186,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
         <div className="flex flex-col md:flex-row h-full items-stretch min-h-0 overflow-y-auto md:overflow-y-hidden">
           {/* Left: Gallery */}
-          <div className="md:w-1/2 lg:w-[60%] bg-gradient-to-br from-primary-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 sm:p-4 md:p-6 flex flex-col items-start justify-start min-h-0 h-auto md:h-full lg:rounded-l-2xl overflow-hidden">
+          <div className="md:w-1/2 lg:w-[60%] bg-linear-to-br from-primary-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 sm:p-4 md:p-6 flex flex-col items-start justify-start min-h-0 h-auto md:h-full lg:rounded-l-2xl overflow-hidden">
             <div
               className="relative w-full flex items-center justify-center lg:flex-none lg:min-h-0"
               onTouchStart={onTouchStart}
@@ -226,14 +230,14 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow z-40 focus:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-[40px] min-h-[40px]"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-40 focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
                     aria-label="Anterior imagen"
                   >
                     <ChevronLeft className="w-5 sm:w-6 h-5 sm:h-6 text-gray-900 dark:text-white" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow z-40 focus:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-[40px] min-h-[40px]"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-40 focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
                     aria-label="Siguiente imagen"
                   >
                     <ChevronRight className="w-5 sm:w-6 h-5 sm:h-6 text-gray-900 dark:text-white" />
@@ -256,7 +260,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                   }}
                   className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${
                     i === index ? "border-primary-500" : "border-transparent"
-                  } min-w-[64px] min-h-[64px]`}
+                  } min-w-16 min-h-16`}
                 >
                   <img
                     src={img}
@@ -280,7 +284,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               </h2>
               <button
                 onClick={onClose}
-                className="ml-2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 shadow flex-shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+                className="ml-2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 shadow-sm shrink-0 min-w-10 min-h-10 flex items-center justify-center"
                 aria-label="Cerrar"
               >
                 <X className="w-5 h-5 text-gray-800 dark:text-white" />
@@ -311,7 +315,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               <div className="flex gap-1 sm:gap-2">
                 <button
                   onClick={() => setSelectedTab("details")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
                     selectedTab === "details"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
@@ -321,7 +325,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 </button>
                 <button
                   onClick={() => setSelectedTab("reviews")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-[44px] flex items-center ${
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
                     selectedTab === "reviews"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
@@ -422,12 +426,12 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={(product.stock ?? 0) === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-[44px] transition-all whitespace-nowrap min-w-[120px] ${
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${
                         (product.stock ?? 0) === 0
                           ? "bg-gray-400 cursor-not-allowed"
                           : addedToCart
                             ? "bg-green-600 hover:bg-green-700"
-                            : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                            : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                       }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
@@ -464,3 +468,4 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 };
 
 export default ProductModal;
+

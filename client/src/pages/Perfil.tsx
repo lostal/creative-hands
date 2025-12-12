@@ -76,7 +76,7 @@ const Perfil = () => {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-white"
               />
             </div>
 
@@ -88,7 +88,7 @@ const Perfil = () => {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-white"
                 placeholder="Contraseña actual"
               />
             </div>
@@ -101,7 +101,7 @@ const Perfil = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/60 dark:bg-black/30 px-4 py-2 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-white"
                 placeholder="Dejar vacío para mantener la misma contraseña"
                 minLength={6}
               />
@@ -111,7 +111,7 @@ const Perfil = () => {
               <button
                 disabled={loading}
                 type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full hover:shadow-md disabled:opacity-60"
+                className="px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full hover:shadow-md disabled:opacity-60"
               >
                 {loading ? "Guardando..." : "Guardar cambios"}
               </button>
@@ -127,3 +127,4 @@ const Perfil = () => {
 };
 
 export default Perfil;
+

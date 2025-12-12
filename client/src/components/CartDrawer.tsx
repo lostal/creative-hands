@@ -48,7 +48,7 @@ const CartDrawer = () => {
           </h3>
           <button
             onClick={closeCart}
-            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -62,7 +62,7 @@ const CartDrawer = () => {
           ) : (
             cartItems.map((item) => (
               <div key={item.product._id} className="flex gap-3 items-center">
-                <div className="w-16 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
+                <div className="w-16 h-16 rounded-sm overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
                   <img
                     src={item.product.images?.[0] || "/placeholder.png"}
                     alt={item.product.name}
@@ -77,7 +77,7 @@ const CartDrawer = () => {
                     </h4>
                     <button
                       onClick={() => removeFromCart(item.product._id)}
-                      className="text-red-500 hover:text-red-700 p-1 rounded"
+                      className="text-red-500 hover:text-red-700 p-1 rounded-sm"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -97,7 +97,7 @@ const CartDrawer = () => {
                           Math.max(1, item.quantity - 1),
                         )
                       }
-                      className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded"
+                      className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm"
                     >
                       -
                     </button>
@@ -115,7 +115,7 @@ const CartDrawer = () => {
                         )
                       }
                       disabled={item.quantity >= (item.product.stock ?? 999)}
-                      className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
+                      className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm disabled:opacity-50"
                     >
                       +
                     </button>
@@ -172,3 +172,4 @@ const CartDrawer = () => {
 };
 
 export default CartDrawer;
+

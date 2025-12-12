@@ -144,7 +144,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-linear-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <MotionDiv
@@ -169,9 +169,9 @@ const Admin = () => {
         >
           <button
             onClick={() => setActiveTab("products")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-12 text-base ${
               activeTab === "products"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
             }`}
           >
@@ -180,9 +180,9 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setActiveTab("chat")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-12 text-base ${
               activeTab === "chat"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
             }`}
           >
@@ -191,9 +191,9 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-[48px] text-base ${
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-12 text-base ${
               activeTab === "orders"
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                 : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
             }`}
           >
@@ -217,7 +217,7 @@ const Admin = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleOpenProductModal()}
-                  className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 min-h-[48px] text-base"
+                  className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 min-h-12 text-base"
                   style={{ willChange: "transform" }}
                 >
                   <Plus className="w-5 h-5" />
@@ -227,7 +227,7 @@ const Admin = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleOpenCategoryModal}
-                  className="flex items-center justify-center space-x-2 px-4 py-3 glass rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:shadow-md transition-shadow duration-200 min-h-[48px] text-base"
+                  className="flex items-center justify-center space-x-2 px-4 py-3 glass rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:shadow-md transition-shadow duration-200 min-h-12 text-base"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Gestionar categorías</span>
@@ -310,3 +310,4 @@ const Admin = () => {
 };
 
 export default Admin;
+

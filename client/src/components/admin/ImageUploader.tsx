@@ -103,7 +103,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const fromIndex = arr.findIndex((it) => it.id === fromId);
         const toIndex = arr.findIndex((it) => it.id === targetId);
         if (fromIndex === -1 || toIndex === -1) return prev;
-        const [moved] = arr.splice(fromIndex, 1);
+        const moved = arr[fromIndex];
+        if (!moved) return prev;
+        arr.splice(fromIndex, 1);
         arr.splice(toIndex, 0, moved);
         return arr;
       });
@@ -189,7 +191,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               onDragOver={onThumbDragOver}
               onDrop={(e) => onThumbDrop(e, it.id)}
               onDragEnd={onThumbDragEnd}
-              className="relative rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900 cursor-move shadow-sm hover:scale-[1.03] active:scale-[0.98] transition-transform"
+              className="relative rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900 cursor-move shadow-xs hover:scale-[1.03] active:scale-[0.98] transition-transform"
             >
               {/* Icono de grip */}
               <div className="absolute left-2 top-2 text-white/90 dark:text-white/90">
@@ -214,13 +216,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               </button>
 
               {/* Etiqueta de estado */}
-              <div className="absolute left-2 bottom-2 bg-black/40 text-white text-xs px-2 py-0.5 rounded">
+              <div className="absolute left-2 bottom-2 bg-black/40 text-white text-xs px-2 py-0.5 rounded-sm">
                 {it.type === "existing" ? "Subida" : it.file?.name || "Nuevo"}
               </div>
 
               {/* Badge de imagen principal */}
               {imageList[0]?.id === it.id && (
-                <div className="absolute right-2 bottom-2 flex items-center gap-1 bg-yellow-400 text-black text-xs px-2 py-0.5 rounded">
+                <div className="absolute right-2 bottom-2 flex items-center gap-1 bg-yellow-400 text-black text-xs px-2 py-0.5 rounded-sm">
                   <Star className="w-3 h-3" />
                   <span>Principal</span>
                 </div>
@@ -234,3 +236,4 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 };
 
 export default ImageUploader;
+

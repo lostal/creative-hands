@@ -33,7 +33,7 @@ const Cart = () => {
             </p>
             <Link
               to="/products"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
+              className="inline-block px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
             >
               Continuar comprando
             </Link>
@@ -72,10 +72,10 @@ const Cart = () => {
                 key={item.product._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex gap-4"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex gap-4"
               >
                 {/* Imagen */}
-                <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
+                <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
                   <img
                     src={item.product.images?.[0] || "/placeholder.png"}
                     alt={item.product.name}
@@ -106,7 +106,7 @@ const Cart = () => {
                         )
                       }
                       disabled={item.quantity <= 1}
-                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       -
                     </button>
@@ -124,7 +124,7 @@ const Cart = () => {
                         )
                       }
                       disabled={item.quantity >= (item.product.stock ?? 999)}
-                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       +
                     </button>
@@ -143,7 +143,7 @@ const Cart = () => {
                   </div>
                   <button
                     onClick={() => removeFromCart(item.product._id)}
-                    className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-sm transition-colors"
                     aria-label="Eliminar del carrito"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -155,7 +155,7 @@ const Cart = () => {
 
           {/* Resumen */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 sticky top-24">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-24">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Resumen del pedido
               </h2>
@@ -190,7 +190,7 @@ const Cart = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all mb-3"
+                className="w-full px-4 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all mb-3"
               >
                 {user ? "Proceder al pago" : "Iniciar sesión para continuar"}
               </button>
@@ -217,3 +217,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

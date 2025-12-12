@@ -44,7 +44,7 @@ const ProductCard = ({
       style={{ willChange: "transform" }}
     >
       {/* Image */}
-      <div className="relative h-48 sm:h-56 md:h-64 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
+      <div className="relative h-48 sm:h-56 md:h-64 bg-linear-to-br from-primary-100 to-primary-200 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0]}
@@ -61,7 +61,7 @@ const ProductCard = ({
 
         {/* Badge de categoría */}
         <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
-          <span className="px-2 sm:px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-xs font-medium text-gray-900 dark:text-white rounded-full">
+          <span className="px-2 sm:px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xs text-xs font-medium text-gray-900 dark:text-white rounded-full">
             {(typeof product.category === "object"
               ? product.category?.name
               : "Producto") || "Producto"}
@@ -76,7 +76,7 @@ const ProductCard = ({
               whileTap={{ scale: 0.9 }}
               onClick={() => onEdit(product)}
               aria-label="Editar producto"
-              className="p-2 sm:p-2.5 bg-white dark:bg-gray-900 rounded-full shadow-lg hover:bg-primary-500 hover:text-white dark:hover:bg-primary-500 dark:hover:text-white transition-colors text-gray-900 dark:text-white min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+              className="p-2 sm:p-2.5 bg-white dark:bg-gray-900 rounded-full shadow-lg hover:bg-primary-500 hover:text-white dark:hover:bg-primary-500 dark:hover:text-white transition-colors text-gray-900 dark:text-white min-w-10 min-h-10 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <Edit className="w-4 h-4" />
             </MotionButton>
@@ -85,7 +85,7 @@ const ProductCard = ({
               whileTap={{ scale: 0.9 }}
               onClick={() => onDelete(product._id)}
               aria-label="Eliminar producto"
-              className="p-2 sm:p-2.5 bg-white dark:bg-gray-900 rounded-full shadow-lg hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-colors text-gray-900 dark:text-white min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+              className="p-2 sm:p-2.5 bg-white dark:bg-gray-900 rounded-full shadow-lg hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-colors text-gray-900 dark:text-white min-w-10 min-h-10 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <Trash2 className="w-4 h-4" />
             </MotionButton>
@@ -102,7 +102,7 @@ const ProductCard = ({
 
           {/* Media compacta: icono + rating (solo si hay valoraciones) */}
           {reviewsCount > 0 && avgRating !== null && (
-            <div className="flex items-center flex-shrink-0 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+            <div className="flex items-center shrink-0 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
               <Star className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-yellow-400 mr-1" />
               <span className="font-medium">{avgRating}</span>
             </div>
@@ -134,7 +134,7 @@ const ProductCard = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               // dejar la animación de escala a framer-motion; CSS solo anima colores
-              className="px-3 sm:px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-h-[40px] sm:min-h-[44px]"
+              className="px-3 sm:px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-h-10 sm:min-h-11"
               disabled={(product.stock ?? 0) === 0}
               onClick={() => onViewDetails && onViewDetails(product)}
             >
@@ -148,3 +148,4 @@ const ProductCard = ({
 };
 
 export default ProductCard;
+

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 const Footer = () => {
   return (
     <footer
-      className="bg-gradient-to-t from-gray-50 via-white to-transparent dark:from-gray-900 dark:via-gray-900"
+      className="bg-linear-to-t from-gray-50 via-white to-transparent dark:from-gray-900 dark:via-gray-900"
       role="contentinfo"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -27,7 +27,7 @@ const Footer = () => {
           {/* Phrase: centered, full width on mobile (below Brand/Info), middle column on md+ */}
           <div className="flex justify-center col-span-2 md:col-span-1 order-3 md:order-2">
             <div className="text-center text-sm text-gray-700 dark:text-gray-200">
-              <div className="inline-flex items-center gap-2 justify-center px-4 py-2 rounded-xl bg-white/8 dark:bg-gray-800/60 backdrop-blur-md shadow-sm border border-white/6 dark:border-white/10">
+              <div className="inline-flex items-center gap-2 justify-center px-4 py-2 rounded-xl bg-white/8 dark:bg-gray-800/60 backdrop-blur-md shadow-xs border border-white/6 dark:border-white/10">
                 <span className="font-medium">
                   © {new Date().getFullYear()} Álvaro Lostal
                 </span>
@@ -82,3 +82,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

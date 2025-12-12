@@ -15,15 +15,15 @@ const ProductCardSkeleton = () => {
 
         {/* Description lines */}
         <div className="space-y-2">
-          <div className="h-4 skeleton rounded w-full" />
-          <div className="h-4 skeleton rounded w-2/3" />
+          <div className="h-4 skeleton rounded-sm w-full" />
+          <div className="h-4 skeleton rounded-sm w-2/3" />
         </div>
 
         {/* Price and button */}
         <div className="flex items-center justify-between mt-4">
           <div className="space-y-1">
-            <div className="h-7 skeleton rounded w-20" />
-            <div className="h-3 skeleton rounded w-16" />
+            <div className="h-7 skeleton rounded-sm w-20" />
+            <div className="h-3 skeleton rounded-sm w-16" />
           </div>
           <div className="h-10 skeleton rounded-full w-24" />
         </div>
@@ -33,3 +33,4 @@ const ProductCardSkeleton = () => {
 };
 
 export default ProductCardSkeleton;
+

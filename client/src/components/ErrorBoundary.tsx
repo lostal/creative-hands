@@ -42,7 +42,7 @@ class ErrorBoundary extends React.Component<
               La aplicación encontró un error al renderizar esta página. Mira la
               consola para más detalles.
             </p>
-            <details className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap max-h-48 overflow-auto p-2 bg-gray-50 dark:bg-gray-900 rounded">
+            <details className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap max-h-48 overflow-auto p-2 bg-gray-50 dark:bg-gray-900 rounded-sm">
               {String(this.state.error)}
               {this.state.info && this.state.info.componentStack
                 ? "\n\n" + this.state.info.componentStack
@@ -51,7 +51,7 @@ class ErrorBoundary extends React.Component<
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-primary-500 text-white rounded"
+                className="px-4 py-2 bg-primary-500 text-white rounded-sm"
               >
                 Recargar
               </button>
@@ -59,7 +59,7 @@ class ErrorBoundary extends React.Component<
                 onClick={() => {
                   this.setState({ hasError: false, error: null, info: null });
                 }}
-                className="px-4 py-2 glass rounded"
+                className="px-4 py-2 glass rounded-sm"
               >
                 Intentar ignorar
               </button>
@@ -74,3 +74,4 @@ class ErrorBoundary extends React.Component<
 }
 
 export default ErrorBoundary;
+

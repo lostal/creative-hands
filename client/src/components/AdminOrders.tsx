@@ -90,7 +90,7 @@ const AdminOrders = () => {
           key={order._id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
         >
           {/* Header del pedido */}
           <button
@@ -177,7 +177,7 @@ const AdminOrders = () => {
                     {order.orderItems.map((item) => (
                       <div
                         key={item._id}
-                        className="flex justify-between items-center text-sm bg-white dark:bg-gray-800 p-3 rounded"
+                        className="flex justify-between items-center text-sm bg-white dark:bg-gray-800 p-3 rounded-sm"
                       >
                         <div>
                           <p className="text-gray-900 dark:text-white font-medium">
@@ -204,7 +204,7 @@ const AdminOrders = () => {
                     <MapPin className="w-4 h-4" />
                     Dirección de envío
                   </h3>
-                  <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1 bg-white dark:bg-gray-800 p-3 rounded">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1 bg-white dark:bg-gray-800 p-3 rounded-sm">
                     <p className="font-medium">
                       {order.shippingAddress.address}
                     </p>
@@ -276,3 +276,4 @@ const AdminOrders = () => {
 };
 
 export default AdminOrders;
+
