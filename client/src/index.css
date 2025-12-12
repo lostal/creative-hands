@@ -319,33 +319,23 @@ layer(base);
 /* Asegurar colores de texto legibles en modo oscuro para utilidades heredadas
    Algunas clases pueden haberse definido sólo para modo claro; aquí añadimos
    un pequeño override para que esos textos también sean legibles en .dark. */
-@utility text-gray-900 {
-  .dark & {
+@layer base {
+  .dark .text-gray-900 {
     color: #ffffff !important;
   }
-}
-@utility text-gray-800 {
-  .dark & {
+  .dark .text-gray-800 {
     color: #f8fafc !important;
   }
-}
-@utility text-gray-700 {
-  .dark & {
+  .dark .text-gray-700 {
     color: #d1d5db !important;
   }
-}
-@utility text-gray-600 {
-  .dark & {
+  .dark .text-gray-600 {
     color: #9ca3af !important;
   }
-}
-@utility text-gray-500 {
-  .dark & {
+  .dark .text-gray-500 {
     color: #6b7280 !important;
   }
-}
 
-@layer base {
   @font-face {
     font-family: "Copernicus-Bold";
     src: url("/fonts/CopernicusBold.woff2") format("woff2");
@@ -360,11 +350,7 @@ layer(base);
     font-style: normal;
     font-display: swap;
   }
-}
 
-/* Variante condensada para el título/logo (110) */
-
-@layer utilities {
   * {
     margin: 0;
     padding: 0;
@@ -383,8 +369,6 @@ layer(base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
-  /* Clase utilitaria para el título de marca */
 }
 
 /* Variable global de color de texto para elementos sin utilidades específicas */
