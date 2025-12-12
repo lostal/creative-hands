@@ -19,6 +19,7 @@ interface ProductResponse {
   page: number;
   pages: number;
   count: number;
+  total: number;
 }
 
 /**

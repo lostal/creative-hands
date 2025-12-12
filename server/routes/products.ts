@@ -74,6 +74,7 @@ router.put(
   validateObjectId(),
   validateObjectId("reviewId"),
   protect,
+  validate(reviewSchema),
   reviewController.updateReview,
 );
 

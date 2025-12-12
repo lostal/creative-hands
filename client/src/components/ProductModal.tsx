@@ -5,7 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errors";
+import logger from "../utils/logger";
 import { formatCurrency } from "../utils/formatters";
+import { getProductDetailUrl } from "../utils/cloudinary";
 import Reviews from "./Reviews";
 import { MotionDiv, MotionImg } from "../lib/motion";
 
@@ -108,7 +110,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
         );
         if (mounted && data?.product) setDetailedProduct(data.product);
       } catch (err: unknown) {
-        console.warn(
+        logger.warn(
           "No se pudo cargar detalles del producto:",
           getErrorMessage(err),
         );
@@ -205,7 +207,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 {/* Prev image (exiting) */}
                 {prevIndex !== null && (
                   <MotionImg
-                    src={images[prevIndex]}
+                    src={getProductDetailUrl(images[prevIndex] || "")}
                     key={`prev-${prevIndex}`}
                     initial={{ x: 0, opacity: 1 }}
                     animate={{
@@ -220,7 +222,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
                 {/* Current image (entering) */}
                 <MotionImg
-                  src={images[index]}
+                  src={getProductDetailUrl(images[index] || "")}
                   key={`cur-${index}`}
                   initial={
                     isFirstMount.current && prevIndex === null

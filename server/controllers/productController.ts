@@ -10,38 +10,52 @@ import { cloudinary } from "../config/cloudinary";
 import { enrichProductWithMetrics } from "../utils/reviewUtils";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
-import { getErrorMessage } from "../utils/errors";
+import { getErrorMessage, getErrorForResponse } from "../utils/errors";
 
 // Fix: Allow files to be object or array to match Express.Request type compatibility
 interface MulterRequest extends AuthRequest {
   files?:
-    | Express.Multer.File[]
-    | { [fieldname: string]: Express.Multer.File[] };
+  | Express.Multer.File[]
+  | { [fieldname: string]: Express.Multer.File[] };
 }
 
 /**
- * Obtener todos los productos
+ * Obtener todos los productos con paginación
  * @route GET /api/products
  */
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const { search, sort = "-createdAt" } = req.query;
+    const { search, sort = "-createdAt", page = 1, limit = 12 } = req.query;
     const query: QueryFilter<IProduct> = {};
 
     if (search) {
       query.$text = { $search: search as string };
     }
 
-    const products = await Product.find(query)
-      .sort(sort as string)
-      .populate("createdBy", "name")
-      .populate("categoryId", "name slug");
+    // Calcular skip para paginación
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Ejecutar query con paginación y contar total en paralelo
+    const [products, total] = await Promise.all([
+      Product.find(query)
+        .sort(sort as string)
+        .skip(skip)
+        .limit(limitNum)
+        .populate("createdBy", "name")
+        .populate("categoryId", "name slug"),
+      Product.countDocuments(query),
+    ]);
 
     const enriched = products.map(enrichProductWithMetrics);
 
     res.json({
       success: true,
       count: products.length,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
       products: enriched,
     });
   } catch (error) {
@@ -156,7 +170,7 @@ export const createProduct = async (req: MulterRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al crear producto",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };

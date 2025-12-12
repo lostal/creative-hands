@@ -187,14 +187,29 @@ const configureStaticFiles = (app: Express): void => {
 
 /**
  * Configurar manejador global de errores
+ * - En desarrollo: expone mensaje de error para debugging
+ * - En producción: solo mensaje genérico, logs completos en servidor
  */
 const configureErrorHandler = (app: Express): void => {
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    logger.error("Error no manejado:", err.stack);
+    const isDev = process.env.NODE_ENV === "development";
+
+    // En producción, log completo para debugging del servidor
+    if (!isDev) {
+      logger.error("Error no manejado:", {
+        message: err.message,
+        stack: err.stack,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      // En desarrollo, log más legible
+      logger.error("Error no manejado:", err.stack);
+    }
+
     res.status(500).json({
       success: false,
-      message: "Error del servidor",
-      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+      message: isDev ? err.message : "Error del servidor",
+      // Nunca exponer stack trace, solo mensaje en dev
     });
   });
 };

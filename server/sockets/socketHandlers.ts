@@ -73,6 +73,65 @@ export type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
  */
 const connectedUsers = new Map<string, Set<string>>();
 
+// ==================== RATE LIMITING ====================
+
+/**
+ * Configuración de rate limiting para mensajes
+ */
+const MESSAGE_RATE_LIMIT = {
+  MAX_MESSAGES_PER_MINUTE: 30,
+  WINDOW_MS: 60 * 1000, // 1 minuto
+  CLEANUP_INTERVAL_MS: 5 * 60 * 1000, // Limpiar cada 5 minutos
+};
+
+/**
+ * Historial de timestamps de mensajes por usuario para rate limiting
+ */
+const messageTimestamps = new Map<string, number[]>();
+
+/**
+ * Verifica si un usuario ha excedido el límite de mensajes por minuto
+ * @returns true si el usuario puede enviar mensajes, false si está limitado
+ */
+const checkMessageRateLimit = (userId: string): boolean => {
+  const now = Date.now();
+  const windowStart = now - MESSAGE_RATE_LIMIT.WINDOW_MS;
+
+  // Obtener timestamps del usuario, filtrar los antiguos
+  const timestamps = messageTimestamps.get(userId) || [];
+  const recentTimestamps = timestamps.filter((ts) => ts > windowStart);
+
+  // Actualizar con el nuevo mensaje si está permitido
+  if (recentTimestamps.length >= MESSAGE_RATE_LIMIT.MAX_MESSAGES_PER_MINUTE) {
+    return false; // Límite excedido
+  }
+
+  recentTimestamps.push(now);
+  messageTimestamps.set(userId, recentTimestamps);
+  return true;
+};
+
+/**
+ * Limpieza periódica del historial de rate limiting
+ * Elimina entradas para usuarios que no han enviado mensajes recientemente
+ */
+const cleanupRateLimitHistory = () => {
+  const now = Date.now();
+  const windowStart = now - MESSAGE_RATE_LIMIT.WINDOW_MS;
+
+  for (const [userId, timestamps] of messageTimestamps.entries()) {
+    const recent = timestamps.filter((ts) => ts > windowStart);
+    if (recent.length === 0) {
+      messageTimestamps.delete(userId);
+    } else {
+      messageTimestamps.set(userId, recent);
+    }
+  }
+};
+
+// Iniciar limpieza periódica
+setInterval(cleanupRateLimitHistory, MESSAGE_RATE_LIMIT.CLEANUP_INTERVAL_MS);
+
 /**
  * Middleware de autenticación para Socket.IO
  * Verifica el token JWT desde cookies httpOnly o auth header
@@ -202,6 +261,14 @@ const handleMessageSend = async (
 
     if (!senderId) {
       socket.emit("message:error", { message: "Usuario no autenticado" });
+      return;
+    }
+
+    // Verificar rate limit para prevenir spam
+    if (!checkMessageRateLimit(senderId)) {
+      socket.emit("message:error", {
+        message: "Demasiados mensajes. Espera un momento antes de enviar más.",
+      });
       return;
     }
 

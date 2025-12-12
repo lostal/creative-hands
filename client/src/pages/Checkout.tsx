@@ -178,6 +178,7 @@ const Checkout = () => {
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="Ej: Calle Principal 123, Apartamento 4"
+                    autoComplete="street-address"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     required
                   />
@@ -194,6 +195,7 @@ const Checkout = () => {
                       value={formData.city}
                       onChange={handleChange}
                       placeholder="Ej: Madrid"
+                      autoComplete="address-level2"
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       required
                     />
@@ -208,6 +210,9 @@ const Checkout = () => {
                       value={formData.postalCode}
                       onChange={handleChange}
                       placeholder="Ej: 28001"
+                      autoComplete="postal-code"
+                      pattern="[0-9]{5}"
+                      title="Código postal de 5 dígitos"
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       required
                     />
@@ -224,6 +229,7 @@ const Checkout = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Ej: +34 612 345 678"
+                    autoComplete="tel"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     required
                   />

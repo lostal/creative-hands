@@ -8,7 +8,7 @@ import Order, { IOrderItem } from "../models/Order";
 import Product from "../models/Product";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
-import { getErrorMessage } from "../utils/errors";
+import { getErrorForResponse } from "../utils/errors";
 
 /** Tipo para items del pedido en el request body */
 interface OrderItemInput {
@@ -121,7 +121,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al crear el pedido",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };
@@ -145,7 +145,7 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };
@@ -170,7 +170,7 @@ export const getAllOrders = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al obtener los pedidos",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };
@@ -214,7 +214,7 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al obtener el pedido",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };
@@ -249,7 +249,7 @@ export const deliverOrder = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error al entregar el pedido",
-      error: getErrorMessage(error),
+      error: getErrorForResponse(error),
     });
   }
 };

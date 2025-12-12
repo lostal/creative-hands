@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   useRef,
+  useMemo,
   ReactNode,
 } from "react";
 import { io, Socket } from "socket.io-client";
@@ -92,10 +93,14 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     }
   }, [isAuthenticated, loading]);
 
-  const value: SocketContextType = {
-    socket: socketRef.current,
-    connected,
-  };
+  // Memoizar el valor del contexto para evitar re-renders innecesarios
+  const value = useMemo<SocketContextType>(
+    () => ({
+      socket: socketRef.current,
+      connected,
+    }),
+    [connected]
+  );
 
   return (
     <SocketContext.Provider value={value}>{children}</SocketContext.Provider>

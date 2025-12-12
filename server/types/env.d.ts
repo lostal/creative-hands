@@ -32,16 +32,16 @@ declare global {
       /** Nombre del admin por defecto */
       ADMIN_NAME?: string;
 
-      // === CLOUDINARY ===
+      // === CLOUDINARY (Requeridas - se validan en validateEnvironment) ===
       /** Nombre del cloud de Cloudinary */
-      CLOUDINARY_CLOUD_NAME?: string;
+      CLOUDINARY_CLOUD_NAME: string;
       /** API Key de Cloudinary */
-      CLOUDINARY_API_KEY?: string;
+      CLOUDINARY_API_KEY: string;
       /** API Secret de Cloudinary */
-      CLOUDINARY_API_SECRET?: string;
+      CLOUDINARY_API_SECRET: string;
     }
   }
 }
 
 // Necesario para que TypeScript lo trate como un módulo
-export {};
+export { };

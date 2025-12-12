@@ -3,10 +3,36 @@
  * Contiene la lógica de negocio para gestión de mensajes y conversaciones
  */
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import Message from "../models/Message";
 import User from "../models/User";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
+
+/**
+ * Valida que un string sea un ObjectId válido de MongoDB
+ */
+const isValidObjectId = (id: string): boolean => {
+  return Types.ObjectId.isValid(id) && new Types.ObjectId(id).toString() === id;
+};
+
+/**
+ * Valida el formato del conversationId
+ * Puede ser: un ObjectId simple o dos ObjectIds separados por "_"
+ */
+const validateConversationId = (id: string): boolean => {
+  if (!id || typeof id !== "string") return false;
+
+  // Si contiene _, debe ser formato "userId1_userId2"
+  if (id.includes("_")) {
+    const parts = id.split("_");
+    if (parts.length !== 2) return false;
+    return parts.every((part) => isValidObjectId(part));
+  }
+
+  // Si no, debe ser un ObjectId simple
+  return isValidObjectId(id);
+};
 
 /**
  * Verificar que el router está activo
@@ -47,6 +73,14 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "ID de conversación requerido",
+      });
+    }
+
+    // Validar formato del ID para prevenir inyecciones
+    if (!validateConversationId(conversationId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Formato de ID de conversación inválido",
       });
     }
 

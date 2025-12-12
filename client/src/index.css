@@ -570,10 +570,8 @@ button:active {
 .hero-scroll-btn {
   position: absolute;
   left: 50% !important;
-  top: calc(100% + 0.75rem) !important;
-  --tx: translateX(calc(-50% + 6.5px));
   top: calc(100% + 2.25rem) !important;
-  transform: var(--tx) translateY(0);
+  transform: translateX(-50%) translateY(0);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -591,7 +589,7 @@ button:active {
 }
 
 .hero-scroll-btn:hover {
-  transform: var(--tx) translateY(-2px) scale(1.03);
+  transform: translateX(-50%) translateY(-2px) scale(1.03);
   box-shadow: 0 14px 28px rgba(2, 6, 23, 0.16);
 }
 
