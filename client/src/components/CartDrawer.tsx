@@ -32,7 +32,7 @@ const CartDrawer = () => {
         aria-hidden={!isCartOpen}
         onClick={closeCart}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       {/* Drawer */}
@@ -62,7 +62,7 @@ const CartDrawer = () => {
           ) : (
             cartItems.map((item) => (
               <div key={item.product._id} className="flex gap-3 items-center">
-                <div className="w-16 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                <div className="w-16 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
                   <img
                     src={item.product.images?.[0] || "/placeholder.png"}
                     alt={item.product.name}
@@ -143,7 +143,7 @@ const CartDrawer = () => {
             <button
               onClick={handleCheckout}
               disabled={cartItems.length === 0}
-              className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="w-full px-4 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               Proceder al pago
             </button>

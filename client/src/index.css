@@ -122,6 +122,21 @@ layer(base);
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  /* Tailwind v4: botones ahora usan cursor:default por defecto
+     Restauramos el comportamiento de v3 para mejor UX */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Tailwind v4: inputs no tienen outline por defecto
+     Asegurar que son editables visualmente */
+  input,
+  textarea,
+  select {
+    background-color: inherit;
+  }
 }
 
 @utility copernicus {

@@ -4,7 +4,7 @@
  */
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
-import cookie from "cookie";
+import * as cookie from "cookie";
 import User from "../models/User";
 import Message from "../models/Message";
 import logger from "../utils/logger";

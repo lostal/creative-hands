@@ -128,6 +128,11 @@ const getCorsOrigin = (): string => {
  * Configurar middleware de Express
  */
 const configureMiddleware = (app: Express): void => {
+  // Configurar trust proxy para producción (necesario para express-rate-limit detrás de proxy)
+  if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+  }
+
   app.use(
     cors({
       origin: getCorsOrigin(),
