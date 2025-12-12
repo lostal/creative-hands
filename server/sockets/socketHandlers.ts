@@ -245,11 +245,12 @@ const handleMessagesRead = async (
 
     // Notificar al remitente que los mensajes fueron leídos
     const messages = await Message.find({ conversationId }).limit(1);
-    if (messages.length > 0) {
+    const firstMessage = messages[0];
+    if (firstMessage) {
       const otherUserId =
-        messages[0].sender.toString() === userId
-          ? messages[0].receiver.toString()
-          : messages[0].sender.toString();
+        firstMessage.sender.toString() === userId
+          ? firstMessage.receiver.toString()
+          : firstMessage.sender.toString();
 
       io.to(otherUserId).emit("messages:read", { conversationId });
     }
