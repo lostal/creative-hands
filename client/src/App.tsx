@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { SocketProvider } from "./context/SocketContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 import Navbar from "./components/Navbar";
 import CartDrawer from "./components/CartDrawer";
 import NoiseOverlay from "./components/NoiseOverlay";
@@ -160,7 +161,9 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <SocketProvider>
-              <AppContent />
+              <ToastProvider>
+                <AppContent />
+              </ToastProvider>
             </SocketProvider>
           </CartProvider>
         </AuthProvider>

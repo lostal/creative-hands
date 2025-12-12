@@ -78,8 +78,8 @@ const Navbar = () => {
                         <Link
                             to="/products"
                             className={`text-sm font-medium transition-colors ${isActive("/products")
-                                    ? "text-primary-500"
-                                    : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
+                                ? "text-primary-500"
+                                : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
                                 }`}
                         >
                             Productos
@@ -89,8 +89,8 @@ const Navbar = () => {
                             <Link
                                 to="/admin"
                                 className={`text-sm font-medium transition-colors flex items-center space-x-1 ${isActive("/admin")
-                                        ? "text-primary-500"
-                                        : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
+                                    ? "text-primary-500"
+                                    : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
                                     }`}
                             >
                                 <LayoutDashboard className="w-4 h-4" />
@@ -102,12 +102,15 @@ const Navbar = () => {
                         {user && !isAdmin && (
                             <button
                                 onClick={openCart}
-                                className="relative text-sm font-medium transition-colors text-gray-700 dark:text-gray-300 hover:text-primary-500 flex items-center space-x-1"
+                                className="relative text-sm font-medium transition-colors text-gray-700 dark:text-gray-300 hover:text-primary-500 flex items-center space-x-1 focus-ring rounded-lg p-1"
                                 aria-label="Abrir carrito"
                             >
                                 <ShoppingBag className="w-5 h-5" />
                                 {totalItems > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    <span
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse"
+                                        key={totalItems}
+                                    >
                                         {totalItems}
                                     </span>
                                 )}

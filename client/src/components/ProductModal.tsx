@@ -3,6 +3,7 @@ import { X, ChevronLeft, ChevronRight, Star, ShoppingCart } from "lucide-react";
 import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errors";
 import Reviews from "./Reviews";
 import { MotionDiv, MotionImg } from "../lib/motion";
@@ -41,7 +42,6 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
   const touchEndX = useRef<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [ctaMessage, setCtaMessage] = useState("");
   const [detailedProduct, setDetailedProduct] = useState<Product | null>(
     product,
   );
@@ -49,6 +49,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
   const { addToCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const toast = useToast();
 
   const images =
     product?.images && product.images.length > 0
@@ -320,8 +321,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <button
                   onClick={() => setSelectedTab("details")}
                   className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "details"
-                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                      : "text-gray-600 dark:text-gray-300"
+                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                    : "text-gray-600 dark:text-gray-300"
                     }`}
                 >
                   Detalles
@@ -329,8 +330,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <button
                   onClick={() => setSelectedTab("reviews")}
                   className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "reviews"
-                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                      : "text-gray-600 dark:text-gray-300"
+                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                    : "text-gray-600 dark:text-gray-300"
                     }`}
                 >
                   Valoraciones ({detailedProduct?.numReviews ?? 0})
@@ -415,40 +416,31 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     <button
                       onClick={() => {
                         if (!isAuthenticated) {
-                          setCtaMessage("Regístrate para agregar al carrito.");
-                          setTimeout(() => setCtaMessage(""), 3000);
+                          toast.warning("Regístrate para agregar al carrito.");
                           return;
                         }
                         if (user?.role === "admin") {
-                          setCtaMessage(
-                            "Eres admin, no puedes añadir productos al carrito.",
-                          );
-                          setTimeout(() => setCtaMessage(""), 3000);
+                          toast.warning("Eres admin, no puedes añadir productos al carrito.");
                           return;
                         }
 
                         addToCart(product, quantity);
                         setAddedToCart(true);
+                        toast.success(`${product.name} añadido al carrito`);
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={(product.stock ?? 0) === 0}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${(product.stock ?? 0) === 0
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : addedToCart
-                            ? "bg-green-600 hover:bg-green-700"
-                            : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : addedToCart
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                         }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>{addedToCart ? "Añadido" : "Añadir"}</span>
                     </button>
                   </div>
-                  {/* Mensaje CTA colocado debajo para evitar que rompa la línea en móviles */}
-                  {ctaMessage && (
-                    <div className="w-full text-sm mt-2 text-center text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 px-3 py-2 rounded-md">
-                      {ctaMessage}
-                    </div>
-                  )}
                 </div>
                 <div className="mt-4 sm:mt-6 text-xs text-gray-400">
                   ID del producto: {product._id}

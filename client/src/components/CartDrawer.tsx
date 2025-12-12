@@ -24,9 +24,9 @@ const CartDrawer = () => {
     <Fragment>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity ${isCartOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-drawer-backdrop transition-opacity ${isCartOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
           }`}
         aria-hidden={!isCartOpen}
         onClick={closeCart}
@@ -36,7 +36,7 @@ const CartDrawer = () => {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 z-50 h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${isCartOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 z-drawer h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${isCartOpen ? "translate-x-0" : "translate-x-full"
           }`}
         aria-hidden={!isCartOpen}
       >
