@@ -115,8 +115,13 @@ export interface PaginatedApiResponse<T> {
 }
 
 /**
- * Respuestas específicas del backend (para compatibilidad)
- * TODO: Migrar gradualmente al formato estándar ApiResponse<T>
+ * Respuestas específicas del backend (formato legacy)
+ *
+ * PLAN DE MIGRACIÓN:
+ * 1. Nuevos endpoints deben usar ApiResponse<T> con campo 'data'
+ * 2. Endpoints existentes mantienen formato actual por compatibilidad
+ * 3. Frontend debe soportar ambos formatos durante transición
+ * 4. Usar helpers de tipado para normalizar respuestas cuando sea posible
  */
 export interface ProductsResponse {
   success: boolean;

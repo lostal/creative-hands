@@ -6,6 +6,7 @@ import { Request, Response, CookieOptions } from "express";
 import jwt, { SignOptions } from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { AuthRequest } from "../middleware/auth";
+import { JWT_CONFIG } from "../config/constants";
 import logger from "../utils/logger";
 
 /**
@@ -18,8 +19,8 @@ const getCookieOptions = (): CookieOptions => {
   const isProduction = process.env.NODE_ENV === "production";
 
   // Parsear JWT_EXPIRE para obtener milisegundos
-  const jwtExpire = process.env.JWT_EXPIRE || "7d";
-  let maxAge = 7 * 24 * 60 * 60 * 1000; // Default: 7 días en ms
+  const jwtExpire = process.env.JWT_EXPIRE || JWT_CONFIG.DEFAULT_EXPIRE;
+  let maxAge = JWT_CONFIG.DEFAULT_MAX_AGE_MS;
 
   if (jwtExpire.endsWith("d")) {
     maxAge = parseInt(jwtExpire) * 24 * 60 * 60 * 1000;

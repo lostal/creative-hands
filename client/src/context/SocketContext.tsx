@@ -97,8 +97,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       // No autenticado: cerrar socket si existe
       closeSocket();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, loading]);
+  }, [isAuthenticated, loading, socket, closeSocket]);
 
   const value: SocketContextType = {
     socket,

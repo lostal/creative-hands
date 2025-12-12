@@ -28,6 +28,13 @@ interface PopulatedUser {
 /**
  * Crear nuevo pedido
  * @route POST /api/orders
+ *
+ * NOTA DE SEGURIDAD PARA PRODUCCIÓN:
+ * Este endpoint actualmente marca las órdenes como "Contrarreembolso".
+ * Si se integra un proveedor de pagos (Stripe, PayPal, etc.), se debe:
+ * 1. Implementar webhooks con validación de firma HMAC
+ * 2. Solo marcar isPaid=true tras verificación del webhook del proveedor
+ * 3. No confiar en llamadas directas del cliente para marcar como pagado
  */
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {

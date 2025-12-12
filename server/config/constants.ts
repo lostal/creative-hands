@@ -23,6 +23,10 @@ export const RATE_LIMITS = {
   AUTH_WINDOW_MS: 15 * 60 * 1000,
   /** Máximo de intentos de autenticación por ventana */
   AUTH_MAX_ATTEMPTS: 5,
+  /** Ventana de tiempo para creación de órdenes (15 minutos en ms) */
+  ORDER_WINDOW_MS: 15 * 60 * 1000,
+  /** Máximo de órdenes por ventana por usuario */
+  ORDER_MAX_ATTEMPTS: 10,
 } as const;
 
 /**
@@ -41,4 +45,6 @@ export const PAGINATION = {
 export const JWT_CONFIG = {
   /** Tiempo de expiración por defecto */
   DEFAULT_EXPIRE: "7d",
+  /** MaxAge en milisegundos (7 días) para cookies */
+  DEFAULT_MAX_AGE_MS: 7 * 24 * 60 * 60 * 1000,
 } as const;

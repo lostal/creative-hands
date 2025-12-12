@@ -5,9 +5,16 @@
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import * as cookie from "cookie";
+import Joi from "joi";
 import User from "../models/User";
 import Message from "../models/Message";
 import logger from "../utils/logger";
+
+/**
+ * Esquema de validación para contenido de mensajes
+ * Previene mensajes vacíos, extremadamente largos o con contenido peligroso
+ */
+const messageContentSchema = Joi.string().trim().min(1).max(2000).required();
 
 // ==================== TIPOS DE EVENTOS ====================
 
@@ -119,6 +126,33 @@ export const createAuthMiddleware = () => {
 };
 
 /**
+ * Obtiene los IDs de usuarios con los que el usuario tiene conversaciones
+ * Para enviar notificaciones de estado solo a usuarios relacionados
+ */
+const getRelatedUserIds = async (userId: string): Promise<string[]> => {
+  try {
+    const conversations = await Message.distinct("conversationId", {
+      $or: [{ sender: userId }, { receiver: userId }],
+    });
+
+    const relatedIds = new Set<string>();
+    for (const convId of conversations) {
+      const parts = convId.split("_");
+      for (const part of parts) {
+        if (part !== userId) {
+          relatedIds.add(part);
+        }
+      }
+    }
+
+    return Array.from(relatedIds);
+  } catch (error) {
+    logger.error("Error obteniendo usuarios relacionados:", error);
+    return [];
+  }
+};
+
+/**
  * Registrar usuario como conectado
  */
 const registerUserConnection = async (
@@ -144,11 +178,11 @@ const registerUserConnection = async (
     logger.error("Error actualizando estado online:", error);
   }
 
-  // Notificar a todos que el usuario está online
-  io.emit("user:status", {
-    userId,
-    isOnline: true,
-  });
+  // Notificar solo a usuarios con conversaciones previas (privacidad + eficiencia)
+  const relatedUserIds = await getRelatedUserIds(userId);
+  for (const relatedId of relatedUserIds) {
+    io.to(relatedId).emit("user:status", { userId, isOnline: true });
+  }
 
   // Unirse a sala personal para recibir mensajes directos
   socket.join(userId);
@@ -171,15 +205,26 @@ const handleMessageSend = async (
       return;
     }
 
+    // Validar y sanitizar contenido del mensaje
+    const { error, value: sanitizedContent } =
+      messageContentSchema.validate(content);
+    if (error) {
+      const errorMessage = error.details?.[0]?.message || "Contenido inválido";
+      socket.emit("message:error", {
+        message: "Mensaje inválido: " + errorMessage,
+      });
+      return;
+    }
+
     // Generar ID de conversación (ordenado para consistencia)
     const conversationId = [senderId, receiverId].sort().join("_");
 
-    // Guardar mensaje en DB
+    // Guardar mensaje en DB (usando contenido sanitizado)
     const message = await Message.create({
       conversationId,
       sender: senderId,
       receiver: receiverId,
-      content,
+      content: sanitizedContent,
     });
 
     const populatedMessage = await Message.findById(message._id)
@@ -287,11 +332,11 @@ const handleDisconnect = async (socket: AuthenticatedSocket, io: Server) => {
         logger.error("Error actualizando estado offline:", error);
       }
 
-      // Notificar a todos
-      io.emit("user:status", {
-        userId,
-        isOnline: false,
-      });
+      // Notificar solo a usuarios con conversaciones previas
+      const relatedUserIds = await getRelatedUserIds(userId);
+      for (const relatedId of relatedUserIds) {
+        io.to(relatedId).emit("user:status", { userId, isOnline: false });
+      }
     }
   }
 };

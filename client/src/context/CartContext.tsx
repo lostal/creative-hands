@@ -26,6 +26,15 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+/**
+ * NOTA DE ARQUITECTURA:
+ * El carrito actualmente solo persiste en localStorage (cliente).
+ * Para escalabilidad futura, considerar:
+ * 1. Sincronizar carrito con backend para usuarios autenticados
+ * 2. Usar localStorage como caché/fallback para offline
+ * 3. Validar precios del servidor antes de crear orden (ya implementado en orderController)
+ */
+
 export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (!context) {

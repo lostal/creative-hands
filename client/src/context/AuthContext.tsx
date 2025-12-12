@@ -65,13 +65,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Hook de navegación para redirecciones sin recargar la página
-  let navigate: ReturnType<typeof useNavigate> | null = null;
-  try {
-    navigate = useNavigate();
-  } catch {
-    // En tests o fuera de Router, navigate no está disponible
-  }
+  // Hook de navegación - siempre se llama (regla de hooks)
+  const navigate = useNavigate();
 
   // Función para limpiar auth y redirigir (usada por interceptor y logout)
   const clearAuthAndRedirect = useCallback(() => {
@@ -79,9 +74,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Usar navegación de React en lugar de window.location.replace
     // Esto evita recargar la app y perder estado (ej. carrito)
-    if (navigate) {
-      navigate("/login", { replace: true });
-    }
+    navigate("/login", { replace: true });
   }, [navigate]);
 
   // Interceptor global para capturar 401 (token expirado / inválido)
