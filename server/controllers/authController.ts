@@ -3,7 +3,7 @@
  * Contiene la lógica de negocio para registro, login y gestión de usuarios
  */
 import { Request, Response, CookieOptions } from "express";
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { AuthRequest } from "../middleware/auth";
 import { JWT_CONFIG } from "../config/constants";

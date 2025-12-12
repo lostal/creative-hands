@@ -1,11 +1,5 @@
 import { Suspense, lazy, ReactNode } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { SocketProvider } from "./context/SocketContext";
@@ -15,7 +9,7 @@ import CartDrawer from "./components/CartDrawer";
 import NoiseOverlay from "./components/NoiseOverlay";
 import useLenis from "./hooks/useLenis";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Footer from "./components/Footer";
+import { PublicLayout } from "./layouts";
 import { Loader } from "lucide-react";
 
 // Lazy loading de páginas para reducir bundle inicial
@@ -73,7 +67,6 @@ const ProtectedRoute = ({
 
 function AppContent() {
   const { loading } = useAuth();
-  const location = useLocation();
 
   // Inicializar Lenis smooth scroll
   useLenis();
@@ -105,11 +98,12 @@ function AppContent() {
           }
         >
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/envios" element={<ShippingReturns />} />
-            <Route path="/privacidad" element={<PrivacyTerms />} />
-            <Route path="/cart" element={<Cart />} />
+            {/* Public pages with Footer */}
+            <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+            <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
+            <Route path="/envios" element={<PublicLayout><ShippingReturns /></PublicLayout>} />
+            <Route path="/privacidad" element={<PublicLayout><PrivacyTerms /></PublicLayout>} />
+            <Route path="/cart" element={<PublicLayout><Cart /></PublicLayout>} />
             <Route
               path="/checkout"
               element={
@@ -136,8 +130,8 @@ function AppContent() {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/products/category/:slug" element={<Products />} />
-            <Route path="/products" element={<Products />} />
+            <Route path="/products/category/:slug" element={<PublicLayout><Products /></PublicLayout>} />
+            <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
             <Route
               path="/admin"
               element={
@@ -155,12 +149,6 @@ function AppContent() {
       <Suspense fallback={null}>
         <ChatWidget />
       </Suspense>
-      {/* Mostrar footer sólo en las páginas de contenido/publicas especificadas */}
-      {(location.pathname === "/" ||
-        location.pathname.startsWith("/products") ||
-        ["/about", "/envios", "/privacidad", "/cart"].includes(
-          location.pathname,
-        )) && <Footer />}
     </div>
   );
 }
