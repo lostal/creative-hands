@@ -3,7 +3,7 @@ import {
   useContext,
   useEffect,
   useState,
-  useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { io, Socket } from "socket.io-client";
@@ -39,21 +39,10 @@ const getServerUrl = (): string => {
 };
 
 export const SocketProvider = ({ children }: SocketProviderProps) => {
-  // Usar useState en lugar de useRef para que los cambios causen re-renders en consumidores
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // Usar useRef para evitar re-renders innecesarios y loops infinitos
+  const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { isAuthenticated, loading } = useAuth();
-
-  // Función para cerrar el socket actual
-  const closeSocket = useCallback(() => {
-    setSocket((prev) => {
-      if (prev) {
-        prev.close();
-      }
-      return null;
-    });
-    setConnected(false);
-  }, []);
 
   useEffect(() => {
     // Esperar a que AuthContext haya terminado la verificación inicial
@@ -63,7 +52,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
 
     if (isAuthenticated) {
       // Evitar crear múltiples conexiones
-      if (socket) {
+      if (socketRef.current) {
         return;
       }
 
@@ -86,21 +75,25 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
         setConnected(false);
       });
 
-      setSocket(newSocket);
+      socketRef.current = newSocket;
 
       return () => {
         newSocket.close();
-        setSocket(null);
+        socketRef.current = null;
         setConnected(false);
       };
     } else {
       // No autenticado: cerrar socket si existe
-      closeSocket();
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
+        setConnected(false);
+      }
     }
-  }, [isAuthenticated, loading, socket, closeSocket]);
+  }, [isAuthenticated, loading]);
 
   const value: SocketContextType = {
-    socket,
+    socket: socketRef.current,
     connected,
   };
 
