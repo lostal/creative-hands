@@ -41,6 +41,7 @@ interface CartProviderProps {
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   // Cargar carrito desde localStorage al montar
   useEffect(() => {
@@ -53,12 +54,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         setCartItems([]);
       }
     }
+    setIsInitialized(true);
   }, []);
 
-  // Guardar carrito en localStorage cuando cambie
+  // Guardar carrito en localStorage cuando cambie (solo después de inicializar)
   useEffect(() => {
+    if (!isInitialized) return;
     localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+  }, [cartItems, isInitialized]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1) => {
     setCartItems((prevItems) => {

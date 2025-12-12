@@ -6,7 +6,7 @@ import { Trash2, Edit3 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { MotionDiv } from "../lib/motion";
 
-import { Product, Review } from "../types";
+import { Product, Review, User } from "../types";
 
 // Reviews.jsx - componente consolidado para listado, métricas y formulario
 interface StarsDisplayProps {
@@ -66,13 +66,16 @@ const Reviews = ({
 
   useEffect(() => setProduct(initialProduct), [initialProduct]);
 
-  const myReview = (product?.reviews || []).find(
-    (r) =>
-      r.user &&
-      typeof r.user === "object" &&
-      user &&
-      (r.user._id === user._id || r.user.id === user._id),
-  );
+  const myReview = (product?.reviews || []).find((r) => {
+    if (!r.user || !user) return false;
+    // Caso 1: user es un string (ID sin popular)
+    if (typeof r.user === "string") {
+      return r.user === user._id;
+    }
+    // Caso 2: user es un objeto populado
+    const reviewUser = r.user as User;
+    return reviewUser._id === user._id || reviewUser.id === user._id;
+  });
 
   const openFormForNew = () => {
     setError(null);
@@ -213,7 +216,7 @@ const Reviews = ({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {(r.user as any)?.name || "Usuario"}
+                      {typeof r.user === "object" ? (r.user as User).name : "Usuario"}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(r.createdAt).toLocaleDateString()}
@@ -231,8 +234,9 @@ const Reviews = ({
                 </p>
 
                 {user &&
-                  ((r.user as any)?._id === user._id ||
-                    (r.user as any)?.id === user._id) && (
+                  (typeof r.user === "string"
+                    ? r.user === user._id
+                    : (r.user as User)?._id === user._id || (r.user as User)?.id === user._id) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
@@ -253,9 +257,9 @@ const Reviews = ({
 
                 {/* Inline edit overlay: aparece sobre la card sin afectar el layout ni estirar la card */}
                 <AnimatePresence initial={false}>
-                  {editingId === (r._id || (r as any).id) && (
+                  {editingId === (r._id || r.id) && (
                     <MotionDiv
-                      key={`edit-overlay-${r._id || (r as any).id}`}
+                      key={`edit-overlay-${r._id || r.id}`}
                       className="absolute inset-0 z-40 flex items-center justify-center p-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -330,11 +334,10 @@ const Reviews = ({
                                     onClick={() =>
                                       setForm((s) => ({ ...s, rating: n }))
                                     }
-                                    className={`text-2xl ${
-                                      n <= form.rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-300 dark:text-gray-600"
-                                    }`}
+                                    className={`text-2xl ${n <= form.rating
+                                      ? "text-yellow-400"
+                                      : "text-gray-300 dark:text-gray-600"
+                                      }`}
                                     aria-label={`Puntuar ${n}`}
                                   >
                                     ★
@@ -421,11 +424,10 @@ const Reviews = ({
                       key={n}
                       type="button"
                       onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-2xl ${
-                        n <= form.rating
-                          ? "text-yellow-400"
-                          : "text-gray-300 dark:text-gray-600"
-                      }`}
+                      className={`text-2xl ${n <= form.rating
+                        ? "text-yellow-400"
+                        : "text-gray-300 dark:text-gray-600"
+                        }`}
                       aria-label={`Puntuar ${n}`}
                     >
                       ★

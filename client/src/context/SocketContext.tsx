@@ -3,7 +3,6 @@ import {
   useContext,
   useEffect,
   useState,
-  useRef,
   useCallback,
   ReactNode,
 } from "react";
@@ -40,18 +39,20 @@ const getServerUrl = (): string => {
 };
 
 export const SocketProvider = ({ children }: SocketProviderProps) => {
-  // Usar useRef para el socket evita problemas con el ciclo de dependencias
-  const socketRef = useRef<Socket | null>(null);
+  // Usar useState en lugar de useRef para que los cambios causen re-renders en consumidores
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { isAuthenticated, loading } = useAuth();
 
   // Función para cerrar el socket actual
   const closeSocket = useCallback(() => {
-    if (socketRef.current) {
-      socketRef.current.close();
-      socketRef.current = null;
-      setConnected(false);
-    }
+    setSocket((prev) => {
+      if (prev) {
+        prev.close();
+      }
+      return null;
+    });
+    setConnected(false);
   }, []);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
 
     if (isAuthenticated) {
       // Evitar crear múltiples conexiones
-      if (socketRef.current) {
+      if (socket) {
         return;
       }
 
@@ -85,19 +86,22 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
         setConnected(false);
       });
 
-      socketRef.current = newSocket;
+      setSocket(newSocket);
 
       return () => {
-        closeSocket();
+        newSocket.close();
+        setSocket(null);
+        setConnected(false);
       };
     } else {
       // No autenticado: cerrar socket si existe
       closeSocket();
     }
-  }, [isAuthenticated, loading, closeSocket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, loading]);
 
   const value: SocketContextType = {
-    socket: socketRef.current,
+    socket,
     connected,
   };
 
