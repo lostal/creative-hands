@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../utils/axios";
 import { getApiErrorMessage } from "../utils/errors";
+import { formatCurrency } from "../utils/formatters";
 import logger from "../utils/logger";
 import {
   Loader,
@@ -129,10 +130,7 @@ const AdminOrders = () => {
                     Total
                   </p>
                   <p className="text-lg font-bold text-primary-500">
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(order.totalPrice)}
+                    {formatCurrency(order.totalPrice)}
                   </p>
                 </div>
 
@@ -153,9 +151,8 @@ const AdminOrders = () => {
             </div>
 
             <ChevronDown
-              className={`w-5 h-5 text-gray-400 transition-transform ${
-                expandedOrder === order._id ? "rotate-180" : ""
-              }`}
+              className={`w-5 h-5 text-gray-400 transition-transform ${expandedOrder === order._id ? "rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -188,10 +185,7 @@ const AdminOrders = () => {
                           </p>
                         </div>
                         <p className="text-gray-900 dark:text-white font-semibold">
-                          {new Intl.NumberFormat("es-ES", {
-                            style: "currency",
-                            currency: "EUR",
-                          }).format(item.price * item.quantity)}
+                          {formatCurrency(item.price * item.quantity)}
                         </p>
                       </div>
                     ))}
@@ -224,10 +218,7 @@ const AdminOrders = () => {
                       Total:
                     </span>
                     <span className="text-lg font-bold text-primary-500">
-                      {new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(order.totalPrice)}
+                      {formatCurrency(order.totalPrice)}
                     </span>
                   </div>
                   <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">

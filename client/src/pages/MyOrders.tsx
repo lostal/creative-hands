@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
+import { formatCurrency } from "../utils/formatters";
 import logger from "../utils/logger";
 import { Loader, ShoppingBag, Calendar, MapPin } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
@@ -153,18 +154,15 @@ const MyOrders = () => {
                           Total
                         </p>
                         <p className="text-lg font-bold text-primary-500">
-                          {new Intl.NumberFormat("es-ES", {
-                            style: "currency",
-                            currency: "EUR",
-                          }).format(order.totalPrice)}
+                          {formatCurrency(order.totalPrice)}
                         </p>
                       </div>
 
                       <div className="flex gap-2">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${order.isDelivered
-                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                            : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
                             }`}
                         >
                           {order.isDelivered ? "Entregado" : "En preparación"}
@@ -206,10 +204,7 @@ const MyOrders = () => {
                               </p>
                             </div>
                             <p className="text-gray-900 dark:text-white font-semibold">
-                              {new Intl.NumberFormat("es-ES", {
-                                style: "currency",
-                                currency: "EUR",
-                              }).format(item.price * item.quantity)}
+                              {formatCurrency(item.price * item.quantity)}
                             </p>
                           </div>
                         ))}
@@ -238,10 +233,7 @@ const MyOrders = () => {
                         Total:
                       </span>
                       <span className="text-lg font-bold text-primary-500">
-                        {new Intl.NumberFormat("es-ES", {
-                          style: "currency",
-                          currency: "EUR",
-                        }).format(order.totalPrice)}
+                        {formatCurrency(order.totalPrice)}
                       </span>
                     </div>
                   </MotionDiv>

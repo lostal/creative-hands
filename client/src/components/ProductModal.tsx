@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errors";
+import { formatCurrency } from "../utils/formatters";
 import Reviews from "./Reviews";
 import { MotionDiv, MotionImg } from "../lib/motion";
 
@@ -297,10 +298,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
               <p className="text-primary-500 text-xl sm:text-2xl font-extrabold">
-                {new Intl.NumberFormat("es-ES", {
-                  style: "currency",
-                  currency: "EUR",
-                }).format(product.price)}
+                {formatCurrency(product.price)}
               </p>
               <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -367,22 +365,6 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                   <p>{product.description}</p>
                 </div>
 
-                {/* Extra details area: propiedades, tags, seller info, etc. (si existen) */}
-                {(product as any).features &&
-                  (product as any).features.length > 0 && (
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold mb-2">
-                        Características
-                      </h3>
-                      <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300">
-                        {(product as any).features.map(
-                          (f: string, idx: number) => (
-                            <li key={idx}>{f}</li>
-                          ),
-                        )}
-                      </ul>
-                    </div>
-                  )}
 
                 {/* CTA */}
                 <div className="mt-4 sm:mt-6 flex flex-row flex-nowrap items-center gap-3">

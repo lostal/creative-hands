@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import api from "../utils/axios";
 import logger from "../utils/logger";
+import { getUserId, normalizeId, isSameUser } from "../utils/user";
 import { MotionButton, MotionDiv, MotionSpan } from "../lib/motion";
 
 const ChatWidget = () => {
@@ -33,7 +34,7 @@ const ChatWidget = () => {
   const [typing, setTyping] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,6 +43,15 @@ const ChatWidget = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Obtener info del admin y mensajes
   useEffect(() => {
@@ -84,10 +94,10 @@ const ChatWidget = () => {
     socket.on("message:new", (message: Message) => {
       setMessages((prev) => [...prev, message]);
       if (!isOpen) {
-        const userId = user?.id || user?._id;
-        const senderId = message.sender._id?.toString?.() || message.sender._id;
+        const currentUserId = getUserId(user);
+        const senderId = normalizeId(message.sender._id);
         // Solo incrementar si el mensaje NO es mío
-        if (senderId !== userId) {
+        if (!isSameUser(senderId, currentUserId)) {
           setUnreadCount((prev) => prev + 1);
         }
       }
@@ -253,11 +263,9 @@ const ChatWidget = () => {
               ) : (
                 <>
                   {messages.map((message) => {
-                    // user.id viene del backend (authController), user._id es el tipo del frontend
-                    const userId = user.id || user._id;
-                    // sender._id viene del populate de Mongoose (ObjectId) - convertir a string
-                    const senderId = message.sender._id?.toString?.() || message.sender._id;
-                    const isOwn = senderId === userId;
+                    const currentUserId = getUserId(user);
+                    const senderId = normalizeId(message.sender._id);
+                    const isOwn = isSameUser(senderId, currentUserId);
                     return (
                       <MotionDiv
                         key={message._id}

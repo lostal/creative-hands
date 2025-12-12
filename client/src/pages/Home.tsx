@@ -1,5 +1,4 @@
 import { ArrowRight, Sparkles, Palette, ChevronDown } from "lucide-react";
-import { useRef } from "react";
 import { Link } from "react-router";
 import {
   MotionDiv,
@@ -11,8 +10,6 @@ import {
 import ScrollReveal from "../components/ScrollReveal";
 
 const Home = () => {
-  const ctaRef = useRef(null);
-  const btnRef = useRef(null);
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -99,7 +96,6 @@ const Home = () => {
             {/* CTA Buttons (wrapper relative para centrar la flecha) */}
             <div className="relative inline-block w-full">
               <MotionDiv
-                ref={ctaRef}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.8 }}
@@ -130,7 +126,6 @@ const Home = () => {
 
               {/* Flecha absoluta dentro del wrapper de CTA para centrarla exactamente */}
               <MotionButton
-                ref={btnRef}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.9, duration: 0.7 }}
@@ -241,7 +236,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer gestionado globalmente en App.jsx */}
+      {/* Footer gestionado globalmente en App.tsx */}
     </div>
   );
 };

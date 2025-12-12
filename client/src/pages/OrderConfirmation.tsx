@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import { formatCurrency } from "../utils/formatters";
 import {
   CheckCircle2,
   Package,
@@ -97,10 +98,7 @@ const OrderConfirmation = () => {
                   </p>
                 </div>
                 <p className="text-gray-900 dark:text-white font-semibold">
-                  {new Intl.NumberFormat("es-ES", {
-                    style: "currency",
-                    currency: "EUR",
-                  }).format(item.price * item.quantity)}
+                  {formatCurrency(item.price * item.quantity)}
                 </p>
               </div>
             ))}
@@ -111,10 +109,7 @@ const OrderConfirmation = () => {
               Total del pedido:
             </span>
             <span className="text-2xl font-bold text-primary-500">
-              {new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: "EUR",
-              }).format(order.totalPrice)}
+              {formatCurrency(order.totalPrice)}
             </span>
           </div>
         </MotionDiv>

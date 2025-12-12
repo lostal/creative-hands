@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { getApiErrorMessage } from "../utils/errors";
+import { formatCurrency } from "../utils/formatters";
 import logger from "../utils/logger";
 import { ArrowLeft, Loader } from "lucide-react";
 import { MotionDiv } from "../lib/motion";
@@ -299,10 +300,7 @@ const Checkout = () => {
                       </span>
                     </span>
                     <span className="font-medium">
-                      {new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(item.product.price * item.quantity)}
+                      {formatCurrency(item.product.price * item.quantity)}
                     </span>
                   </div>
                 ))}
@@ -311,12 +309,7 @@ const Checkout = () => {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-gray-700 dark:text-gray-300">
                   <span>Subtotal:</span>
-                  <span>
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(totalPrice)}
-                  </span>
+                  <span>{formatCurrency(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700 dark:text-gray-300">
                   <span>Envío:</span>
@@ -332,10 +325,7 @@ const Checkout = () => {
                     Total:
                   </span>
                   <span className="text-2xl font-bold text-primary-500">
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(totalPrice)}
+                    {formatCurrency(totalPrice)}
                   </span>
                 </div>
               </div>

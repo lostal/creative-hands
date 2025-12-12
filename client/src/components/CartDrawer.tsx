@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
+import { formatCurrency } from "../utils/formatters";
 import { X, Trash2 } from "lucide-react";
 
 const CartDrawer = () => {
@@ -81,10 +82,7 @@ const CartDrawer = () => {
                     </button>
                   </div>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    {new Intl.NumberFormat("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(item.product.price)}
+                    {formatCurrency(item.product.price)}
                   </p>
 
                   <div className="mt-2 flex items-center gap-2">
@@ -131,10 +129,7 @@ const CartDrawer = () => {
               Total
             </span>
             <span className="text-lg font-bold text-primary-500">
-              {new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: "EUR",
-              }).format(totalPrice)}
+              {formatCurrency(totalPrice)}
             </span>
           </div>
 

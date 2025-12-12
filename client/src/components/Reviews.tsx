@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../utils/errors";
+import { getUserId, isSameUser } from "../utils/user";
 import { Trash2, Edit3 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { MotionDiv } from "../lib/motion";
@@ -66,19 +67,18 @@ const Reviews = ({
 
   useEffect(() => setProduct(initialProduct), [initialProduct]);
 
-  // user.id viene del backend (authController), user._id es el tipo del frontend
-  const userId = user?.id || user?._id;
+  const currentUserId = getUserId(user);
 
   const myReview = (product?.reviews || []).find((r) => {
-    if (!r.user || !userId) return false;
+    if (!r.user || !currentUserId) return false;
     // Caso 1: user es un string (ID sin popular)
     if (typeof r.user === "string") {
-      return r.user === userId;
+      return isSameUser(r.user, currentUserId);
     }
     // Caso 2: user es un objeto populado
     const reviewUser = r.user as User;
     const reviewUserId = reviewUser._id || reviewUser.id;
-    return reviewUserId === userId;
+    return isSameUser(reviewUserId, currentUserId);
   });
 
   const openFormForNew = () => {
@@ -237,10 +237,10 @@ const Reviews = ({
                   {r.comment}
                 </p>
 
-                {userId &&
+                {currentUserId &&
                   (typeof r.user === "string"
-                    ? r.user === userId
-                    : ((r.user as User)?._id || (r.user as User)?.id) === userId) && (
+                    ? isSameUser(r.user, currentUserId)
+                    : isSameUser((r.user as User)?._id || (r.user as User)?.id, currentUserId)) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}

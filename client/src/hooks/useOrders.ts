@@ -73,7 +73,7 @@ export const useOrder = (orderId: string): UseOrderReturn => {
       setOrder(data.order);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err));
-      console.error("Error fetching order:", err);
+      logger.error("Error fetching order:", err);
     } finally {
       setLoading(false);
     }

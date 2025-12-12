@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../utils/axios";
 import { User } from "../types";
 import logger from "../utils/logger";
+import { getUserId, normalizeId, isSameUser } from "../utils/user";
 import { MotionDiv, MotionButton } from "../lib/motion";
 
 interface Message {
@@ -36,7 +37,7 @@ const AdminChat = () => {
   const [loading, setLoading] = useState(true);
   const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<any>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,6 +46,15 @@ const AdminChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetchConversations();
@@ -176,8 +186,8 @@ const AdminChat = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => selectConversation(conv)}
                 className={`w-full p-4 rounded-xl text-left transition-colors duration-200 ${selectedConversation?.conversationId === conv.conversationId
-                    ? "bg-linear-to-r from-primary-500 to-primary-600 text-white"
-                    : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                  ? "bg-linear-to-r from-primary-500 to-primary-600 text-white"
+                  : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                   }`}
               >
                 <div className="flex items-center space-x-3">
@@ -197,9 +207,9 @@ const AdminChat = () => {
                     </p>
                     <p
                       className={`text-sm truncate ${selectedConversation?.conversationId ===
-                          conv.conversationId
-                          ? "text-white/80"
-                          : "text-gray-500 dark:text-gray-400"
+                        conv.conversationId
+                        ? "text-white/80"
+                        : "text-gray-500 dark:text-gray-400"
                         }`}
                     >
                       {conv.lastMessage.content}
@@ -248,10 +258,9 @@ const AdminChat = () => {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900/50">
               {messages.map((message) => {
-                // user.id viene del backend, message.sender._id viene del populate de Mongoose
-                const userId = user?.id || user?._id;
-                const senderId = message.sender._id?.toString?.() || message.sender._id;
-                const isOwn = userId && senderId === userId;
+                const currentUserId = getUserId(user);
+                const senderId = normalizeId(message.sender._id);
+                const isOwn = isSameUser(senderId, currentUserId);
                 return (
                   <MotionDiv
                     key={message._id}
@@ -262,15 +271,15 @@ const AdminChat = () => {
                   >
                     <div
                       className={`max-w-[75%] rounded-2xl px-4 py-2 ${isOwn
-                          ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
-                          : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
+                        : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                         }`}
                     >
                       <p className="text-sm">{message.content}</p>
                       <p
                         className={`text-xs mt-1 ${isOwn
-                            ? "text-white/70"
-                            : "text-gray-500 dark:text-gray-400"
+                          ? "text-white/70"
+                          : "text-gray-500 dark:text-gray-400"
                           }`}
                       >
                         {new Date(message.createdAt).toLocaleTimeString(
