@@ -43,4 +43,3 @@ const PrivacyTerms = () => {
 };
 
 export default PrivacyTerms;
-

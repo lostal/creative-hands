@@ -73,6 +73,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }, [cartItems, isInitialized]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1) => {
+    // Validar stock disponible
+    if (product.stock <= 0) {
+      logger.warn(`Producto ${product.name} sin stock disponible`);
+      return false;
+    }
+
     setCartItems((prevItems) => {
       // Buscar si el producto ya existe en el carrito
       const existingItem = prevItems.find(
@@ -80,23 +86,38 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       );
 
       if (existingItem) {
+        // Verificar que no exceda el stock disponible
+        const newQuantity = existingItem.quantity + quantity;
+        if (newQuantity > product.stock) {
+          logger.warn(
+            `Stock insuficiente para ${product.name}. Máximo: ${product.stock}`,
+          );
+          // Ajustar al máximo disponible
+          return prevItems.map((item) =>
+            item.product._id === product._id
+              ? { ...item, quantity: product.stock }
+              : item,
+          );
+        }
         // Si existe, incrementar la cantidad
         return prevItems.map((item) =>
           item.product._id === product._id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: newQuantity }
             : item,
         );
       } else {
-        // Si no existe, agregarlo
+        // Si no existe, agregarlo (respetando stock)
+        const safeQuantity = Math.min(quantity, product.stock);
         return [
           ...prevItems,
           {
             product,
-            quantity,
+            quantity: safeQuantity,
           },
         ];
       }
     });
+    return true;
   }, []);
 
   const removeFromCart = useCallback((productId: string) => {
@@ -114,11 +135,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         return;
       }
       setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.product._id === productId
-            ? { ...item, quantity: newQuantity }
-            : item,
-        ),
+        prevItems.map((item) => {
+          if (item.product._id === productId) {
+            // Validar contra stock disponible
+            const safeQuantity = Math.min(newQuantity, item.product.stock);
+            return { ...item, quantity: safeQuantity };
+          }
+          return item;
+        }),
       );
     },
     [],
@@ -179,4 +203,3 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
-

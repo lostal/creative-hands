@@ -220,7 +220,9 @@ const Reviews = ({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {typeof r.user === "object" ? (r.user as User).name : "Usuario"}
+                      {typeof r.user === "object"
+                        ? (r.user as User).name
+                        : "Usuario"}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(r.createdAt).toLocaleDateString()}
@@ -240,7 +242,10 @@ const Reviews = ({
                 {currentUserId &&
                   (typeof r.user === "string"
                     ? isSameUser(r.user, currentUserId)
-                    : isSameUser((r.user as User)?._id || (r.user as User)?.id, currentUserId)) && (
+                    : isSameUser(
+                        (r.user as User)?._id || (r.user as User)?.id,
+                        currentUserId,
+                      )) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
@@ -338,10 +343,11 @@ const Reviews = ({
                                     onClick={() =>
                                       setForm((s) => ({ ...s, rating: n }))
                                     }
-                                    className={`text-2xl ${n <= form.rating
-                                      ? "text-yellow-400"
-                                      : "text-gray-300 dark:text-gray-600"
-                                      }`}
+                                    className={`text-2xl ${
+                                      n <= form.rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-300 dark:text-gray-600"
+                                    }`}
                                     aria-label={`Puntuar ${n}`}
                                   >
                                     ★
@@ -428,10 +434,11 @@ const Reviews = ({
                       key={n}
                       type="button"
                       onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-2xl ${n <= form.rating
-                        ? "text-yellow-400"
-                        : "text-gray-300 dark:text-gray-600"
-                        }`}
+                      className={`text-2xl ${
+                        n <= form.rating
+                          ? "text-yellow-400"
+                          : "text-gray-300 dark:text-gray-600"
+                      }`}
                       aria-label={`Puntuar ${n}`}
                     >
                       ★
@@ -468,4 +475,3 @@ const Reviews = ({
 };
 
 export default Reviews;
-

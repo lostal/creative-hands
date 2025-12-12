@@ -33,4 +33,3 @@ const ProductCardSkeleton = () => {
 };
 
 export default ProductCardSkeleton;
-

@@ -15,8 +15,8 @@ import { getErrorMessage, getErrorForResponse } from "../utils/errors";
 // Fix: Allow files to be object or array to match Express.Request type compatibility
 interface MulterRequest extends AuthRequest {
   files?:
-  | Express.Multer.File[]
-  | { [fieldname: string]: Express.Multer.File[] };
+    | Express.Multer.File[]
+    | { [fieldname: string]: Express.Multer.File[] };
 }
 
 /**

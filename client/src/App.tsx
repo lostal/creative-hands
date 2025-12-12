@@ -100,11 +100,46 @@ function AppContent() {
         >
           <Routes>
             {/* Public pages with Footer */}
-            <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-            <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
-            <Route path="/envios" element={<PublicLayout><ShippingReturns /></PublicLayout>} />
-            <Route path="/privacidad" element={<PublicLayout><PrivacyTerms /></PublicLayout>} />
-            <Route path="/cart" element={<PublicLayout><Cart /></PublicLayout>} />
+            <Route
+              path="/"
+              element={
+                <PublicLayout>
+                  <Home />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PublicLayout>
+                  <About />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/envios"
+              element={
+                <PublicLayout>
+                  <ShippingReturns />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/privacidad"
+              element={
+                <PublicLayout>
+                  <PrivacyTerms />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <PublicLayout>
+                  <Cart />
+                </PublicLayout>
+              }
+            />
             <Route
               path="/checkout"
               element={
@@ -131,8 +166,22 @@ function AppContent() {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/products/category/:slug" element={<PublicLayout><Products /></PublicLayout>} />
-            <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
+            <Route
+              path="/products/category/:slug"
+              element={
+                <PublicLayout>
+                  <Products />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <PublicLayout>
+                  <Products />
+                </PublicLayout>
+              }
+            />
             <Route
               path="/admin"
               element={
@@ -173,4 +222,3 @@ function App() {
 }
 
 export default App;
-

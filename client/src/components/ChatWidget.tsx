@@ -71,7 +71,7 @@ const ChatWidget = () => {
 
           // Calcular mensajes no leídos iniciales
           const userId = user?.id || user?._id;
-          const unread = messagesData.messages.filter(m => {
+          const unread = messagesData.messages.filter((m) => {
             const senderId = m.sender._id?.toString?.() || m.sender._id;
             // Contar si NO es mi mensaje y NO está leído
             return senderId !== userId && !m.read;
@@ -170,8 +170,8 @@ const ChatWidget = () => {
     if (socket && adminInfo && user) {
       const userId = user.id || user._id;
       // ID de conversación estándar: IDs ordenados alfabéticamente
-      const conversationId = [userId, adminInfo._id].sort().join('_');
-      socket.emit('messages:read', { conversationId });
+      const conversationId = [userId, adminInfo._id].sort().join("_");
+      socket.emit("messages:read", { conversationId });
     }
   };
 
@@ -189,6 +189,7 @@ const ChatWidget = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
+            aria-label={`Abrir chat de soporte${unreadCount > 0 ? `. ${unreadCount} mensajes sin leer` : ""}`}
             className="fixed bottom-6 right-6 w-14 h-14 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-primary-500/50 transition-shadow duration-200 z-popover"
             style={{ willChange: "transform" }}
           >
@@ -214,7 +215,7 @@ const ChatWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             /* Mobile: full width with small side margins. On sm+ use fixed size on the right. */
-            className="fixed bottom-3 left-3 right-3 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96 h-[60vh] sm:h-[500px] glass rounded-2xl shadow-2xl flex flex-col overflow-hidden z-popover"
+            className="fixed bottom-3 left-3 right-3 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96 h-[60vh] sm:h-500px glass rounded-2xl shadow-2xl flex flex-col overflow-hidden z-popover"
           >
             {/* Header */}
             <div className="bg-linear-to-r from-primary-500 to-primary-600 p-4 flex items-center justify-between">
@@ -238,6 +239,7 @@ const ChatWidget = () => {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar chat"
                 className="text-white/80 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -271,21 +273,24 @@ const ChatWidget = () => {
                         key={message._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${isOwn ? "justify-end" : "justify-start"
-                          }`}
+                        className={`flex ${
+                          isOwn ? "justify-end" : "justify-start"
+                        }`}
                       >
                         <div
-                          className={`max-w-[75%] rounded-2xl px-4 py-2 ${isOwn
-                            ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
-                            : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                            }`}
+                          className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                            isOwn
+                              ? "bg-linear-to-br from-primary-500 to-primary-600 text-white"
+                              : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          }`}
                         >
                           <p className="text-sm">{message.content}</p>
                           <p
-                            className={`text-xs mt-1 ${isOwn
-                              ? "text-white/70"
-                              : "text-gray-500 dark:text-gray-400"
-                              }`}
+                            className={`text-xs mt-1 ${
+                              isOwn
+                                ? "text-white/70"
+                                : "text-gray-500 dark:text-gray-400"
+                            }`}
                           >
                             {new Date(message.createdAt).toLocaleTimeString(
                               "es-ES",
@@ -361,4 +366,3 @@ const ChatWidget = () => {
 };
 
 export default ChatWidget;
-

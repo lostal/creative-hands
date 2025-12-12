@@ -8,6 +8,8 @@ import { Server } from "socket.io";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import compression from "compression";
 
 import connectDB from "./config/db";
 import { RATE_LIMITS } from "./config/constants";
@@ -133,6 +135,26 @@ const configureMiddleware = (app: Express): void => {
     app.set("trust proxy", 1);
   }
 
+  // Headers de seguridad con Helmet
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "res.cloudinary.com", "data:", "blob:"],
+          fontSrc: ["'self'", "data:"],
+          connectSrc: ["'self'", "ws:", "wss:"],
+        },
+      },
+      crossOriginEmbedderPolicy: false, // Necesario para cargar imágenes de Cloudinary
+    }),
+  );
+
+  // Compresión gzip/brotli para respuestas
+  app.use(compression());
+
   app.use(
     cors({
       origin: getCorsOrigin(),
@@ -222,6 +244,14 @@ const createSocketServer = (server: http.Server): Server => {
     cors: {
       origin: getCorsOrigin(),
       credentials: true,
+    },
+    // Configuración de timeouts para conexiones
+    pingTimeout: 20000, // Tiempo de espera para respuesta de ping
+    pingInterval: 25000, // Intervalo entre pings
+    // Recuperación de estado de conexión
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutos
+      skipMiddlewares: true,
     },
   });
 };

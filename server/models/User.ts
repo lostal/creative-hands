@@ -13,6 +13,10 @@ export interface IUserBase {
   avatar?: string;
   isOnline: boolean;
   lastSeen: Date;
+  /** Número de intentos de login fallidos */
+  loginAttempts: number;
+  /** Fecha hasta la cual la cuenta está bloqueada */
+  lockUntil?: Date;
 }
 
 /**
@@ -22,6 +26,12 @@ export interface IUserBase {
 export interface IUser extends IUserBase, Document {
   _id: Types.ObjectId;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  /** Verifica si la cuenta está actualmente bloqueada */
+  isLocked(): boolean;
+  /** Incrementa intentos fallidos y bloquea si excede límite */
+  incrementLoginAttempts(): Promise<void>;
+  /** Resetea intentos fallidos tras login exitoso */
+  resetLoginAttempts(): Promise<void>;
 }
 
 const userSchema = new Schema(
@@ -62,6 +72,14 @@ const userSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -83,6 +101,44 @@ userSchema.methods.comparePassword = async function (
 ) {
   if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Constantes para bloqueo de cuenta
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_TIME_MS = 15 * 60 * 1000; // 15 minutos
+
+// Método para verificar si la cuenta está bloqueada
+userSchema.methods.isLocked = function (this: IUser): boolean {
+  return !!(this.lockUntil && this.lockUntil > new Date());
+};
+
+// Método para incrementar intentos fallidos
+userSchema.methods.incrementLoginAttempts = async function (
+  this: IUser,
+): Promise<void> {
+  // Si el bloqueo ha expirado, reiniciar contador
+  if (this.lockUntil && this.lockUntil < new Date()) {
+    this.loginAttempts = 1;
+    this.lockUntil = undefined;
+  } else {
+    this.loginAttempts += 1;
+    // Bloquear si excede el límite
+    if (this.loginAttempts >= MAX_LOGIN_ATTEMPTS && !this.isLocked()) {
+      this.lockUntil = new Date(Date.now() + LOCK_TIME_MS);
+    }
+  }
+  await this.save();
+};
+
+// Método para resetear intentos fallidos
+userSchema.methods.resetLoginAttempts = async function (
+  this: IUser,
+): Promise<void> {
+  if (this.loginAttempts > 0 || this.lockUntil) {
+    this.loginAttempts = 0;
+    this.lockUntil = undefined;
+    await this.save();
+  }
 };
 
 export default mongoose.model<IUser>("User", userSchema);

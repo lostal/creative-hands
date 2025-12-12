@@ -5,12 +5,12 @@ import type { StorageEngine } from "multer";
 /**
  * Interfaz extendida para archivos con metadatos de Cloudinary
  */
-export interface CloudinaryFile extends Omit<Express.Multer.File, 'stream'> {
+export interface CloudinaryFile extends Omit<Express.Multer.File, "stream"> {
   path: string;
   filename: string;
   public_id?: string;
   secure_url?: string;
-  stream?: Express.Multer.File['stream'];
+  stream?: Express.Multer.File["stream"];
 }
 
 /**

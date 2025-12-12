@@ -25,10 +25,11 @@ const CartDrawer = () => {
     <Fragment>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-drawer-backdrop transition-opacity ${isCartOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-drawer-backdrop transition-opacity ${
+          isCartOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         aria-hidden={!isCartOpen}
         onClick={closeCart}
       >
@@ -37,8 +38,9 @@ const CartDrawer = () => {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 z-drawer h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${isCartOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 z-drawer h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${
+          isCartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         aria-hidden={!isCartOpen}
       >
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -47,6 +49,7 @@ const CartDrawer = () => {
           </h3>
           <button
             onClick={closeCart}
+            aria-label="Cerrar carrito"
             className="p-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -76,6 +79,7 @@ const CartDrawer = () => {
                     </h4>
                     <button
                       onClick={() => removeFromCart(item.product._id)}
+                      aria-label={`Eliminar ${item.product.name} del carrito`}
                       className="text-red-500 hover:text-red-700 p-1 rounded-sm"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -94,6 +98,7 @@ const CartDrawer = () => {
                         )
                       }
                       disabled={item.quantity <= 1}
+                      aria-label={`Reducir cantidad de ${item.product.name}`}
                       className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm disabled:opacity-50"
                     >
                       -
@@ -112,6 +117,7 @@ const CartDrawer = () => {
                         )
                       }
                       disabled={item.quantity >= (item.product.stock ?? 999)}
+                      aria-label={`Aumentar cantidad de ${item.product.name}`}
                       className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-sm disabled:opacity-50"
                     >
                       +
@@ -166,4 +172,3 @@ const CartDrawer = () => {
 };
 
 export default CartDrawer;
-

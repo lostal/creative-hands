@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import api from "../../utils/axios";
 import { Category } from "../../types";
 import { getApiErrorMessage } from "../../utils/errors";
+import logger from "../../utils/logger";
 
 interface CategoryModalProps {
   show: boolean;
@@ -38,7 +39,7 @@ const CategoryModal = ({
       onCategoriesChange();
       setNewCategory({ name: "", slug: "", description: "" });
     } catch (error: unknown) {
-      console.error("Error al crear categoría:", error);
+      logger.error("Error al crear categoría:", error);
       alert(getApiErrorMessage(error) || "Error al crear categoría");
     }
   };
@@ -54,7 +55,7 @@ const CategoryModal = ({
       await api.delete(`/categories/${id}`);
       onCategoriesChange();
     } catch (error: unknown) {
-      console.error("Error al eliminar categoría:", error);
+      logger.error("Error al eliminar categoría:", error);
       alert(getApiErrorMessage(error) || "Error al eliminar categoría");
     }
   };
@@ -200,4 +201,3 @@ const CategoryModal = ({
 };
 
 export default CategoryModal;
-

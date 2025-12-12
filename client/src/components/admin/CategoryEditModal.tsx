@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import api from "../../utils/axios";
 import { Category } from "../../types";
 import { getApiErrorMessage } from "../../utils/errors";
+import logger from "../../utils/logger";
 
 interface CategoryEditModalProps {
   show: boolean;
@@ -44,7 +45,7 @@ const CategoryEditModal = ({
       await api.put(`/categories/${category?._id}`, formData);
       onCategorySaved();
     } catch (error: unknown) {
-      console.error("Error al actualizar categoría:", error);
+      logger.error("Error al actualizar categoría:", error);
       alert(getApiErrorMessage(error) || "Error al actualizar categoría");
     }
   };
@@ -57,7 +58,7 @@ const CategoryEditModal = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-[60] p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-60 p-4"
         onClick={onClose}
       >
         <MotionDiv
@@ -140,4 +141,3 @@ const CategoryEditModal = ({
 };
 
 export default CategoryEditModal;
-

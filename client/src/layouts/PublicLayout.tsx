@@ -6,16 +6,16 @@ import { ReactNode } from "react";
 import Footer from "../components/Footer";
 
 interface PublicLayoutProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
-    return (
-        <>
-            {children}
-            <Footer />
-        </>
-    );
+  return (
+    <>
+      {children}
+      <Footer />
+    </>
+  );
 };
 
 export default PublicLayout;

@@ -130,7 +130,9 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select(
+      "+password +loginAttempts +lockUntil",
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -139,14 +141,38 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
+    // Verificar si la cuenta está bloqueada
+    if (user.isLocked()) {
+      const lockMinutes = Math.ceil(
+        (user.lockUntil!.getTime() - Date.now()) / 60000,
+      );
+      return res.status(423).json({
+        success: false,
+        message: `Cuenta bloqueada temporalmente. Intenta de nuevo en ${lockMinutes} minutos.`,
+      });
+    }
+
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
+      // Incrementar intentos fallidos
+      await user.incrementLoginAttempts();
+
+      // Mensaje según intentos restantes
+      const attemptsLeft = 5 - user.loginAttempts;
+      const message =
+        attemptsLeft > 0
+          ? `Credenciales inválidas. ${attemptsLeft} intentos restantes.`
+          : "Cuenta bloqueada por demasiados intentos fallidos. Intenta en 15 minutos.";
+
       return res.status(401).json({
         success: false,
-        message: "Credenciales inválidas",
+        message,
       });
     }
+
+    // Login exitoso: resetear intentos fallidos
+    await user.resetLoginAttempts();
 
     // Actualizar estado online
     user.isOnline = true;

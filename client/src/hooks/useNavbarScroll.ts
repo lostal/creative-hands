@@ -10,24 +10,24 @@ import { useState, useEffect } from "react";
  * @param threshold - Scroll position in pixels to trigger "scrolled" state (default: 20)
  */
 export const useNavbarScroll = (threshold: number = 20): boolean => {
-    const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-    useEffect(() => {
-        let ticking = false;
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    setScrolled(window.scrollY > threshold);
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [threshold]);
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > threshold);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [threshold]);
 
-    return scrolled;
+  return scrolled;
 };
 
 export default useNavbarScroll;

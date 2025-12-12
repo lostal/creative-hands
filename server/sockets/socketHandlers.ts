@@ -11,6 +11,20 @@ import Message from "../models/Message";
 import logger from "../utils/logger";
 
 /**
+ * Sanitiza contenido HTML para prevenir XSS
+ * Escapa caracteres peligrosos que podrían ejecutar scripts
+ */
+const sanitizeHtml = (content: string): string => {
+  return content
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+};
+
+/**
  * Esquema de validación para contenido de mensajes
  * Previene mensajes vacíos, extremadamente largos o con contenido peligroso
  */
@@ -273,7 +287,7 @@ const handleMessageSend = async (
     }
 
     // Validar y sanitizar contenido del mensaje
-    const { error, value: sanitizedContent } =
+    const { error, value: validatedContent } =
       messageContentSchema.validate(content);
     if (error) {
       const errorMessage = error.details?.[0]?.message || "Contenido inválido";
@@ -282,6 +296,9 @@ const handleMessageSend = async (
       });
       return;
     }
+
+    // Sanitizar HTML para prevenir XSS
+    const sanitizedContent = sanitizeHtml(validatedContent);
 
     // Generar ID de conversación (ordenado para consistencia)
     const conversationId = [senderId, receiverId].sort().join("_");

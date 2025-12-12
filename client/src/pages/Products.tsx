@@ -124,10 +124,16 @@ const Products = () => {
         <Breadcrumbs
           items={[
             { label: "Productos", href: "/products" },
-            ...(selectedCategorySlug && categoriesWithAll.find(c => c.slug === selectedCategorySlug)
-              ? [{ label: categoriesWithAll.find(c => c.slug === selectedCategorySlug)!.name }]
-              : []
-            ),
+            ...(selectedCategorySlug &&
+            categoriesWithAll.find((c) => c.slug === selectedCategorySlug)
+              ? [
+                  {
+                    label: categoriesWithAll.find(
+                      (c) => c.slug === selectedCategorySlug,
+                    )!.name,
+                  },
+                ]
+              : []),
           ]}
           className="mb-4 sm:mb-6"
         />
@@ -182,11 +188,12 @@ const Products = () => {
                     navigate("/products");
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${selectedCategorySlug === category.slug ||
-                    (selectedCategorySlug === "" && category.name === "Todas")
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${
+                  selectedCategorySlug === category.slug ||
+                  (selectedCategorySlug === "" && category.name === "Todas")
                     ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
                     : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                  }`}
+                }`}
               >
                 {category.name}
               </MotionButton>
@@ -260,4 +267,3 @@ const Products = () => {
 };
 
 export default Products;
-

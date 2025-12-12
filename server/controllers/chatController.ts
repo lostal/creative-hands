@@ -62,12 +62,19 @@ export const getAdmin = async (req: Request, res: Response) => {
 };
 
 /**
- * Obtener mensajes de una conversación
+ * Obtener mensajes de una conversación con paginación
  * @route GET /api/chat/messages/:conversationId
+ * @query page - Número de página (default: 1)
+ * @query limit - Mensajes por página (default: 50, max: 100)
  */
 export const getMessages = async (req: AuthRequest, res: Response) => {
   try {
     let { conversationId } = req.params;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(req.query.limit as string) || 50),
+    );
 
     if (!conversationId) {
       return res.status(400).json({
@@ -91,12 +98,28 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
       conversationId = [currentUserId, otherUserId].sort().join("_");
     }
 
-    const messages = await Message.find({ conversationId })
-      .sort("createdAt")
-      .populate("sender", "name avatar")
-      .populate("receiver", "name avatar");
+    // Obtener total y mensajes con paginación
+    const [total, messages] = await Promise.all([
+      Message.countDocuments({ conversationId }),
+      Message.find({ conversationId })
+        .sort("-createdAt") // Más recientes primero
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate("sender", "name avatar")
+        .populate("receiver", "name avatar"),
+    ]);
 
-    res.json({ success: true, count: messages.length, messages });
+    // Invertir para mostrar cronológicamente en el cliente
+    const sortedMessages = messages.reverse();
+
+    res.json({
+      success: true,
+      count: messages.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      messages: sortedMessages,
+    });
   } catch (error) {
     logger.error("Error al obtener mensajes:", error);
     res

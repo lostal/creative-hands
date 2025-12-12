@@ -44,4 +44,4 @@ declare global {
 }
 
 // Necesario para que TypeScript lo trate como un módulo
-export { };
+export {};

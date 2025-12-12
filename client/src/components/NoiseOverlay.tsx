@@ -39,4 +39,3 @@ function NoiseOverlay() {
 }
 
 export default NoiseOverlay;
-

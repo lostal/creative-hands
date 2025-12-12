@@ -160,10 +160,11 @@ const MyOrders = () => {
 
                       <div className="flex gap-2">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${order.isDelivered
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                            : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                            }`}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            order.isDelivered
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                          }`}
                         >
                           {order.isDelivered ? "Entregado" : "En preparación"}
                         </span>
@@ -248,4 +249,3 @@ const MyOrders = () => {
 };
 
 export default MyOrders;
-

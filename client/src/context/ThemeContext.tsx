@@ -60,4 +60,3 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
-

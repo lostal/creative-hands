@@ -5,6 +5,9 @@
 import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
 
+// Patrón de contraseña segura: mínimo una mayúscula, una minúscula y un número
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+
 // Esquema para registro de usuario
 export const registerSchema = Joi.object({
   name: Joi.string().required().min(2).max(50).messages({
@@ -16,9 +19,11 @@ export const registerSchema = Joi.object({
     "string.empty": "El email es obligatorio",
     "string.email": "Email no válido",
   }),
-  password: Joi.string().required().min(6).messages({
+  password: Joi.string().required().min(8).pattern(passwordPattern).messages({
     "string.empty": "La contraseña es obligatoria",
-    "string.min": "La contraseña debe tener al menos 6 caracteres",
+    "string.min": "La contraseña debe tener al menos 8 caracteres",
+    "string.pattern.base":
+      "La contraseña debe incluir al menos una mayúscula, una minúscula y un número",
   }),
 });
 
@@ -40,8 +45,10 @@ export const updateProfileSchema = Joi.object({
     "string.max": "El nombre no puede exceder 50 caracteres",
   }),
   currentPassword: Joi.string().optional(),
-  password: Joi.string().min(6).optional().messages({
-    "string.min": "La nueva contraseña debe tener al menos 6 caracteres",
+  password: Joi.string().min(8).pattern(passwordPattern).optional().messages({
+    "string.min": "La nueva contraseña debe tener al menos 8 caracteres",
+    "string.pattern.base":
+      "La contraseña debe incluir al menos una mayúscula, una minúscula y un número",
   }),
 })
   .with("password", "currentPassword")
@@ -138,7 +145,9 @@ export const validateQuery = (schema: Joi.Schema) => {
 
     // En Express 5, req.query es de solo lectura (getter-only)
     // Usamos Object.assign para modificar las propiedades existentes
-    Object.keys(req.query).forEach((key) => delete (req.query as Record<string, unknown>)[key]);
+    Object.keys(req.query).forEach(
+      (key) => delete (req.query as Record<string, unknown>)[key],
+    );
     Object.assign(req.query, value);
     next();
   };

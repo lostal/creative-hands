@@ -99,11 +99,10 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       socket: socketRef.current,
       connected,
     }),
-    [connected]
+    [connected],
   );
 
   return (
     <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 };
-

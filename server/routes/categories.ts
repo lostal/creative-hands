@@ -20,29 +20,29 @@ router.get("/", categoryController.getCategories);
 
 // POST /api/categories - Crear categoría
 router.post(
-    "/",
-    protect,
-    adminOnly,
-    validate(categorySchema),
-    categoryController.createCategory,
+  "/",
+  protect,
+  adminOnly,
+  validate(categorySchema),
+  categoryController.createCategory,
 );
 
 // PUT /api/categories/:id - Actualizar categoría
 router.put(
-    "/:id",
-    validateObjectId(),
-    protect,
-    adminOnly,
-    categoryController.updateCategory,
+  "/:id",
+  validateObjectId(),
+  protect,
+  adminOnly,
+  categoryController.updateCategory,
 );
 
 // DELETE /api/categories/:id - Eliminar categoría
 router.delete(
-    "/:id",
-    validateObjectId(),
-    protect,
-    adminOnly,
-    categoryController.deleteCategory,
+  "/:id",
+  validateObjectId(),
+  protect,
+  adminOnly,
+  categoryController.deleteCategory,
 );
 
 export default router;

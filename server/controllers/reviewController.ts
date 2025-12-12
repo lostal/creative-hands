@@ -82,12 +82,10 @@ export const addReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Producto no encontrado tras actualizar",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Producto no encontrado tras actualizar",
+      });
     }
 
     res.status(201).json({
@@ -160,12 +158,10 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Producto no encontrado tras actualizar",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Producto no encontrado tras actualizar",
+      });
     }
 
     res.json({
@@ -226,12 +222,10 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
     const updated = await populateProduct(product._id.toString());
 
     if (!updated) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Producto no encontrado tras actualizar",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Producto no encontrado tras actualizar",
+      });
     }
 
     res.json({
