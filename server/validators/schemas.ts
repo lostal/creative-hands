@@ -136,7 +136,10 @@ export const validateQuery = (schema: Joi.Schema) => {
       });
     }
 
-    req.query = value;
+    // En Express 5, req.query es de solo lectura (getter-only)
+    // Usamos Object.assign para modificar las propiedades existentes
+    Object.keys(req.query).forEach((key) => delete (req.query as Record<string, unknown>)[key]);
+    Object.assign(req.query, value);
     next();
   };
 };
