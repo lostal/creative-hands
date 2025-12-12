@@ -679,68 +679,6 @@ button:active {
 }
 
 /* ============================================
-   FILM GRAIN OVERLAY
-   ============================================ */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.25;
-  /* Reducido para balancear visibilidad */
-  mix-blend-mode: overlay;
-  overflow: hidden;
-}
-
-.dark .noise-overlay {
-  opacity: 0.2;
-  /* Reducido para balancear visibilidad */
-}
-
-.noise-overlay svg {
-  position: absolute;
-  left: -100%;
-  /* Centrado para width 300% */
-  top: -100%;
-  /* Centrado para height 300% */
-  width: 300%;
-  height: 300%;
-  animation: noise-shift 0.25s steps(3) infinite;
-}
-
-@keyframes noise-shift {
-  0% {
-    transform: translate(0, 0);
-  }
-
-  33% {
-    transform: translate(5%, 5%);
-  }
-
-  66% {
-    transform: translate(-5%, 2%);
-  }
-
-  100% {
-    transform: translate(2%, -5%);
-  }
-}
-
-/* Reduced motion: desactivar animación */
-@media (prefers-reduced-motion: reduce) {
-  .noise-overlay svg {
-    animation: none;
-  }
-}
-
-/* Touch devices: ocultar completamente (backup CSS) */
-@media (hover: none) and (pointer: coarse) {
-  .noise-overlay {
-    display: none;
-  }
-}
-
-/* ============================================
    LENIS SMOOTH SCROLL - Overrides necesarios
    ============================================ */
 html.lenis,

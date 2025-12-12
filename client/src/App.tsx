@@ -7,7 +7,6 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 import Navbar from "./components/Navbar";
 import CartDrawer from "./components/CartDrawer";
-import NoiseOverlay from "./components/NoiseOverlay";
 import useLenis from "./hooks/useLenis";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { PublicLayout } from "./layouts";
@@ -87,7 +86,6 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-light-500 dark:bg-dark-500 transition-colors duration-300">
-      <NoiseOverlay />
       <Navbar />
       <CartDrawer />
       <ErrorBoundary>
