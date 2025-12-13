@@ -142,7 +142,12 @@ const configureMiddleware = (app: Express): void => {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'", "'unsafe-inline'"],
-          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
+            "https://fonts.gstatic.com",
+          ],
           imgSrc: [
             "'self'",
             "res.cloudinary.com",
