@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
  * 
  * ESTRATEGIA:
  * - Para modales de pantalla completa: bloquea el scroll del fondo completamente
+ * - Usa position: fixed para prevenir scroll nativo (funciona en PWA standalone)
  * - Los modales deben usar `data-lenis-prevent` en sus contenedores scrollables
  *   para permitir scroll nativo dentro de ellos
  * 
@@ -26,17 +27,38 @@ export function useScrollLock(isLocked: boolean): void {
         const scrollbarWidth =
             window.innerWidth - document.documentElement.clientWidth;
 
-        // Guardar estilos originales
-        const originalStyles = {
+        // Guardar estilos originales del body
+        const originalBodyStyles = {
             overflow: document.body.style.overflow,
             paddingRight: document.body.style.paddingRight,
+            position: document.body.style.position,
+            top: document.body.style.top,
+            left: document.body.style.left,
+            right: document.body.style.right,
+            width: document.body.style.width,
         };
 
-        // Bloquear scroll del body
+        // Guardar estilos originales del html (para touch-action en móvil/PWA)
+        const originalHtmlStyles = {
+            overflow: document.documentElement.style.overflow,
+            touchAction: document.documentElement.style.touchAction,
+        };
+
+        // Bloquear scroll del body usando position: fixed
+        // Esto es más efectivo que solo overflow: hidden, especialmente en iOS PWA
         document.body.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY.current}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
         if (scrollbarWidth > 0) {
             document.body.style.paddingRight = `${scrollbarWidth}px`;
         }
+
+        // Bloquear en html también (necesario para PWA standalone en iOS)
+        document.documentElement.style.overflow = "hidden";
+        document.documentElement.style.touchAction = "none";
 
         // Pausar Lenis si existe
         const lenis = window.lenis;
@@ -46,10 +68,23 @@ export function useScrollLock(isLocked: boolean): void {
 
         // Cleanup: restaurar el estado original
         return () => {
-            document.body.style.overflow = originalStyles.overflow;
-            document.body.style.paddingRight = originalStyles.paddingRight;
+            // Restaurar estilos del body
+            document.body.style.overflow = originalBodyStyles.overflow;
+            document.body.style.paddingRight = originalBodyStyles.paddingRight;
+            document.body.style.position = originalBodyStyles.position;
+            document.body.style.top = originalBodyStyles.top;
+            document.body.style.left = originalBodyStyles.left;
+            document.body.style.right = originalBodyStyles.right;
+            document.body.style.width = originalBodyStyles.width;
 
-            // Reanudar Lenis
+            // Restaurar estilos del html
+            document.documentElement.style.overflow = originalHtmlStyles.overflow;
+            document.documentElement.style.touchAction = originalHtmlStyles.touchAction;
+
+            // Restaurar posición del scroll
+            window.scrollTo(0, scrollY.current);
+
+            // Reanudar Lenis si existe
             if (lenis) {
                 lenis.start();
             }
