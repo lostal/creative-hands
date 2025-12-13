@@ -55,7 +55,7 @@ test("register and login flow", async () => {
   const newUser = {
     name: "Test User",
     email: "test@example.com",
-    password: "password123",
+    password: "Password123", // Debe cumplir: mayúscula, minúscula y número
   };
 
   const resReg = await request(app).post("/api/auth/register").send(newUser);
