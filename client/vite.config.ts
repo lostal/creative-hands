@@ -43,66 +43,67 @@ export default defineConfig(({ command }) => {
         workbox: isDev
           ? { globPatterns: [] }
           : {
-              globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-              runtimeCaching: [
-                {
-                  urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-                  handler: "CacheFirst",
-                  options: {
-                    cacheName: "google-fonts-cache",
-                    expiration: {
-                      maxEntries: 10,
-                      maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
-                    },
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
+            // Excluir html del precache para que siempre venga del servidor con cabeceras CSP
+            globPatterns: ["**/*.{js,css,ico,png,svg,woff2}"],
+            runtimeCaching: [
+              {
+                urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                handler: "CacheFirst",
+                options: {
+                  cacheName: "google-fonts-cache",
+                  expiration: {
+                    maxEntries: 10,
+                    maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
                   },
                 },
-                {
-                  urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-                  handler: "CacheFirst",
-                  options: {
-                    cacheName: "gstatic-fonts-cache",
-                    expiration: {
-                      maxEntries: 10,
-                      maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
-                    },
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
+              },
+              {
+                urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+                handler: "CacheFirst",
+                options: {
+                  cacheName: "gstatic-fonts-cache",
+                  expiration: {
+                    maxEntries: 10,
+                    maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
                   },
                 },
-                {
-                  urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
-                  handler: "CacheFirst",
-                  options: {
-                    cacheName: "cloudinary-images-cache",
-                    expiration: {
-                      maxEntries: 50,
-                      maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-                    },
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
+              },
+              {
+                urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
+                handler: "CacheFirst",
+                options: {
+                  cacheName: "cloudinary-images-cache",
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
                   },
                 },
-                {
-                  urlPattern: /^http:\/\/localhost:5000\/api\/.*/i,
-                  handler: "NetworkFirst",
-                  options: {
-                    cacheName: "api-cache",
-                    expiration: {
-                      maxEntries: 50,
-                      maxAgeSeconds: 60 * 5, // 5 minutes
-                    },
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
+              },
+              {
+                urlPattern: /^http:\/\/localhost:5000\/api\/.*/i,
+                handler: "NetworkFirst",
+                options: {
+                  cacheName: "api-cache",
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 5, // 5 minutes
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
                   },
                 },
-              ],
-            },
+              },
+            ],
+          },
         devOptions: {
           // NEVER enable SW in dev - causes massive console spam and intercepts all requests
           enabled: false,
