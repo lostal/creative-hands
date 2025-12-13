@@ -3,7 +3,7 @@ import { Link } from "react-router";
 const Footer = () => {
   return (
     <footer
-      className="bg-linear-to-t from-gray-50 via-white to-transparent dark:from-gray-900 dark:via-gray-900"
+      className="bg-linear-to-t from-gray-100 via-white to-transparent dark:from-gray-950 dark:via-gray-900 dark:to-transparent"
       role="contentinfo"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

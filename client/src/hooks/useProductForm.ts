@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import api from "../utils/axios";
 import { Product } from "../types";
 import { getApiErrorMessage } from "../utils/errors";
@@ -139,6 +139,15 @@ export const useProductForm = ({
   const [dragActive, setDragActive] = useState(false);
   const [fileErrors, setFileErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+
+  // Bloquear scroll del body cuando el modal está abierto
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   /**
    * Maneja cambios en los campos del formulario

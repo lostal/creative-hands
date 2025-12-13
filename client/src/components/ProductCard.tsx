@@ -134,8 +134,7 @@ const ProductCard = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               // dejar la animación de escala a framer-motion; CSS solo anima colores
-              className="px-3 sm:px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-h-10 sm:min-h-11"
-              disabled={(product.stock ?? 0) === 0}
+              className="px-3 sm:px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-colors whitespace-nowrap min-h-10 sm:min-h-11"
               onClick={() => onViewDetails && onViewDetails(product)}
             >
               Ver detalles

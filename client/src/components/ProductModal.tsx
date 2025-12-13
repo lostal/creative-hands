@@ -320,8 +320,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <button
                   onClick={() => setSelectedTab("details")}
                   className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "details"
-                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                      : "text-gray-600 dark:text-gray-300"
+                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                    : "text-gray-600 dark:text-gray-300"
                     }`}
                 >
                   Detalles
@@ -329,8 +329,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <button
                   onClick={() => setSelectedTab("reviews")}
                   className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "reviews"
-                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                      : "text-gray-600 dark:text-gray-300"
+                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                    : "text-gray-600 dark:text-gray-300"
                     }`}
                 >
                   Valoraciones ({detailedProduct?.numReviews ?? 0})
@@ -368,11 +368,11 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
                 {/* CTA */}
                 <div className="mt-4 sm:mt-6 flex flex-row flex-nowrap items-center gap-3">
-                  <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-2 w-28 sm:w-40 flex-none justify-center">
+                  <div className={`flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-2 w-28 sm:w-40 flex-none justify-center ${(product.stock ?? 0) === 0 ? 'opacity-50' : ''}`}>
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                      disabled={quantity <= 1}
+                      className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={quantity <= 1 || (product.stock ?? 0) === 0}
                       aria-label="Disminuir cantidad"
                     >
                       -
@@ -386,8 +386,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                           Math.min(product.stock ?? 999, quantity + 1),
                         )
                       }
-                      className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                      disabled={quantity >= (product.stock ?? 999)}
+                      className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={quantity >= (product.stock ?? 999) || (product.stock ?? 0) === 0}
                       aria-label="Aumentar cantidad"
                     >
                       +
@@ -415,10 +415,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                       }}
                       disabled={(product.stock ?? 0) === 0}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${(product.stock ?? 0) === 0
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : addedToCart
-                            ? "bg-green-600 hover:bg-green-700"
-                            : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : addedToCart
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                         }`}
                     >
                       <ShoppingCart className="w-4 h-4" />

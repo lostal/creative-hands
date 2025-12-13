@@ -6,7 +6,6 @@ import logger from "../utils/logger";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import ProductModal from "../components/ProductModal";
-import Breadcrumbs from "../components/Breadcrumbs";
 import { useCategories } from "../hooks/useCategories";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Product } from "../types";
@@ -120,24 +119,6 @@ const Products = () => {
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-linear-to-br from-light-500 via-primary-50 to-light-500 dark:from-dark-500 dark:via-dark-400 dark:to-dark-600">
       <div className="max-w-7xl mx-auto">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: "Productos", href: "/products" },
-            ...(selectedCategorySlug &&
-            categoriesWithAll.find((c) => c.slug === selectedCategorySlug)
-              ? [
-                  {
-                    label: categoriesWithAll.find(
-                      (c) => c.slug === selectedCategorySlug,
-                    )!.name,
-                  },
-                ]
-              : []),
-          ]}
-          className="mb-4 sm:mb-6"
-        />
-
         {/* Header */}
         <MotionDiv
           initial={{ opacity: 0, y: -20 }}
@@ -160,14 +141,14 @@ const Products = () => {
           className="mb-6 sm:mb-8 space-y-4"
         >
           {/* Search */}
-          <div className="relative max-w-md mx-auto px-2 sm:px-0">
-            <Search className="absolute left-4 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-5 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
             <input
               type="text"
               placeholder="Buscar productos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3 glass rounded-full text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-all text-base"
+              className="w-full pl-12 pr-4 py-3 glass rounded-full text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-all text-base mx-2 sm:mx-0"
             />
           </div>
 
@@ -188,12 +169,11 @@ const Products = () => {
                     navigate("/products");
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${
-                  selectedCategorySlug === category.slug ||
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${selectedCategorySlug === category.slug ||
                   (selectedCategorySlug === "" && category.name === "Todas")
-                    ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                    : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                }`}
+                  ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                  : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+                  }`}
               >
                 {category.name}
               </MotionButton>
