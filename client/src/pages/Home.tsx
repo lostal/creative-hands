@@ -38,7 +38,7 @@ const Home = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <div className="relative z-dropdown text-center px-4 max-w-5xl mx-auto">
           <MotionDiv
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -134,7 +134,7 @@ const Home = () => {
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
                 aria-label="Ir a destacados"
-                className="hero-scroll-btn subtle-bounce z-30 left-1/2 transform -translate-x-1/2"
+                className="hero-scroll-btn subtle-bounce z-fixed left-1/2 transform -translate-x-1/2"
               >
                 <ChevronDown className="w-6 h-6 text-primary-600" />
               </MotionButton>

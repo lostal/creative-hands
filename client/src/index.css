@@ -230,13 +230,13 @@ layer(base);
 
 @utility glass {
   /* Glassmorphism component: base + dark override (se usan selectores .dark para compatibilidad con darkMode: 'class') */
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.18);
 
   .dark & {
-    background: rgba(38, 38, 36, 0.7);
+    background: rgba(38, 38, 36, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -245,7 +245,7 @@ layer(base);
 
 @utility dark {
   & .glass {
-    background: rgba(38, 38, 36, 0.7);
+    background: rgba(38, 38, 36, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -264,7 +264,7 @@ layer(base);
   }
 
   & .glass-nav {
-    background: rgba(20, 20, 18, 0.6);
+    background: rgba(20, 20, 18, 0.75);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: none;
@@ -319,13 +319,13 @@ layer(base);
 }
 
 @utility glass-nav {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: none;
 
   .dark & {
-    background: rgba(20, 20, 18, 0.6);
+    background: rgba(20, 20, 18, 0.75);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: none;

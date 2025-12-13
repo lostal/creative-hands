@@ -243,9 +243,9 @@ const Reviews = ({
                   (typeof r.user === "string"
                     ? isSameUser(r.user, currentUserId)
                     : isSameUser(
-                        (r.user as User)?._id || (r.user as User)?.id,
-                        currentUserId,
-                      )) && (
+                      (r.user as User)?._id || (r.user as User)?.id,
+                      currentUserId,
+                    )) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
@@ -269,7 +269,7 @@ const Reviews = ({
                   {editingId === (r._id || r.id) && (
                     <MotionDiv
                       key={`edit-overlay-${r._id || r.id}`}
-                      className="absolute inset-0 z-40 flex items-center justify-center p-4"
+                      className="absolute inset-0 z-popover flex items-center justify-center p-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -343,11 +343,10 @@ const Reviews = ({
                                     onClick={() =>
                                       setForm((s) => ({ ...s, rating: n }))
                                     }
-                                    className={`text-2xl ${
-                                      n <= form.rating
+                                    className={`text-2xl ${n <= form.rating
                                         ? "text-yellow-400"
                                         : "text-gray-300 dark:text-gray-600"
-                                    }`}
+                                      }`}
                                     aria-label={`Puntuar ${n}`}
                                   >
                                     ★
@@ -434,11 +433,10 @@ const Reviews = ({
                       key={n}
                       type="button"
                       onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-2xl ${
-                        n <= form.rating
+                      className={`text-2xl ${n <= form.rating
                           ? "text-yellow-400"
                           : "text-gray-300 dark:text-gray-600"
-                      }`}
+                        }`}
                       aria-label={`Puntuar ${n}`}
                     >
                       ★

@@ -242,14 +242,14 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-40 focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-dropdown focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
                     aria-label="Anterior imagen"
                   >
                     <ChevronLeft className="w-5 sm:w-6 h-5 sm:h-6 text-gray-900 dark:text-white" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-40 focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-sm z-dropdown focus:outline-hidden transform-gpu will-change-transform active:scale-95 transition-transform duration-100 min-w-10 min-h-10"
                     aria-label="Siguiente imagen"
                   >
                     <ChevronRight className="w-5 sm:w-6 h-5 sm:h-6 text-gray-900 dark:text-white" />

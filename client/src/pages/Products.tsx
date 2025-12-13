@@ -142,7 +142,7 @@ const Products = () => {
         >
           {/* Search */}
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-5 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+            <Search className="absolute left-5 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-dropdown" />
             <input
               type="text"
               placeholder="Buscar productos..."
