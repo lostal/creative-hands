@@ -1,4 +1,3 @@
-// Build version: 2024-12-13-v2 - Force SW cache invalidation
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
