@@ -1,7 +1,6 @@
 import { Edit, Trash2, Package, Star } from "lucide-react";
 import { formatCurrency } from "../utils/formatters";
 import { MotionDiv, MotionButton } from "../lib/motion";
-import { getCardImageUrl } from "../utils/cloudinary";
 
 import { Product } from "../types";
 
@@ -48,7 +47,7 @@ const ProductCard = ({
       <div className="relative h-48 sm:h-56 md:h-64 bg-linear-to-br from-primary-100 to-primary-200 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <img
-            src={getCardImageUrl(product.images[0] || "")}
+            src={product.images[0] || ""}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             decoding="async"

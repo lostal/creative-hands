@@ -7,7 +7,6 @@ import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errors";
 import logger from "../utils/logger";
 import { formatCurrency } from "../utils/formatters";
-import { getProductDetailUrl } from "../utils/cloudinary";
 import Reviews from "./Reviews";
 import { MotionDiv, MotionImg } from "../lib/motion";
 
@@ -207,7 +206,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 {/* Prev image (exiting) */}
                 {prevIndex !== null && (
                   <MotionImg
-                    src={getProductDetailUrl(images[prevIndex] || "")}
+                    src={images[prevIndex] || ""}
                     key={`prev-${prevIndex}`}
                     initial={{ x: 0, opacity: 1 }}
                     animate={{
@@ -222,7 +221,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
                 {/* Current image (entering) */}
                 <MotionImg
-                  src={getProductDetailUrl(images[index] || "")}
+                  src={images[index] || ""}
                   key={`cur-${index}`}
                   initial={
                     isFirstMount.current && prevIndex === null
@@ -267,9 +266,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     setDirection(i > index ? 1 : -1);
                     setIndex(i);
                   }}
-                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${
-                    i === index ? "border-primary-500" : "border-transparent"
-                  } min-w-16 min-h-16`}
+                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${i === index ? "border-primary-500" : "border-transparent"
+                    } min-w-16 min-h-16`}
                 >
                   <img
                     src={img}
@@ -321,21 +319,19 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               <div className="flex gap-1 sm:gap-2">
                 <button
                   onClick={() => setSelectedTab("details")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
-                    selectedTab === "details"
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "details"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
-                  }`}
+                    }`}
                 >
                   Detalles
                 </button>
                 <button
                   onClick={() => setSelectedTab("reviews")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
-                    selectedTab === "reviews"
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "reviews"
                       ? "border-b-2 border-primary-500 text-primary-600 font-medium"
                       : "text-gray-600 dark:text-gray-300"
-                  }`}
+                    }`}
                 >
                   Valoraciones ({detailedProduct?.numReviews ?? 0})
                 </button>
@@ -418,13 +414,12 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={(product.stock ?? 0) === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${
-                        (product.stock ?? 0) === 0
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${(product.stock ?? 0) === 0
                           ? "bg-gray-400 cursor-not-allowed"
                           : addedToCart
                             ? "bg-green-600 hover:bg-green-700"
                             : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                      }`}
+                        }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>{addedToCart ? "Añadido" : "Añadir"}</span>
