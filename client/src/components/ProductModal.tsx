@@ -4,6 +4,7 @@ import api from "../utils/axios";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import { useScrollLock } from "../hooks/useScrollLock";
 import { getErrorMessage } from "../utils/errors";
 import logger from "../utils/logger";
 import { formatCurrency } from "../utils/formatters";
@@ -52,6 +53,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
   const { addToCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const toast = useToast();
+
+  // Bloquear scroll del background cuando el modal está abierto
+  useScrollLock(!!product);
 
   const images =
     product?.images && product.images.length > 0
@@ -192,7 +196,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
       >
         {/* Note: moved close button into the right column header to avoid overlapping the title */}
 
-        <div className="flex flex-col md:flex-row h-full items-stretch min-h-0 overflow-y-auto md:overflow-y-hidden">
+        <div className="flex flex-col md:flex-row h-full items-stretch min-h-0 overflow-y-auto md:overflow-y-hidden" data-lenis-prevent>
           {/* Left: Gallery */}
           <div className="md:w-1/2 lg:w-[60%] bg-linear-to-br from-primary-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 sm:p-4 md:p-6 flex flex-col items-start justify-start min-h-0 h-auto md:h-full lg:rounded-l-2xl overflow-hidden">
             <div
@@ -284,7 +288,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
           </div>
 
           {/* Right: Details */}
-          <div className="md:w-1/2 lg:w-[40%] p-4 sm:p-5 md:p-6 overflow-y-auto min-h-0">
+          <div className="md:w-1/2 lg:w-[40%] p-4 sm:p-5 md:p-6 overflow-y-auto min-h-0" data-lenis-prevent>
             <div className="flex items-start justify-between mb-3 sm:mb-4">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 pr-2">
                 {product.name}

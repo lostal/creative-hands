@@ -5,3 +5,4 @@ export { useLenis } from "./useLenis";
 export { useMyOrders, useOrder } from "./useOrders";
 export { useProductForm } from "./useProductForm";
 export { useProducts, useProduct } from "./useProducts";
+export { useScrollLock } from "./useScrollLock";

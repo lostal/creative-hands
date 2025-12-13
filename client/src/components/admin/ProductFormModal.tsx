@@ -3,6 +3,7 @@ import { MotionDiv, MotionButton } from "../../lib/motion";
 import { X, Save, Loader } from "lucide-react";
 import { Category, Product } from "../../types";
 import { useProductForm } from "../../hooks/useProductForm";
+import { useScrollLock } from "../../hooks/useScrollLock";
 import ImageUploader from "./ImageUploader";
 
 interface ProductFormModalProps {
@@ -24,6 +25,9 @@ const ProductFormModal = ({
   categoriesList,
   onProductSaved,
 }: ProductFormModalProps) => {
+  // Bloquear scroll del background cuando el modal está abierto
+  useScrollLock(show);
+
   const {
     formData,
     imageList,
@@ -58,6 +62,7 @@ const ProductFormModal = ({
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className="glass rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          data-lenis-prevent
         >
           {/* Header */}
           <div className="flex justify-between items-center mb-6">

@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { MotionDiv } from "../../lib/motion";
 import { X } from "lucide-react";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 /**
  * Componente Modal reutilizable
@@ -23,6 +24,8 @@ const Modal = ({
   size = "md",
   className = "",
 }: ModalProps) => {
+  // Bloquear scroll del background cuando el modal está abierto
+  useScrollLock(show);
   const sizes = {
     sm: "max-w-md",
     md: "max-w-2xl",
@@ -48,6 +51,7 @@ const Modal = ({
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className={`glass rounded-3xl p-6 sm:p-8 w-full max-h-[90vh] overflow-y-auto ${sizes[size]} ${className}`}
+          data-lenis-prevent
         >
           {/* Header */}
           <div className="flex justify-between items-center mb-6">

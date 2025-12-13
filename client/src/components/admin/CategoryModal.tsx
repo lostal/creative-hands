@@ -4,6 +4,7 @@ import { MotionDiv } from "../../lib/motion";
 import { X } from "lucide-react";
 import api from "../../utils/axios";
 import { Category } from "../../types";
+import { useScrollLock } from "../../hooks/useScrollLock";
 import { getApiErrorMessage } from "../../utils/errors";
 import logger from "../../utils/logger";
 
@@ -26,6 +27,9 @@ const CategoryModal = ({
   onCategoriesChange,
   onEditCategory,
 }: CategoryModalProps) => {
+  // Bloquear scroll del background cuando el modal está abierto
+  useScrollLock(show);
+
   const [newCategory, setNewCategory] = useState({
     name: "",
     slug: "",
@@ -77,6 +81,7 @@ const CategoryModal = ({
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className="glass rounded-3xl p-6 max-w-lg w-full"
+          data-lenis-prevent
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
