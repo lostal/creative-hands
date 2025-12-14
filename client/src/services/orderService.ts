@@ -4,38 +4,6 @@
 import api from "../utils/axios";
 import { Order } from "../types";
 
-interface CreateOrderData {
-  orderItems: {
-    product: string;
-    name: string;
-    qty: number;
-    image: string;
-    price: number;
-  }[];
-  shippingAddress: {
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-  paymentMethod: string;
-  itemsPrice: number;
-  taxPrice: number;
-  shippingPrice: number;
-  totalPrice: number;
-}
-
-/**
- * Crear nuevo pedido
- * @param {Object} orderData - {orderItems, shippingAddress}
- */
-export const createOrder = async (
-  orderData: CreateOrderData,
-): Promise<{ success: boolean; order: Order }> => {
-  const { data } = await api.post("/orders", orderData);
-  return data;
-};
-
 /**
  * Obtener mis pedidos (usuario actual)
  */
@@ -60,7 +28,6 @@ export const getAllOrders = async (): Promise<{
 
 /**
  * Obtener pedido por ID
- * @param {string} id - ID del pedido
  */
 export const getOrderById = async (
   id: string,
@@ -71,7 +38,6 @@ export const getOrderById = async (
 
 /**
  * Marcar pedido como entregado (requiere admin)
- * @param {string} id - ID del pedido
  */
 export const markAsDelivered = async (
   id: string,

@@ -89,7 +89,8 @@ export default defineConfig(({ command }) => {
                   },
                 },
                 {
-                  urlPattern: /^http:\/\/localhost:5000\/api\/.*/i,
+                  // Cache API responses (funciona en cualquier origen)
+                  urlPattern: /\/api\/.*/i,
                   handler: "NetworkFirst",
                   options: {
                     cacheName: "api-cache",

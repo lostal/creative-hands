@@ -40,10 +40,10 @@ const FILE_CONFIG = {
  */
 const getCategoryId = (product: Product | null): string => {
   if (!product) return "";
-  if (product.category) {
-    if (typeof product.category === "string") return product.category;
-    if (typeof product.category === "object" && "_id" in product.category) {
-      return product.category._id;
+  if (product.categoryId) {
+    if (typeof product.categoryId === "string") return product.categoryId;
+    if (typeof product.categoryId === "object" && "_id" in product.categoryId) {
+      return product.categoryId._id;
     }
   }
   return "";

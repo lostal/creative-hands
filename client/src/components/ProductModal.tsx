@@ -356,8 +356,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                   <strong>Categoría: </strong>
                   <span>
-                    {typeof product.category === "object"
-                      ? (product.category as Category)?.name
+                    {typeof product.categoryId === "object"
+                      ? (product.categoryId as Category)?.name
                       : "—"}
                   </span>
                 </div>

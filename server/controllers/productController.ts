@@ -394,24 +394,3 @@ export const deleteProductImage = async (req: Request, res: Response) => {
       .json({ success: false, message: "Error al eliminar imagen" });
   }
 };
-
-/**
- * Obtener lista de categorías (legacy)
- * @route GET /api/products/categories/list
- */
-export const getCategoriesList = async (req: Request, res: Response) => {
-  try {
-    const categories = await Category.find().sort("name");
-    res.json({ success: true, categories });
-  } catch (error) {
-    logger.error("Error al obtener lista de categorías:", error);
-    const fallback = [
-      "Joyería artesanal",
-      "Velas y aromáticos",
-      "Textiles y ropa",
-      "Cerámica y arcilla",
-      "Arte hecho a mano",
-    ];
-    res.json({ success: true, categories: fallback });
-  }
-};

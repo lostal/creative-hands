@@ -10,7 +10,6 @@ import { Category } from "../types";
 export const getCategories = async (): Promise<{
   success: boolean;
   categories: Category[];
-  count: number;
 }> => {
   const { data } = await api.get("/categories");
   return data;
@@ -18,31 +17,27 @@ export const getCategories = async (): Promise<{
 
 /**
  * Crear categoría (requiere admin)
- * @param {Object} category - {name, slug?, description?}
  */
 export const createCategory = async (
-  category: Partial<Category>,
+  categoryData: Partial<Category>,
 ): Promise<{ success: boolean; category: Category }> => {
-  const { data } = await api.post("/categories", category);
+  const { data } = await api.post("/categories", categoryData);
   return data;
 };
 
 /**
  * Actualizar categoría (requiere admin)
- * @param {string} id - ID de la categoría
- * @param {Object} updates - Campos a actualizar
  */
 export const updateCategory = async (
   id: string,
-  updates: Partial<Category>,
+  categoryData: Partial<Category>,
 ): Promise<{ success: boolean; category: Category }> => {
-  const { data } = await api.put(`/categories/${id}`, updates);
+  const { data } = await api.put(`/categories/${id}`, categoryData);
   return data;
 };
 
 /**
  * Eliminar categoría (requiere admin)
- * @param {string} id - ID de la categoría
  */
 export const deleteCategory = async (
   id: string,

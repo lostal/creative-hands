@@ -48,9 +48,6 @@ router.get(
   productController.getProducts,
 );
 
-// GET /api/products/categories/list - Lista de categorías (legacy)
-router.get("/categories/list", productController.getCategoriesList);
-
 // GET /api/products/category/:slug - Productos por categoría
 router.get("/category/:slug", productController.getProductsByCategory);
 

@@ -62,8 +62,8 @@ const ProductCard = ({
         {/* Badge de categoría */}
         <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
           <span className="px-2 sm:px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xs text-xs font-medium text-gray-900 dark:text-white rounded-full">
-            {(typeof product.category === "object"
-              ? product.category?.name
+            {(typeof product.categoryId === "object"
+              ? product.categoryId?.name
               : "Producto") || "Producto"}
           </span>
         </div>

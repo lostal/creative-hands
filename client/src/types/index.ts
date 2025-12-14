@@ -31,7 +31,7 @@ export interface Product {
   /** Array de URLs de imágenes del producto */
   images: string[];
   /** Categoría del producto (puede venir populada o como ID) */
-  category?: string | Category;
+  categoryId?: string | Category;
   rating?: number;
   numReviews?: number;
   reviews?: Review[];
@@ -54,7 +54,6 @@ export interface Category {
 export interface OrderItem {
   name: string;
   quantity: number;
-  image: string;
   price: number;
   product: string | Product;
   _id?: string;
@@ -80,9 +79,6 @@ export interface Order {
   orderItems: OrderItem[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
-  itemsPrice: number;
-  taxPrice: number;
-  shippingPrice: number;
   totalPrice: number;
   isPaid: boolean;
   paidAt?: string;

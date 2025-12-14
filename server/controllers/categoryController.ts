@@ -4,6 +4,7 @@
  */
 import { Request, Response } from "express";
 import Category from "../models/Category";
+import Product from "../models/Product";
 import logger from "../utils/logger";
 
 /**
@@ -119,6 +120,15 @@ export const deleteCategory = async (req: Request, res: Response) => {
       return res
         .status(404)
         .json({ success: false, message: "Categoría no encontrada" });
+    }
+
+    // Verificar si hay productos usando esta categoría
+    const productsCount = await Product.countDocuments({ categoryId: id });
+    if (productsCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `No se puede eliminar: hay ${productsCount} producto(s) usando esta categoría`,
+      });
     }
 
     await category.deleteOne();

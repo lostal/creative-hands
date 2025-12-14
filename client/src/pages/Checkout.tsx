@@ -56,6 +56,28 @@ const Checkout = () => {
         return;
       }
 
+      // Verificar stock fresco antes de crear la orden
+      const stockErrors: string[] = [];
+      for (const item of cartItems) {
+        try {
+          const { data } = await api.get(`/products/${item.product._id}`);
+          const currentStock = data.product?.stock ?? 0;
+          if (currentStock < item.quantity) {
+            stockErrors.push(
+              `${item.product.name}: solo hay ${currentStock} disponible(s)`,
+            );
+          }
+        } catch {
+          stockErrors.push(`${item.product.name}: no se pudo verificar stock`);
+        }
+      }
+
+      if (stockErrors.length > 0) {
+        setError(`Stock insuficiente:\n${stockErrors.join("\n")}`);
+        setLoading(false);
+        return;
+      }
+
       // Preparar orderItems
       const orderItems = cartItems.map((item) => ({
         product: item.product._id,
