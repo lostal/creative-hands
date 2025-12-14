@@ -20,7 +20,30 @@ Portal de **productos artesanales** con sistema completo de autenticación, role
 
 ---
 
-## 🔧 Arquitectura del Sistema
+## 🚀 Instalación y Ejecución
+
+```bash
+# Clonar e instalar dependencias
+git clone https://github.com/lostal/creative-hands.git
+cd creative-hands
+pnpm install
+
+# Configurar variables de entorno (ver .env.example)
+cp .env.example .env
+
+# Desarrollo (cliente + servidor)
+pnpm run dev
+
+# Producción
+pnpm run build
+pnpm start
+```
+
+> Las variables de entorno necesarias están documentadas en `.env.example`
+
+---
+
+## Arquitectura del Sistema
 
 ```mermaid
 flowchart TB
@@ -102,6 +125,19 @@ flowchart TB
 - **Panel de pedidos** con actualización de estados
 - **Chat centralizado** para atender a todos los usuarios
 - **Visión de usuarios online** en tiempo real
+
+---
+
+## 💡 Decisiones de Desarrollo
+
+| Decisión | Justificación |
+|----------|---------------|
+| **TypeScript** | Tipado estático para prevenir errores y mejorar mantenibilidad |
+| **React + Vite** | Desarrollo más rápido con HMR y mejor experiencia DX vs Vanilla JS |
+| **Cookies httpOnly** | Más seguro que localStorage para almacenar JWT (previene XSS) |
+| **pnpm workspaces** | Monorepo eficiente con dependencias compartidas |
+| **Express 5** | Soporte nativo de async/await en middlewares |
+| **PWA** | Instalable como app nativa, funciona offline |
 
 ---
 
