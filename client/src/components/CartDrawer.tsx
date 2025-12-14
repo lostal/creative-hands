@@ -29,10 +29,11 @@ const CartDrawer = () => {
     <Fragment>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-drawer-backdrop transition-opacity ${isCartOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-drawer-backdrop transition-opacity ${
+          isCartOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         aria-hidden={!isCartOpen}
         onClick={closeCart}
       >
@@ -41,8 +42,9 @@ const CartDrawer = () => {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 z-drawer h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${isCartOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 z-drawer h-full w-full sm:w-96 transform bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 flex flex-col ${
+          isCartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         aria-hidden={!isCartOpen}
       >
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -58,7 +60,10 @@ const CartDrawer = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4" data-lenis-prevent>
+        <div
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+          data-lenis-prevent
+        >
           {cartItems.length === 0 ? (
             <div className="text-center text-gray-600 dark:text-gray-400 py-8">
               Tu carrito está vacío

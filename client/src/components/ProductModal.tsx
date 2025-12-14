@@ -196,7 +196,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
       >
         {/* Note: moved close button into the right column header to avoid overlapping the title */}
 
-        <div className="flex flex-col md:flex-row h-full items-stretch min-h-0 overflow-y-auto md:overflow-y-hidden" data-lenis-prevent>
+        <div
+          className="flex flex-col md:flex-row h-full items-stretch min-h-0 overflow-y-auto md:overflow-y-hidden"
+          data-lenis-prevent
+        >
           {/* Left: Gallery */}
           <div className="md:w-1/2 lg:w-[60%] bg-linear-to-br from-primary-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 sm:p-4 md:p-6 flex flex-col items-start justify-start min-h-0 h-auto md:h-full lg:rounded-l-2xl overflow-hidden">
             <div
@@ -270,8 +273,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     setDirection(i > index ? 1 : -1);
                     setIndex(i);
                   }}
-                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${i === index ? "border-primary-500" : "border-transparent"
-                    } min-w-16 min-h-16`}
+                  className={`flex-none w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 ${
+                    i === index ? "border-primary-500" : "border-transparent"
+                  } min-w-16 min-h-16`}
                 >
                   <img
                     src={img}
@@ -288,7 +292,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
           </div>
 
           {/* Right: Details */}
-          <div className="md:w-1/2 lg:w-[40%] p-4 sm:p-5 md:p-6 overflow-y-auto min-h-0" data-lenis-prevent>
+          <div
+            className="md:w-1/2 lg:w-[40%] p-4 sm:p-5 md:p-6 overflow-y-auto min-h-0"
+            data-lenis-prevent
+          >
             <div className="flex items-start justify-between mb-3 sm:mb-4">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 pr-2">
                 {product.name}
@@ -323,19 +330,21 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               <div className="flex gap-1 sm:gap-2">
                 <button
                   onClick={() => setSelectedTab("details")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "details"
-                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                    : "text-gray-600 dark:text-gray-300"
-                    }`}
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
+                    selectedTab === "details"
+                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                      : "text-gray-600 dark:text-gray-300"
+                  }`}
                 >
                   Detalles
                 </button>
                 <button
                   onClick={() => setSelectedTab("reviews")}
-                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${selectedTab === "reviews"
-                    ? "border-b-2 border-primary-500 text-primary-600 font-medium"
-                    : "text-gray-600 dark:text-gray-300"
-                    }`}
+                  className={`py-2 sm:py-2.5 px-3 sm:px-4 -mb-px text-sm sm:text-base min-h-11 flex items-center ${
+                    selectedTab === "reviews"
+                      ? "border-b-2 border-primary-500 text-primary-600 font-medium"
+                      : "text-gray-600 dark:text-gray-300"
+                  }`}
                 >
                   Valoraciones ({detailedProduct?.numReviews ?? 0})
                 </button>
@@ -372,7 +381,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
                 {/* CTA */}
                 <div className="mt-4 sm:mt-6 flex flex-row flex-nowrap items-center gap-3">
-                  <div className={`flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-2 w-28 sm:w-40 flex-none justify-center ${(product.stock ?? 0) === 0 ? 'opacity-50' : ''}`}>
+                  <div
+                    className={`flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-2 w-28 sm:w-40 flex-none justify-center ${(product.stock ?? 0) === 0 ? "opacity-50" : ""}`}
+                  >
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -391,7 +402,10 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         )
                       }
                       className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={quantity >= (product.stock ?? 999) || (product.stock ?? 0) === 0}
+                      disabled={
+                        quantity >= (product.stock ?? 999) ||
+                        (product.stock ?? 0) === 0
+                      }
                       aria-label="Aumentar cantidad"
                     >
                       +
@@ -418,12 +432,13 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                         setTimeout(() => setAddedToCart(false), 2000);
                       }}
                       disabled={(product.stock ?? 0) === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${(product.stock ?? 0) === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : addedToCart
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                        }`}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-3 text-white rounded-full font-semibold shadow-lg hover:shadow-xl text-base min-h-11 transition-all whitespace-nowrap min-w-30 ${
+                        (product.stock ?? 0) === 0
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : addedToCart
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                      }`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>{addedToCart ? "Añadido" : "Añadir"}</span>

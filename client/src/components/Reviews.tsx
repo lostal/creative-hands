@@ -243,9 +243,9 @@ const Reviews = ({
                   (typeof r.user === "string"
                     ? isSameUser(r.user, currentUserId)
                     : isSameUser(
-                      (r.user as User)?._id || (r.user as User)?.id,
-                      currentUserId,
-                    )) && (
+                        (r.user as User)?._id || (r.user as User)?.id,
+                        currentUserId,
+                      )) && (
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openFormForEdit(r)}
@@ -343,10 +343,11 @@ const Reviews = ({
                                     onClick={() =>
                                       setForm((s) => ({ ...s, rating: n }))
                                     }
-                                    className={`text-2xl ${n <= form.rating
+                                    className={`text-2xl ${
+                                      n <= form.rating
                                         ? "text-yellow-400"
                                         : "text-gray-300 dark:text-gray-600"
-                                      }`}
+                                    }`}
                                     aria-label={`Puntuar ${n}`}
                                   >
                                     ★
@@ -433,10 +434,11 @@ const Reviews = ({
                       key={n}
                       type="button"
                       onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-2xl ${n <= form.rating
+                      className={`text-2xl ${
+                        n <= form.rating
                           ? "text-yellow-400"
                           : "text-gray-300 dark:text-gray-600"
-                        }`}
+                      }`}
                       aria-label={`Puntuar ${n}`}
                     >
                       ★

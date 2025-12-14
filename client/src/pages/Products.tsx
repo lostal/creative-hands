@@ -169,11 +169,12 @@ const Products = () => {
                     navigate("/products");
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${selectedCategorySlug === category.slug ||
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-medium transition-shadow duration-200 text-sm sm:text-base min-h-10 sm:min-h-11 ${
+                  selectedCategorySlug === category.slug ||
                   (selectedCategorySlug === "" && category.name === "Todas")
-                  ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
-                  : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
-                  }`}
+                    ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                    : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+                }`}
               >
                 {category.name}
               </MotionButton>
