@@ -20,7 +20,7 @@ export default defineConfig(({ command }) => {
           name: "Creative Hands",
           short_name: "CreativeHands",
           description: "Portal de productos artesanales hechos a mano",
-          theme_color: "#CB6843",
+          theme_color: "#B85A38",
           background_color: "#F5F5F4",
           display: "standalone",
           scope: "/",
