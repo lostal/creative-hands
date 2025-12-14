@@ -19,7 +19,7 @@ const Products = () => {
   const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
-  const params = useParams();
+  const { slug } = useParams();
 
   // Usar hook de categorías mejorado
   const { categoriesWithAll, nameToSlug } = useCategories();
@@ -33,12 +33,34 @@ const Products = () => {
   }, [searchTerm]);
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        let data;
+
+        if (selectedCategorySlug) {
+          const res = await api.get(
+            `/products/category/${selectedCategorySlug}`,
+          );
+          data = res.data;
+        } else {
+          const res = await api.get("/products");
+          data = res.data;
+        }
+
+        setProducts(data.products);
+      } catch (error) {
+        logger.error("Error al cargar productos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProducts();
   }, [selectedCategorySlug]);
 
   // Initialize selectedCategorySlug: prefer path param /products/category/:slug, fallback to query param
   useEffect(() => {
-    const { slug } = params || {};
     if (slug) {
       setSelectedCategorySlug(slug);
       return;
@@ -57,28 +79,7 @@ const Products = () => {
         setSelectedCategorySlug(cat);
       }
     }
-  }, [location.search, params?.slug, nameToSlug]);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      let data;
-
-      if (selectedCategorySlug) {
-        const res = await api.get(`/products/category/${selectedCategorySlug}`);
-        data = res.data;
-      } else {
-        const res = await api.get("/products");
-        data = res.data;
-      }
-
-      setProducts(data.products);
-    } catch (error) {
-      logger.error("Error al cargar productos:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [location.search, slug, nameToSlug]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;

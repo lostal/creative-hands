@@ -35,6 +35,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
  * 3. Validar precios del servidor antes de crear orden (ya implementado en orderController)
  */
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (!context) {

@@ -19,6 +19,9 @@
     "build:client": "cd client && pnpm run build",
     "postinstall": "pnpm run build:server"
   },
+  "workspaces": [
+    "client"
+  ],
   "keywords": [
     "artesanía",
     "ecommerce",
