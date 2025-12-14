@@ -4,7 +4,7 @@
  */
 import { Response } from "express";
 import { Types } from "mongoose";
-import Order, { IOrderItem } from "../models/Order";
+import Order from "../models/Order";
 import Product from "../models/Product";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";

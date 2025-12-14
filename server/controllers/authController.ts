@@ -4,7 +4,7 @@
  */
 import { Request, Response, CookieOptions } from "express";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import { AuthRequest } from "../middleware/auth";
 import { JWT_CONFIG } from "../config/constants";
 import logger from "../utils/logger";

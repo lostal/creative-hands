@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Logger estructurado para el servidor
  * Envuelve console.log/error para control por entorno

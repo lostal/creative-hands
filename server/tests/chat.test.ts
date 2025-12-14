@@ -36,7 +36,7 @@ afterEach(async () => {
 
 test("GET /api/chat/admin is protected and returns admin when authenticated", async () => {
   // create admin
-  const admin = await User.create({
+  await User.create({
     name: "ChatAdmin",
     email: "chatadmin@test.com",
     password: "Admin123!",
