@@ -7,13 +7,17 @@
     "server": "nodemon server/server.ts",
     "client": "cd client && pnpm run dev",
     "dev": "concurrently \"pnpm run server\" \"pnpm run client\"",
-    "lint": "eslint .",
+    "lint": "pnpm run lint:server && pnpm run lint:client",
+    "lint:server": "eslint .",
+    "lint:client": "cd client && eslint .",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,html}\"",
     "test": "jest --runInBand",
+    "check": "pnpm run format && pnpm run lint && pnpm run test && pnpm run build",
     "start": "node dist/server/server.js",
+    "build": "pnpm run build:server && pnpm run build:client",
     "build:server": "tsc -p tsconfig.build.json",
-    "postinstall": "pnpm run build:server",
-    "build": "cd client && pnpm run build"
+    "build:client": "cd client && pnpm run build",
+    "postinstall": "pnpm run build:server"
   },
   "keywords": [
     "artesanía",
