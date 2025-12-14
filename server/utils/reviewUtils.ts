@@ -21,25 +21,25 @@ interface ProductPlain {
 type ProductInput = ProductDocument | ProductPlain;
 
 interface EnrichedProduct extends ProductPlain {
-  reviewsCount: number;
-  avgRating: number;
+  numReviews: number;
+  rating: number;
 }
 
 /**
  * Calcula el número de reviews y el promedio de rating
  * @param reviews - Array de reviews del producto
- * @returns {{ reviewsCount: number, avgRating: number }}
+ * @returns {{ numReviews: number, rating: number }}
  */
 export const calculateReviewMetrics = (
   reviews: IReview[] = [],
-): { reviewsCount: number; avgRating: number } => {
+): { numReviews: number; rating: number } => {
   const count = reviews.length;
   const avg = count
     ? Math.round(
         (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / count) * 10,
       ) / 10
     : 0;
-  return { reviewsCount: count, avgRating: avg };
+  return { numReviews: count, rating: avg };
 };
 
 /**
