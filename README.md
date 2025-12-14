@@ -120,7 +120,7 @@ flowchart TB
 | ----------------------- | :-----: | :-----------: |
 | Ver productos           |   ✅    |      ✅       |
 | Comprar productos       |   ✅    |      ❌       |
-| Chat con admin          |   ✅    |      ✅       |
+| Chat                    |   ✅    |      ✅       |
 | Gestionar productos     |   ❌    |      ✅       |
 | Ver todos los pedidos   |   ❌    |      ✅       |
 | Panel de administración |   ❌    |      ✅       |
