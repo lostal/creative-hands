@@ -176,9 +176,6 @@ const configureMiddleware = (app: Express): void => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-
-  // Servir imágenes subidas
-  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 };
 
 /**

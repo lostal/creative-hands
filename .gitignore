@@ -63,8 +63,3 @@ coverage/
 .eslintcache
 __pycache__/
 *.tgz
-
-# ===========================
-# Legacy upload folder (now using Cloudinary)
-# ===========================
-server/uploads/
