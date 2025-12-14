@@ -14,7 +14,7 @@
     "test": "jest --runInBand",
     "check": "pnpm run format && pnpm run lint && pnpm run test && pnpm run build",
     "start": "node dist/server/server.js",
-    "build": "pnpm install && pnpm run build:server && pnpm run build:client",
+    "build": "pnpm run build:server && pnpm run build:client",
     "build:server": "tsc -p tsconfig.build.json",
     "build:client": "pnpm --filter creative-hands-client build",
     "postinstall": "pnpm run build:server"
