@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Intentar obtener usuario actual - si hay cookie válida, funcionará
         const { data } = await api.get<{ user: User }>("/auth/me");
         setUser(data.user);
-      } catch (error) {
+      } catch {
         // Sin cookie válida o expirada - usuario no autenticado
         logger.info("No hay sesión activa");
         setUser(null);
