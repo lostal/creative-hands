@@ -30,6 +30,7 @@ flowchart TB
         Cart[CartContext]
         Socket[SocketContext]
         Theme[ThemeContext]
+        Toast[ToastContext]
     end
 
     subgraph Servidor["⚙️ Servidor (Express + Node.js)"]
@@ -62,8 +63,9 @@ flowchart TB
     UI --> Cart
     UI --> Socket
     UI --> Theme
+    UI --> Toast
 
-    Auth -->|HTTP + JWT| API
+    Auth -->|HTTP + Cookie| API
     Cart -->|HTTP| API
     Socket -->|WebSocket| SocketIO
 
@@ -105,11 +107,11 @@ flowchart TB
 
 ## 🔐 Sistema de Autenticación
 
-### Flujo JWT
+### Flujo JWT con Cookies Seguras
 
-1. **Registro/Login** → El servidor genera un JWT firmado
-2. **Peticiones** → Token enviado en header `Authorization: Bearer <token>`
-3. **Validación** → Middleware verifica token en cada ruta protegida
+1. **Registro/Login** → El servidor genera un JWT y lo almacena en cookie httpOnly
+2. **Peticiones** → La cookie se envía automáticamente (más seguro que headers)
+3. **Validación** → Middleware verifica el token de la cookie en cada ruta protegida
 4. **Socket.IO** → Token también autentica conexiones WebSocket
 
 ### Roles y Permisos
@@ -125,9 +127,12 @@ flowchart TB
 
 ### Seguridad
 
+- **Cookies httpOnly** para almacenamiento de JWT (previene XSS)
 - Contraseñas hasheadas con **bcrypt**
-- **Rate limiting** en endpoints de autenticación (5 intentos / 15 min)
+- **Bloqueo de cuenta** tras 5 intentos fallidos (15 min lockout)
+- **Rate limiting** en endpoints de autenticación
 - Validación de inputs con **Joi**
+- **Helmet** para headers de seguridad (CSP, etc.)
 - CORS configurado por entorno
 
 ---
@@ -169,16 +174,18 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 ### Productos (`/api/products`)
 
-| Método | Endpoint            | Descripción         | Acceso  |
-| ------ | ------------------- | ------------------- | ------- |
-| GET    | `/`                 | Listar productos    | Público |
-| GET    | `/:id`              | Obtener producto    | Público |
-| POST   | `/`                 | Crear producto      | Admin   |
-| PUT    | `/:id`              | Actualizar producto | Admin   |
-| DELETE | `/:id`              | Eliminar producto   | Admin   |
-| POST   | `/:id/reviews`      | Añadir reseña       | Privado |
-| PUT    | `/:id/reviews/:rid` | Editar reseña       | Privado |
-| DELETE | `/:id/reviews/:rid` | Eliminar reseña     | Privado |
+| Método | Endpoint            | Descripción            | Acceso  |
+| ------ | ------------------- | ---------------------- | ------- |
+| GET    | `/`                 | Listar productos       | Público |
+| GET    | `/:id`              | Obtener producto       | Público |
+| GET    | `/category/:slug`   | Productos por categoría| Público |
+| POST   | `/`                 | Crear producto         | Admin   |
+| PUT    | `/:id`              | Actualizar producto    | Admin   |
+| DELETE | `/:id`              | Eliminar producto      | Admin   |
+| DELETE | `/:id/images`       | Eliminar imagen        | Admin   |
+| POST   | `/:id/reviews`      | Añadir reseña          | Privado |
+| PUT    | `/:id/reviews/:rid` | Editar reseña          | Privado |
+| DELETE | `/:id/reviews/:rid` | Eliminar reseña        | Privado |
 
 ### Pedidos (`/api/orders`)
 
@@ -198,6 +205,14 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 | POST   | `/`      | Crear categoría      | Admin   |
 | PUT    | `/:id`   | Actualizar categoría | Admin   |
 | DELETE | `/:id`   | Eliminar categoría   | Admin   |
+
+### Chat (`/api/chat`)
+
+| Método | Endpoint                  | Descripción            | Acceso  |
+| ------ | ------------------------- | ---------------------- | ------- |
+| GET    | `/admin`                  | Obtener info del admin | Privado |
+| GET    | `/messages/:conversationId` | Obtener mensajes     | Privado |
+| GET    | `/conversations`          | Listar conversaciones  | Privado |
 
 ---
 
