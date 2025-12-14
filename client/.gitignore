@@ -1,42 +1,54 @@
+# ===========================
 # Dependencies
+# ===========================
 node_modules/
-client/node_modules/
 
+# ===========================
 # Environment variables
+# ===========================
 .env
 
-# Build files
-client/dist/
-client/build/
+# ===========================
+# Build output
+# ===========================
+dist/
+build/
 
-# Dev service-worker output
-/dev-dist/
+# ===========================
+# Dev service-worker (PWA)
+# ===========================
+dev-dist/
 
+# ===========================
 # Logs
-logs/
+# ===========================
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ===========================
 # Editor directories
-.vscode/
+# ===========================
 .idea/
 *.swp
 *.swo
 *~
 
-# OS files
+# ===========================
+# OS generated files
+# ===========================
 .DS_Store
 Thumbs.db
 
-# MongoDB
-data/
-
+# ===========================
 # Testing
+# ===========================
 coverage/
 
-# Misc
+# ===========================
+# Misc / Cache
+# ===========================
 .cache/
 .temp/

@@ -1,15 +1,26 @@
+# Dependencies
 node_modules
-client/node_modules
-client/dist
+
+# Build output
 dist
 build
+
+# Version control
 .git
 .hg
 .svn
+
+# Environment
 .env
 .env.*
+
+# Test coverage
 coverage
+
+# Minified/generated files
 *.min.js
 public/**/*.map
-server/logs
 *.log
+
+# Legacy folders
+server/uploads

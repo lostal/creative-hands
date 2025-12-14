@@ -1,49 +1,70 @@
+# ===========================
 # Node dependencies
+# ===========================
 node_modules/
-client/node_modules/
-server/node_modules/
 
-# Production / build
+# ===========================
+# Production / Build output
+# ===========================
 dist/
 build/
-client/dist/
 
-# Vite / caching
+# ===========================
+# Vite / Caching
+# ===========================
 .vite/
 .cache/
-/.parcel-cache/
+.parcel-cache/
 
+# ===========================
+# Development builds
+# ===========================
+client/dev-dist/
+
+# ===========================
 # Logs
+# ===========================
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-*.log
 
+# ===========================
 # Environment variables
+# ===========================
 .env
 
-# OS files
+# ===========================
+# OS generated files
+# ===========================
 .DS_Store
 Thumbs.db
 
-# Editor directories and files
-.vscode/
+# ===========================
+# Editor directories
+# ===========================
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.swp
+*.swo
+*~
 
-# Test coverage and reports
+# ===========================
+# Test coverage
+# ===========================
 coverage/
 .nyc_output/
 
+# ===========================
 # Misc
+# ===========================
 .eslintcache
-/.cache/
 __pycache__/
 *.tgz
 
-# Optional: lockfiles are usually committed. Uncomment if you do not want them
-# package-lock.json
-# yarn.lockserver.log
-`n# Ignorar build dev-dist`nclient/dev-dist/
+# ===========================
+# Legacy upload folder (now using Cloudinary)
+# ===========================
+server/uploads/
