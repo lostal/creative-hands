@@ -25,7 +25,7 @@ export const getErrorMessage = (error: unknown): string => {
  */
 export const isAxiosError = (
   error: unknown,
-): error is { response: { data: { message?: string } } } => {
+): error is { response: { data: { message?: string; errors?: string[] } } } => {
   if (error === null || typeof error !== "object") {
     return false;
   }
@@ -41,10 +41,17 @@ export const isAxiosError = (
 
 /**
  * Extracts message from API error responses
+ * If there are specific validation errors, returns them joined
  */
 export const getApiErrorMessage = (error: unknown): string => {
-  if (isAxiosError(error) && error.response?.data?.message) {
-    return error.response.data.message;
+  if (isAxiosError(error)) {
+    // Si hay errores de validación específicos, mostrarlos
+    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      return error.response.data.errors.join(". ");
+    }
+    if (error.response?.data?.message) {
+      return error.response.data.message;
+    }
   }
   return getErrorMessage(error);
 };
