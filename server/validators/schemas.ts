@@ -58,6 +58,8 @@ export const updateProfileSchema = Joi.object({
   });
 
 // Esquema para crear producto (todos los campos requeridos)
+// Nota: FormData envía todos los valores como strings, por eso usamos
+// Joi.alternatives() para aceptar strings numéricos y convertirlos
 export const productSchema = Joi.object({
   name: Joi.string().required().min(3).max(100).messages({
     "string.empty": "El nombre del producto es obligatorio",
@@ -67,14 +69,26 @@ export const productSchema = Joi.object({
     "string.empty": "La descripción es obligatoria",
     "string.min": "La descripción debe tener al menos 10 caracteres",
   }),
-  price: Joi.number().required().min(0).messages({
-    "number.base": "El precio debe ser un número",
-    "number.min": "El precio no puede ser negativo",
-  }),
-  stock: Joi.number().integer().min(0).default(0).messages({
-    "number.base": "El stock debe ser un número",
-    "number.min": "El stock no puede ser negativo",
-  }),
+  price: Joi.alternatives()
+    .try(
+      Joi.number().min(0),
+      Joi.string().pattern(/^\d+(\.\d+)?$/).custom((value) => parseFloat(value))
+    )
+    .required()
+    .messages({
+      "alternatives.match": "El precio debe ser un número válido",
+      "any.required": "El precio es obligatorio",
+    }),
+  stock: Joi.alternatives()
+    .try(
+      Joi.number().integer().min(0),
+      Joi.string().pattern(/^\d+$/).custom((value) => parseInt(value, 10)),
+      Joi.string().valid("").custom(() => 0)
+    )
+    .default(0)
+    .messages({
+      "alternatives.match": "El stock debe ser un número entero válido",
+    }),
   categoryId: Joi.string().optional().allow(""),
   materials: Joi.alternatives()
     .try(Joi.array().items(Joi.string()), Joi.string())
@@ -84,6 +98,7 @@ export const productSchema = Joi.object({
 });
 
 // Esquema para actualizar producto (campos opcionales para partial updates)
+// Nota: FormData envía todos los valores como strings
 export const productUpdateSchema = Joi.object({
   name: Joi.string().min(3).max(100).messages({
     "string.min": "El nombre debe tener al menos 3 caracteres",
@@ -91,14 +106,23 @@ export const productUpdateSchema = Joi.object({
   description: Joi.string().min(10).messages({
     "string.min": "La descripción debe tener al menos 10 caracteres",
   }),
-  price: Joi.number().min(0).messages({
-    "number.base": "El precio debe ser un número",
-    "number.min": "El precio no puede ser negativo",
-  }),
-  stock: Joi.number().integer().min(0).messages({
-    "number.base": "El stock debe ser un número",
-    "number.min": "El stock no puede ser negativo",
-  }),
+  price: Joi.alternatives()
+    .try(
+      Joi.number().min(0),
+      Joi.string().pattern(/^\d+(\.\d+)?$/).custom((value) => parseFloat(value))
+    )
+    .messages({
+      "alternatives.match": "El precio debe ser un número válido",
+    }),
+  stock: Joi.alternatives()
+    .try(
+      Joi.number().integer().min(0),
+      Joi.string().pattern(/^\d+$/).custom((value) => parseInt(value, 10)),
+      Joi.string().valid("").custom(() => 0)
+    )
+    .messages({
+      "alternatives.match": "El stock debe ser un número entero válido",
+    }),
   categoryId: Joi.string().allow(""),
   materials: Joi.alternatives().try(
     Joi.array().items(Joi.string()),
