@@ -80,10 +80,7 @@ export interface Order {
   shippingAddress: ShippingAddress;
   paymentMethod: string;
   totalPrice: number;
-  isPaid: boolean;
-  paidAt?: string;
-  isDelivered: boolean;
-  deliveredAt?: string;
+  status: "pending" | "completed";
   createdAt: string;
   updatedAt?: string;
 }
@@ -135,4 +132,9 @@ export interface CategoriesResponse {
 export interface OrdersResponse {
   success: boolean;
   orders: Order[];
+}
+
+export interface UsersResponse {
+  success: boolean;
+  users: User[];
 }

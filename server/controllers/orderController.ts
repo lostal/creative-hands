@@ -28,13 +28,6 @@ interface PopulatedUser {
 /**
  * Crear nuevo pedido
  * @route POST /api/orders
- *
- * NOTA DE SEGURIDAD PARA PRODUCCIÓN:
- * Este endpoint actualmente marca las órdenes como "Contrarreembolso".
- * Si se integra un proveedor de pagos (Stripe, PayPal, etc.), se debe:
- * 1. Implementar webhooks con validación de firma HMAC
- * 2. Solo marcar isPaid=true tras verificación del webhook del proveedor
- * 3. No confiar en llamadas directas del cliente para marcar como pagado
  */
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
@@ -98,13 +91,14 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       await Product.bulkWrite(stockUpdates);
     }
 
-    // Crear el pedido
+    // Crear el pedido con status 'pending'
     const order = new Order({
       user: req.user?.id,
       orderItems,
       shippingAddress,
       totalPrice,
       paymentMethod: "Contrarreembolso",
+      status: "pending",
     });
 
     await order.save();
@@ -156,7 +150,15 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
  */
 export const getAllOrders = async (req: AuthRequest, res: Response) => {
   try {
-    const orders = await Order.find()
+    // Filtrar por status si se proporciona
+    const { status } = req.query;
+    const filter: { status?: string } = {};
+
+    if (status && (status === "pending" || status === "completed")) {
+      filter.status = status;
+    }
+
+    const orders = await Order.find(filter)
       .populate("user", "name email")
       .populate("orderItems.product")
       .sort({ createdAt: -1 });
@@ -220,14 +222,23 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Marcar pedido como entregado
- * @route PUT /api/orders/:id/deliver
+ * Actualizar estado del pedido
+ * @route PUT /api/orders/:id/status
  */
-export const deliverOrder = async (req: AuthRequest, res: Response) => {
+export const updateOrderStatus = async (req: AuthRequest, res: Response) => {
   try {
+    const { status } = req.body as { status: string };
+
+    if (!["pending", "completed"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Estado no válido. Usar: pending o completed",
+      });
+    }
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { isDelivered: true },
+      { status },
       { new: true },
     )
       .populate("user", "name email")
@@ -245,10 +256,10 @@ export const deliverOrder = async (req: AuthRequest, res: Response) => {
       order,
     });
   } catch (error: unknown) {
-    logger.error("Error al entregar pedido:", error);
+    logger.error("Error al actualizar estado del pedido:", error);
     res.status(500).json({
       success: false,
-      message: "Error al entregar el pedido",
+      message: "Error al actualizar el pedido",
       error: getErrorForResponse(error),
     });
   }

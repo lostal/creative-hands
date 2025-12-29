@@ -199,7 +199,7 @@ test("admin can get all orders", async () => {
   expect(res.body.orders.length).toBeGreaterThanOrEqual(1);
 });
 
-test("admin can mark order as delivered", async () => {
+test("admin can update order status", async () => {
   const admin = await User.create({
     name: "DeliverAdmin",
     email: "deliveradmin@test.com",
@@ -240,7 +240,7 @@ test("admin can mark order as delivered", async () => {
     },
     totalPrice: 25.0,
     paymentMethod: "Contrarreembolso",
-    isDelivered: false,
+    status: "pending",
   });
 
   const adminToken = jwt.sign(
@@ -250,12 +250,13 @@ test("admin can mark order as delivered", async () => {
   );
 
   const res = await request(app)
-    .put(`/api/orders/${order._id}/deliver`)
-    .set("Authorization", `Bearer ${adminToken}`);
+    .put(`/api/orders/${order._id}/status`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({ status: "completed" });
 
   expect(res.statusCode).toBe(200);
   expect(res.body.success).toBe(true);
-  expect(res.body.order.isDelivered).toBe(true);
+  expect(res.body.order.status).toBe("completed");
 });
 
 test("non-admin cannot get all orders (403)", async () => {

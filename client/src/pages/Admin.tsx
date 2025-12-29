@@ -6,6 +6,7 @@ import {
   Package,
   Loader,
   ShoppingCart,
+  Users,
 } from "lucide-react";
 import api from "../utils/axios";
 import logger from "../utils/logger";
@@ -14,6 +15,7 @@ import { useNavigate } from "react-router";
 import ProductCard from "../components/ProductCard";
 import AdminChat from "../components/AdminChat";
 import AdminOrders from "../components/AdminOrders";
+import AdminUsers from "../components/AdminUsers";
 import {
   ProductFormModal,
   CategoryModal,
@@ -200,6 +202,17 @@ const Admin = () => {
             <ShoppingCart className="w-5 h-5" />
             <span>Pedidos</span>
           </button>
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`flex items-center justify-center sm:justify-start space-x-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-colors duration-200 min-h-12 text-base ${
+              activeTab === "users"
+                ? "bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg"
+                : "glass text-gray-700 dark:text-gray-300 hover:shadow-md"
+            }`}
+          >
+            <Users className="w-5 h-5" />
+            <span>Usuarios</span>
+          </button>
         </MotionDiv>
 
         {/* Content */}
@@ -275,6 +288,17 @@ const Admin = () => {
               exit={{ opacity: 0, x: 20 }}
             >
               <AdminOrders />
+            </MotionDiv>
+          )}
+
+          {activeTab === "users" && (
+            <MotionDiv
+              key="users"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <AdminUsers />
             </MotionDiv>
           )}
         </AnimatePresence>

@@ -72,7 +72,9 @@ export const productSchema = Joi.object({
   price: Joi.alternatives()
     .try(
       Joi.number().min(0),
-      Joi.string().pattern(/^\d+(\.\d+)?$/).custom((value) => parseFloat(value))
+      Joi.string()
+        .pattern(/^\d+(\.\d+)?$/)
+        .custom((value) => parseFloat(value)),
     )
     .required()
     .messages({
@@ -82,8 +84,12 @@ export const productSchema = Joi.object({
   stock: Joi.alternatives()
     .try(
       Joi.number().integer().min(0),
-      Joi.string().pattern(/^\d+$/).custom((value) => parseInt(value, 10)),
-      Joi.string().valid("").custom(() => 0)
+      Joi.string()
+        .pattern(/^\d+$/)
+        .custom((value) => parseInt(value, 10)),
+      Joi.string()
+        .valid("")
+        .custom(() => 0),
     )
     .default(0)
     .messages({
@@ -109,7 +115,9 @@ export const productUpdateSchema = Joi.object({
   price: Joi.alternatives()
     .try(
       Joi.number().min(0),
-      Joi.string().pattern(/^\d+(\.\d+)?$/).custom((value) => parseFloat(value))
+      Joi.string()
+        .pattern(/^\d+(\.\d+)?$/)
+        .custom((value) => parseFloat(value)),
     )
     .messages({
       "alternatives.match": "El precio debe ser un número válido",
@@ -117,8 +125,12 @@ export const productUpdateSchema = Joi.object({
   stock: Joi.alternatives()
     .try(
       Joi.number().integer().min(0),
-      Joi.string().pattern(/^\d+$/).custom((value) => parseInt(value, 10)),
-      Joi.string().valid("").custom(() => 0)
+      Joi.string()
+        .pattern(/^\d+$/)
+        .custom((value) => parseInt(value, 10)),
+      Joi.string()
+        .valid("")
+        .custom(() => 0),
     )
     .messages({
       "alternatives.match": "El stock debe ser un número entero válido",

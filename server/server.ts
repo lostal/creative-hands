@@ -10,6 +10,13 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import compression from "compression";
+import jwt from "jsonwebtoken";
+
+// Apollo Server
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@as-integrations/express5";
+import { typeDefs } from "./graphql/schema";
+import { resolvers } from "./graphql/resolvers";
 
 import connectDB from "./config/db";
 import { RATE_LIMITS } from "./config/constants";
@@ -23,6 +30,15 @@ import productRoutes from "./routes/products";
 import categoryRoutes from "./routes/categories";
 import chatRoutes from "./routes/chat";
 import orderRoutes from "./routes/orders";
+import userRoutes from "./routes/users";
+
+// Tipo para contexto de GraphQL
+interface GraphQLContext {
+  user?: {
+    id: string;
+    role: "user" | "admin";
+  };
+}
 
 /**
  * Validar variables de entorno críticas
@@ -194,11 +210,80 @@ const configureRoutes = (app: Express): void => {
   app.use("/api/categories", categoryRoutes);
   app.use("/api/chat", chatRoutes);
   app.use("/api/orders", orderRoutes);
+  app.use("/api/users", userRoutes);
 
   // Health check
   app.get("/api/health", (_req: Request, res: Response) => {
     res.json({ status: "OK", timestamp: new Date() });
   });
+};
+
+/**
+ * Configurar Apollo Server para GraphQL
+ */
+const configureGraphQL = async (app: Express): Promise<void> => {
+  const apolloServer = new ApolloServer<GraphQLContext>({
+    typeDefs,
+    resolvers,
+  });
+
+  await apolloServer.start();
+
+  // Middleware de GraphQL con contexto de autenticación
+  // NOTA: express.json() debe estar en la misma cadena de middleware que expressMiddleware
+  // según la documentación oficial de Apollo Server
+  app.use(
+    "/graphql",
+    cors<cors.CorsRequest>({
+      origin: getCorsOrigin(),
+      credentials: true,
+    }),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      context: async ({ req }): Promise<GraphQLContext> => {
+        // Extraer token de cookie o header Authorization
+        let token: string | undefined;
+
+        if (
+          req.headers.authorization &&
+          req.headers.authorization.startsWith("Bearer")
+        ) {
+          token = req.headers.authorization.split(" ")[1];
+        } else if (req.cookies && req.cookies.token) {
+          token = req.cookies.token;
+        }
+
+        if (!token) {
+          return {}; // Usuario no autenticado
+        }
+
+        try {
+          const jwtSecret = process.env.JWT_SECRET;
+          if (!jwtSecret) return {};
+
+          const decoded = jwt.verify(token, jwtSecret) as {
+            id: string;
+            iat?: number;
+            exp?: number;
+          };
+
+          const user = await User.findById(decoded.id).select("role");
+          if (!user) return {};
+
+          return {
+            user: {
+              id: user._id.toString(),
+              role: user.role as "user" | "admin",
+            },
+          };
+        } catch {
+          return {}; // Token inválido
+        }
+      },
+    }),
+  );
+
+  logger.startup("🔮 GraphQL disponible en /graphql");
 };
 
 /**
@@ -285,14 +370,18 @@ const startServer = async (): Promise<void> => {
 
     configureMiddleware(app);
     configureRoutes(app);
+
+    // 5. Configurar GraphQL
+    await configureGraphQL(app);
+
     configureStaticFiles(app);
     configureErrorHandler(app);
 
-    // 5. Configurar Socket.IO
+    // 6. Configurar Socket.IO
     const io = createSocketServer(server);
     setupSocketHandlers(io);
 
-    // 6. Iniciar servidor
+    // 7. Iniciar servidor
     const PORT = process.env.PORT || 5000;
 
     server.listen(PORT, () => {
@@ -304,6 +393,7 @@ const startServer = async (): Promise<void> => {
       } else {
         logger.startup(`🌐 Frontend: http://localhost:5173`);
         logger.startup(`🔗 API: http://localhost:${PORT}`);
+        logger.startup(`🔮 GraphQL: http://localhost:${PORT}/graphql`);
       }
 
       logger.startup(`🔌 Socket.IO listo para conexiones\n`);

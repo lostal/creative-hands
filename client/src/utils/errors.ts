@@ -46,7 +46,10 @@ export const isAxiosError = (
 export const getApiErrorMessage = (error: unknown): string => {
   if (isAxiosError(error)) {
     // Si hay errores de validación específicos, mostrarlos
-    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+    if (
+      error.response?.data?.errors &&
+      Array.isArray(error.response.data.errors)
+    ) {
       return error.response.data.errors.join(". ");
     }
     if (error.response?.data?.message) {

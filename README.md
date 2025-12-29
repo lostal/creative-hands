@@ -1,7 +1,7 @@
 # 🎨 Creative Hands
 
 <div align="center">
-    
+
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
@@ -126,14 +126,14 @@ flowchart TB
 
 ## 💡 Decisiones de Desarrollo
 
-| Decisión | Justificación |
-|----------|---------------|
-| **TypeScript** | Tipado estático para prevenir errores y mejorar mantenibilidad |
-| **React + Vite** | Desarrollo más rápido con HMR y mejor experiencia DX vs Vanilla JS |
-| **Cookies httpOnly** | Más seguro que localStorage para almacenar JWT (previene XSS) |
-| **pnpm workspaces** | Monorepo eficiente con dependencias compartidas |
-| **Express 5** | Soporte nativo de async/await en middlewares |
-| **PWA** | Instalable como app nativa, funciona offline |
+| Decisión             | Justificación                                                      |
+| -------------------- | ------------------------------------------------------------------ |
+| **TypeScript**       | Tipado estático para prevenir errores y mejorar mantenibilidad     |
+| **React + Vite**     | Desarrollo más rápido con HMR y mejor experiencia DX vs Vanilla JS |
+| **Cookies httpOnly** | Más seguro que localStorage para almacenar JWT (previene XSS)      |
+| **pnpm workspaces**  | Monorepo eficiente con dependencias compartidas                    |
+| **Express 5**        | Soporte nativo de async/await en middlewares                       |
+| **PWA**              | Instalable como app nativa, funciona offline                       |
 
 ---
 
@@ -221,13 +221,102 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 ### Pedidos (`/api/orders`)
 
-| Método | Endpoint       | Descripción       | Acceso  |
-| ------ | -------------- | ----------------- | ------- |
-| POST   | `/`            | Crear pedido      | Usuario |
-| GET    | `/myorders`    | Mis pedidos       | Usuario |
-| GET    | `/:id`         | Obtener pedido    | Privado |
-| GET    | `/`            | Todos los pedidos | Admin   |
-| PUT    | `/:id/deliver` | Marcar entregado  | Admin   |
+| Método | Endpoint      | Descripción       | Acceso  |
+| ------ | ------------- | ----------------- | ------- |
+| POST   | `/`           | Crear pedido      | Usuario |
+| GET    | `/myorders`   | Mis pedidos       | Usuario |
+| GET    | `/:id`        | Obtener pedido    | Privado |
+| GET    | `/`           | Todos los pedidos | Admin   |
+| PUT    | `/:id/status` | Actualizar estado | Admin   |
+
+### Usuarios (`/api/users`)
+
+| Método | Endpoint    | Descripción      | Acceso |
+| ------ | ----------- | ---------------- | ------ |
+| GET    | `/`         | Listar usuarios  | Admin  |
+| DELETE | `/:id`      | Eliminar usuario | Admin  |
+| PUT    | `/:id/role` | Cambiar rol      | Admin  |
+
+---
+
+## 🔮 API GraphQL
+
+Endpoint: `/graphql`
+
+### Queries
+
+```graphql
+# Obtener todos los productos
+query {
+  products {
+    _id
+    name
+    price
+    stock
+  }
+}
+
+# Obtener producto por ID
+query {
+  product(id: "...") {
+    _id
+    name
+    description
+    price
+  }
+}
+
+# Obtener mis pedidos (autenticado)
+query {
+  myOrders {
+    _id
+    totalPrice
+    status
+  }
+}
+
+# Obtener todos los pedidos (admin)
+query {
+  orders {
+    _id
+    user {
+      name
+    }
+    totalPrice
+    status
+  }
+}
+```
+
+### Mutations
+
+```graphql
+# Crear pedido
+mutation {
+  createOrder(
+    input: {
+      orderItems: [{ product: "...", name: "...", quantity: 1, price: 10 }]
+      shippingAddress: {
+        address: "..."
+        city: "..."
+        postalCode: "..."
+        phone: "..."
+      }
+    }
+  ) {
+    _id
+    totalPrice
+  }
+}
+
+# Actualizar estado del pedido (admin)
+mutation {
+  updateOrderStatus(id: "...", status: "completed") {
+    _id
+    status
+  }
+}
+```
 
 ### Categorías (`/api/categories`)
 

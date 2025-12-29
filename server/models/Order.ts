@@ -20,8 +20,7 @@ export interface IOrder extends Document {
   shippingAddress: IShippingAddress;
   paymentMethod: string;
   totalPrice: number;
-  isPaid: boolean;
-  isDelivered: boolean;
+  status: "pending" | "completed";
 }
 
 const orderSchema = new Schema(
@@ -82,13 +81,10 @@ const orderSchema = new Schema(
       required: true,
       min: 0,
     },
-    isPaid: {
-      type: Boolean,
-      default: false,
-    },
-    isDelivered: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["pending", "completed"],
+      default: "pending",
     },
   },
   {
@@ -98,6 +94,6 @@ const orderSchema = new Schema(
 
 // Índices para consultas frecuentes
 orderSchema.index({ user: 1, createdAt: -1 }); // "Mis pedidos" ordenados por fecha
-orderSchema.index({ isDelivered: 1 }); // Filtrar pedidos pendientes/entregados
+orderSchema.index({ status: 1 }); // Filtrar pedidos por estado
 
 export default mongoose.model<IOrder>("Order", orderSchema);

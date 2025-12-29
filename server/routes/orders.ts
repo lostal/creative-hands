@@ -32,6 +32,7 @@ const orderLimiter = rateLimit({
 // NOTA: Las rutas sin parámetros dinámicos deben ir ANTES de las rutas con :id
 
 // GET /api/orders - Obtener todos los pedidos (Admin)
+// Soporta query param ?status=pending|completed
 router.get("/", protect, adminOnly, orderController.getAllOrders);
 
 // ==================== RUTAS PROTEGIDAS ====================
@@ -51,13 +52,13 @@ router.get("/myorders", protect, orderController.getMyOrders);
 // GET /api/orders/:id - Obtener pedido por ID
 router.get("/:id", validateObjectId(), protect, orderController.getOrderById);
 
-// PUT /api/orders/:id/deliver - Marcar como entregado
+// PUT /api/orders/:id/status - Actualizar estado del pedido (Admin)
 router.put(
-  "/:id/deliver",
+  "/:id/status",
   validateObjectId(),
   protect,
   adminOnly,
-  orderController.deliverOrder,
+  orderController.updateOrderStatus,
 );
 
 export default router;
