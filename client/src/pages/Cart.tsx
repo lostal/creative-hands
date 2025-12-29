@@ -110,7 +110,7 @@ const Cart = () => {
                     >
                       -
                     </button>
-                    <span className="px-4 font-semibold text-gray-900 dark:text-white min-w-[3rem] text-center">
+                    <span className="px-4 font-semibold text-gray-900 dark:text-white min-w-12 text-center">
                       {item.quantity}
                     </span>
                     <button

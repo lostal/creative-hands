@@ -167,8 +167,8 @@ const MyOrders = () => {
                           }`}
                         >
                           {order.status === "completed"
-                            ? "Completed"
-                            : "Pending"}
+                            ? "Completado"
+                            : "Pendiente"}
                         </span>
                         <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
                           {order.paymentMethod}

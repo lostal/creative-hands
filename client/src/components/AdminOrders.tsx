@@ -132,7 +132,7 @@ const AdminOrders = () => {
           }`}
         >
           <Clock className="w-3 h-3" />
-          Pending ({statusCounts.pending})
+          Pendiente ({statusCounts.pending})
         </button>
         <button
           onClick={() => setStatusFilter("completed")}
@@ -143,7 +143,7 @@ const AdminOrders = () => {
           }`}
         >
           <CheckCircle2 className="w-3 h-3" />
-          Completed ({statusCounts.completed})
+          Completado ({statusCounts.completed})
         </button>
       </div>
 
@@ -206,12 +206,12 @@ const AdminOrders = () => {
                     {order.status === "completed" ? (
                       <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        Completed
+                        Completado
                       </span>
                     ) : (
                       <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        Pending
+                        Pendiente
                       </span>
                     )}
                   </div>
@@ -311,7 +311,7 @@ const AdminOrders = () => {
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>Marcar como Completed</span>
+                          <span>Marcar como Completado</span>
                         </>
                       )}
                     </button>
@@ -333,7 +333,7 @@ const AdminOrders = () => {
                         {updatingStatus === order._id ? (
                           <Loader className="w-4 h-4 animate-spin" />
                         ) : (
-                          "Revertir a Pending"
+                          "Revertir a Pendiente"
                         )}
                       </button>
                     </div>

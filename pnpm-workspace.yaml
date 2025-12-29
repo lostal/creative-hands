@@ -1,2 +1,5 @@
 packages:
-  - 'client'
+  - client
+
+onlyBuiltDependencies:
+  - mongodb-memory-server
