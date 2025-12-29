@@ -243,80 +243,10 @@ El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
 
 Endpoint: `/graphql`
 
-### Queries
+Queries disponibles: `products`, `product(id)`, `myOrders`, `orders`, `order(id)`
+Mutations: `createOrder`, `updateOrderStatus`
 
-```graphql
-# Obtener todos los productos
-query {
-  products {
-    _id
-    name
-    price
-    stock
-  }
-}
-
-# Obtener producto por ID
-query {
-  product(id: "...") {
-    _id
-    name
-    description
-    price
-  }
-}
-
-# Obtener mis pedidos (autenticado)
-query {
-  myOrders {
-    _id
-    totalPrice
-    status
-  }
-}
-
-# Obtener todos los pedidos (admin)
-query {
-  orders {
-    _id
-    user {
-      name
-    }
-    totalPrice
-    status
-  }
-}
-```
-
-### Mutations
-
-```graphql
-# Crear pedido
-mutation {
-  createOrder(
-    input: {
-      orderItems: [{ product: "...", name: "...", quantity: 1, price: 10 }]
-      shippingAddress: {
-        address: "..."
-        city: "..."
-        postalCode: "..."
-        phone: "..."
-      }
-    }
-  ) {
-    _id
-    totalPrice
-  }
-}
-
-# Actualizar estado del pedido (admin)
-mutation {
-  updateOrderStatus(id: "...", status: "completed") {
-    _id
-    status
-  }
-}
-```
+📖 **[Documentación completa con comandos ejecutables →](./docs/GRAPHQL.md)**
 
 ### Categorías (`/api/categories`)
 
