@@ -6,6 +6,7 @@ import { Response } from "express";
 import User from "../models/User";
 import Order from "../models/Order";
 import Message from "../models/Message";
+import Product from "../models/Product";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
 import { getErrorForResponse } from "../utils/errors";
@@ -35,7 +36,8 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Eliminar usuario
+ * Eliminar usuario con cascada de datos relacionados
+ * Elimina: pedidos, mensajes y reviews del usuario
  * @route DELETE /api/users/:id
  */
 export const deleteUser = async (req: AuthRequest, res: Response) => {
@@ -59,11 +61,39 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    // Cascada: eliminar datos relacionados en paralelo
+    const [ordersResult, messagesResult, reviewsResult] = await Promise.all([
+      // Eliminar todos los pedidos del usuario
+      Order.deleteMany({ user: userId }),
+
+      // Eliminar todos los mensajes donde el usuario es sender o receiver
+      Message.deleteMany({
+        $or: [{ sender: userId }, { receiver: userId }],
+      }),
+
+      // Eliminar reviews del usuario de todos los productos
+      Product.updateMany({}, { $pull: { reviews: { user: userId } } }),
+    ]);
+
+    // Logging para auditoría
+    logger.info(
+      `Cascada de eliminación para usuario ${userId}: ` +
+        `${ordersResult.deletedCount} pedidos, ` +
+        `${messagesResult.deletedCount} mensajes, ` +
+        `${reviewsResult.modifiedCount} productos con reviews eliminadas`,
+    );
+
+    // Finalmente eliminar el usuario
     await User.findByIdAndDelete(userId);
 
     res.json({
       success: true,
-      message: "Usuario eliminado correctamente",
+      message: "Usuario y datos relacionados eliminados correctamente",
+      deletedData: {
+        orders: ordersResult.deletedCount,
+        messages: messagesResult.deletedCount,
+        productsWithReviewsRemoved: reviewsResult.modifiedCount,
+      },
     });
   } catch (error: unknown) {
     logger.error("Error al eliminar usuario:", error);

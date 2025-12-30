@@ -44,18 +44,50 @@ const AdminUsers = () => {
 
   const handleDeleteUser = async (userId: string) => {
     const userToDelete = users.find((u) => u._id === userId);
-    if (
-      !window.confirm(
-        `¿Estás seguro de eliminar al usuario "${userToDelete?.name}"?`,
-      )
-    ) {
+
+    // Advertencia detallada sobre eliminación en cascada
+    const confirmed = window.confirm(
+      `¿Estás seguro de eliminar al usuario "${userToDelete?.name}"?\n\n` +
+        "⚠️ ATENCIÓN: Esta acción también eliminará:\n" +
+        "• Todos sus pedidos\n" +
+        "• Todos sus mensajes de chat\n" +
+        "• Todas sus valoraciones de productos\n\n" +
+        "Esta acción NO se puede deshacer.",
+    );
+
+    if (!confirmed) {
       return;
     }
 
     try {
       setActionLoading(userId);
-      await api.delete(`/users/${userId}`);
+      const { data } = await api.delete<{
+        success: boolean;
+        deletedData?: {
+          orders: number;
+          messages: number;
+          productsWithReviewsRemoved: number;
+        };
+      }>(`/users/${userId}`);
+
       setUsers(users.filter((u) => u._id !== userId));
+
+      // Mostrar resumen de lo eliminado
+      if (data.deletedData) {
+        const { orders, messages, productsWithReviewsRemoved } =
+          data.deletedData;
+        const parts: string[] = [];
+        if (orders > 0) parts.push(`${orders} pedido(s)`);
+        if (messages > 0) parts.push(`${messages} mensaje(s)`);
+        if (productsWithReviewsRemoved > 0)
+          parts.push(`reviews de ${productsWithReviewsRemoved} producto(s)`);
+
+        if (parts.length > 0) {
+          window.alert(
+            `Usuario eliminado.\n\nDatos relacionados eliminados:\n• ${parts.join("\n• ")}`,
+          );
+        }
+      }
     } catch (err: unknown) {
       logger.error("Error al eliminar usuario:", err);
       setError(getApiErrorMessage(err));

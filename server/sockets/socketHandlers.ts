@@ -232,11 +232,11 @@ const registerUserConnection = async (
   socket: AuthenticatedSocket,
   io: Server,
 ) => {
-  const { userId, userName } = socket;
+  const { userId, userName, userRole } = socket;
 
   if (!userId) return;
 
-  logger.socket(`Usuario conectado: ${userName} (${userId})`);
+  logger.socket(`Usuario conectado: ${userName} (${userId}) [${userRole}]`);
 
   // Agregar socket al Set del usuario (soporta múltiples pestañas)
   if (!connectedUsers.has(userId)) {
@@ -259,6 +259,12 @@ const registerUserConnection = async (
 
   // Unirse a sala personal para recibir mensajes directos
   socket.join(userId);
+
+  // Si es admin, unirse a la sala compartida de admins para ver todas las conversaciones
+  if (userRole === "admin") {
+    socket.join("admins");
+    logger.socket(`Admin ${userName} unido a sala compartida 'admins'`);
+  }
 };
 
 /**
@@ -315,15 +321,33 @@ const handleMessageSend = async (
       .populate("sender", "name avatar")
       .populate("receiver", "name avatar");
 
-    // Enviar a ambos usuarios (usando sus salas personales)
-    io.to(senderId).emit("message:new", populatedMessage);
-    io.to(receiverId).emit("message:new", populatedMessage);
+    // Chat compartido: enviar a usuario y a TODOS los admins
+    // El sender ya ve el mensaje localmente, pero lo emitimos para consistencia
 
-    // Notificar al receptor
-    io.to(receiverId).emit("message:notification", {
-      from: socket.userName,
-      conversationId,
-    });
+    // Determinar si es conversación de soporte (usuario <-> admin)
+    const senderRole = socket.userRole;
+
+    if (senderRole === "admin") {
+      // Admin respondiendo a usuario: enviar al usuario y a todos los admins
+      io.to(receiverId).emit("message:new", populatedMessage);
+      io.to("admins").emit("message:new", populatedMessage);
+
+      // Notificar al usuario
+      io.to(receiverId).emit("message:notification", {
+        from: "Soporte",
+        conversationId,
+      });
+    } else {
+      // Usuario enviando mensaje: enviar a él mismo y a todos los admins
+      io.to(senderId).emit("message:new", populatedMessage);
+      io.to("admins").emit("message:new", populatedMessage);
+
+      // Notificar a todos los admins
+      io.to("admins").emit("message:notification", {
+        from: socket.userName,
+        conversationId,
+      });
+    }
   } catch (error) {
     logger.error("Error al enviar mensaje:", error);
     socket.emit("message:error", { message: "Error al enviar mensaje" });

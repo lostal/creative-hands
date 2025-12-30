@@ -130,27 +130,61 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
 
 /**
  * Obtener conversaciones del usuario
+ * Para admins: muestra TODAS las conversaciones de usuarios (chat compartido)
+ * Para usuarios: muestra solo sus propias conversaciones
  * @route GET /api/chat/conversations
  */
 export const getConversations = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
+    const userRole = req.user?.role;
 
-    const messages = await Message.find({
-      $or: [{ sender: userId }, { receiver: userId }],
-    })
-      .sort("-createdAt")
-      .limit(500)
-      .populate("sender", "name email isOnline")
-      .populate("receiver", "name email isOnline");
+    let messages;
+
+    if (userRole === "admin") {
+      // ADMIN: Ver TODAS las conversaciones de usuarios (no entre admins)
+      // Buscar todos los usuarios no-admin
+      const regularUsers = await User.find({ role: "user" }).select("_id");
+      const userIds = regularUsers.map((u) => u._id);
+
+      // Obtener mensajes donde al menos un participante es usuario regular
+      messages = await Message.find({
+        $or: [{ sender: { $in: userIds } }, { receiver: { $in: userIds } }],
+      })
+        .sort("-createdAt")
+        .limit(1000)
+        .populate("sender", "name email isOnline role")
+        .populate("receiver", "name email isOnline role");
+    } else {
+      // USUARIO REGULAR: Solo sus propias conversaciones
+      messages = await Message.find({
+        $or: [{ sender: userId }, { receiver: userId }],
+      })
+        .sort("-createdAt")
+        .limit(500)
+        .populate("sender", "name email isOnline role")
+        .populate("receiver", "name email isOnline role");
+    }
 
     // Agrupar por conversationId
     const convMap = new Map();
 
     for (const msg of messages) {
       if (!convMap.has(msg.conversationId)) {
-        const otherUser =
-          msg.sender._id.toString() === userId ? msg.receiver : msg.sender;
+        // Para admins: el "otherUser" es siempre el usuario regular (no el admin)
+        // Para usuarios: el "otherUser" es el admin
+        let otherUser;
+
+        if (userRole === "admin") {
+          // Encontrar el usuario regular en la conversación
+          const senderIsAdmin =
+            (msg.sender as { role?: string }).role === "admin";
+          otherUser = senderIsAdmin ? msg.receiver : msg.sender;
+        } else {
+          otherUser =
+            msg.sender._id.toString() === userId ? msg.receiver : msg.sender;
+        }
+
         convMap.set(msg.conversationId, {
           conversationId: msg.conversationId,
           user: otherUser,
@@ -159,10 +193,19 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
         });
       }
 
-      // Contar no leídos
+      // Contar no leídos (para admins: cualquier mensaje no leído hacia un admin)
       const conv = convMap.get(msg.conversationId);
-      if (msg.receiver._id.toString() === userId && !msg.read) {
-        conv.unreadCount += 1;
+      if (userRole === "admin") {
+        // Contar no leídos dirigidos a cualquier admin
+        const receiverIsAdmin =
+          (msg.receiver as { role?: string }).role === "admin";
+        if (receiverIsAdmin && !msg.read) {
+          conv.unreadCount += 1;
+        }
+      } else {
+        if (msg.receiver._id.toString() === userId && !msg.read) {
+          conv.unreadCount += 1;
+        }
       }
     }
 
