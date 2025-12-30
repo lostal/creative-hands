@@ -66,17 +66,44 @@ const AdminUsers = () => {
 
   const handleToggleRole = async (userId: string, currentRole: string) => {
     const newRole = currentRole === "admin" ? "user" : "admin";
+    const userToUpdate = users.find((u) => u._id === userId);
+
+    // Mensaje de confirmación específico según el cambio de rol
+    const confirmMessage =
+      newRole === "admin"
+        ? `¿Promover a "${userToUpdate?.name}" a administrador?\n\n` +
+          "• Podrá gestionar productos y categorías\n" +
+          "• Podrá ver y gestionar todos los pedidos\n" +
+          "• Podrá gestionar usuarios\n" +
+          "• No podrá realizar compras\n\n" +
+          "Si el usuario tenía pedidos o mensajes, permanecerán como historial."
+        : `¿Degradar a "${userToUpdate?.name}" a usuario?\n\n` +
+          "• Perderá acceso al panel de administración\n" +
+          "• Podrá realizar compras\n" +
+          "• Podrá usar el chat de soporte";
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
 
     try {
       setActionLoading(userId);
-      const { data } = await api.put<{ success: boolean; user: User }>(
-        `/users/${userId}/role`,
-        { role: newRole },
-      );
+      const { data } = await api.put<{
+        success: boolean;
+        user: User;
+        warning?: string;
+      }>(`/users/${userId}/role`, { role: newRole });
+
       if (data.success) {
         setUsers(
           users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)),
         );
+
+        // Mostrar advertencia si hay historial
+        if (data.warning) {
+          // Usar alert por simplicidad - el toast no está disponible aquí
+          window.alert(`Rol actualizado.\n\n⚠️ ${data.warning}`);
+        }
       }
     } catch (err: unknown) {
       logger.error("Error al cambiar rol:", err);

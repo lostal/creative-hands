@@ -4,6 +4,8 @@
  */
 import { Response } from "express";
 import User from "../models/User";
+import Order from "../models/Order";
+import Message from "../models/Message";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
 import { getErrorForResponse } from "../utils/errors";
@@ -75,6 +77,7 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
 
 /**
  * Actualizar rol de usuario
+ * Incluye verificación de historial y advertencias
  * @route PUT /api/users/:id/role
  */
 export const updateUserRole = async (req: AuthRequest, res: Response) => {
@@ -98,22 +101,69 @@ export const updateUserRole = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { role },
-      { new: true },
-    ).select("-password -loginAttempts -lockUntil");
-
-    if (!user) {
+    // Verificar que el usuario existe
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
         message: "Usuario no encontrado",
       });
     }
 
+    // Si el rol no cambia, no hacer nada
+    if (existingUser.role === role) {
+      return res.json({
+        success: true,
+        user: existingUser,
+        message: "El usuario ya tiene este rol",
+      });
+    }
+
+    // Verificar historial del usuario (pedidos y mensajes)
+    const [orderCount, messageCount] = await Promise.all([
+      Order.countDocuments({ user: userId }),
+      Message.countDocuments({
+        $or: [{ sender: userId }, { receiver: userId }],
+      }),
+    ]);
+
+    const hasHistory = orderCount > 0 || messageCount > 0;
+
+    // Preparar datos de actualización
+    const updateData: { role: string; roleChangedAt?: Date } = { role };
+
+    // Si tiene historial, registrar la fecha del cambio
+    if (hasHistory) {
+      updateData.roleChangedAt = new Date();
+      logger.info(
+        `Cambio de rol con historial: Usuario ${userId} de ${existingUser.role} a ${role}. ` +
+          `Historial: ${orderCount} pedidos, ${messageCount} mensajes.`,
+      );
+    }
+
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select("-password -loginAttempts -lockUntil");
+
+    // Construir mensaje de advertencia si hay historial
+    let warning: string | undefined;
+    if (hasHistory) {
+      const historyParts: string[] = [];
+      if (orderCount > 0) {
+        historyParts.push(`${orderCount} pedido${orderCount > 1 ? "s" : ""}`);
+      }
+      if (messageCount > 0) {
+        historyParts.push(
+          `${messageCount} mensaje${messageCount > 1 ? "s" : ""}`,
+        );
+      }
+      warning = `El usuario tenía ${historyParts.join(" y ")} que permanecerán como historial.`;
+    }
+
     res.json({
       success: true,
       user,
+      warning,
     });
   } catch (error: unknown) {
     logger.error("Error al actualizar rol:", error);

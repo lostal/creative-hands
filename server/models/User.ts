@@ -17,6 +17,8 @@ export interface IUserBase {
   loginAttempts: number;
   /** Fecha hasta la cual la cuenta está bloqueada */
   lockUntil?: Date;
+  /** Fecha en que se cambió el rol (si tenía historial previo) */
+  roleChangedAt?: Date;
 }
 
 /**
@@ -77,6 +79,10 @@ const userSchema = new Schema(
       default: 0,
     },
     lockUntil: {
+      type: Date,
+      default: null,
+    },
+    roleChangedAt: {
       type: Date,
       default: null,
     },

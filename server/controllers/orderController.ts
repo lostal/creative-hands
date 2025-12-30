@@ -31,6 +31,14 @@ interface PopulatedUser {
  */
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
+    // Los administradores no pueden crear pedidos (gestionan la tienda, no compran)
+    if (req.user?.role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Los administradores no pueden realizar pedidos",
+      });
+    }
+
     const { orderItems, shippingAddress } = req.body as {
       orderItems: OrderItemInput[];
       shippingAddress: {

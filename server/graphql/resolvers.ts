@@ -139,6 +139,11 @@ export const resolvers = {
         throw new Error("No autenticado");
       }
 
+      // Los administradores no pueden crear pedidos
+      if (context.user.role === "admin") {
+        throw new Error("Los administradores no pueden realizar pedidos");
+      }
+
       const { orderItems, shippingAddress } = input;
 
       // Obtener productos y validar stock
