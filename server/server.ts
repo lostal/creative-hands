@@ -15,6 +15,7 @@ import jwt from "jsonwebtoken";
 // Apollo Server
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
+import depthLimit from "graphql-depth-limit";
 import { typeDefs } from "./graphql/schema";
 import { resolvers } from "./graphql/resolvers";
 
@@ -57,7 +58,7 @@ const validateEnvironment = (): void => {
 
   if (missing.length > 0) {
     throw new Error(
-      `Variables de entorno requeridas no configuradas: ${missing.join(", ")}`,
+      `Variables de entorno requeridas no configuradas: ${missing.join(", ")}`
     );
   }
 
@@ -68,7 +69,7 @@ const validateEnvironment = (): void => {
 
     if (missingAdmin.length > 0) {
       throw new Error(
-        `CREATE_DEFAULT_ADMIN está activo pero faltan variables: ${missingAdmin.join(", ")}`,
+        `CREATE_DEFAULT_ADMIN está activo pero faltan variables: ${missingAdmin.join(", ")}`
       );
     }
 
@@ -177,7 +178,7 @@ const configureMiddleware = (app: Express): void => {
         },
       },
       crossOriginEmbedderPolicy: false, // Necesario para cargar imágenes de Cloudinary
-    }),
+    })
   );
 
   // Compresión gzip/brotli para respuestas
@@ -187,7 +188,7 @@ const configureMiddleware = (app: Express): void => {
     cors({
       origin: getCorsOrigin(),
       credentials: true,
-    }),
+    })
   );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -225,6 +226,8 @@ const configureGraphQL = async (app: Express): Promise<void> => {
   const apolloServer = new ApolloServer<GraphQLContext>({
     typeDefs,
     resolvers,
+    // Prevenir DoS por queries profundamente anidadas (máximo 5 niveles)
+    validationRules: [depthLimit(5)],
   });
 
   await apolloServer.start();
@@ -280,7 +283,7 @@ const configureGraphQL = async (app: Express): Promise<void> => {
           return {}; // Token inválido
         }
       },
-    }),
+    })
   );
 
   logger.startup("🔮 GraphQL disponible en /graphql");

@@ -234,7 +234,7 @@ const getRelatedUserIds = async (userId: string): Promise<string[]> => {
  */
 const registerUserConnection = async (
   socket: AuthenticatedSocket,
-  io: Server,
+  io: Server
 ) => {
   const { userId, userName, userRole } = socket;
 
@@ -277,7 +277,7 @@ const registerUserConnection = async (
 const handleMessageSend = async (
   socket: AuthenticatedSocket,
   io: Server,
-  data: { receiverId: string; content: string; conversationId?: string },
+  data: { receiverId: string; content: string; conversationId?: string }
 ) => {
   try {
     const {
@@ -307,6 +307,15 @@ const handleMessageSend = async (
       const errorMessage = error.details?.[0]?.message || "Contenido inválido";
       socket.emit("message:error", {
         message: "Mensaje inválido: " + errorMessage,
+      });
+      return;
+    }
+
+    // Verificar que el receptor existe
+    const receiver = await User.findById(receiverId);
+    if (!receiver) {
+      socket.emit("message:error", {
+        message: "Usuario destinatario no encontrado",
       });
       return;
     }
@@ -370,7 +379,7 @@ const handleTyping = (
   socket: AuthenticatedSocket,
   io: Server,
   receiverId: string,
-  isTyping: boolean,
+  isTyping: boolean
 ) => {
   io.to(receiverId).emit("typing:status", {
     userId: socket.userId,
@@ -385,7 +394,7 @@ const handleTyping = (
 const handleMessagesRead = async (
   socket: AuthenticatedSocket,
   io: Server,
-  data: { conversationId: string },
+  data: { conversationId: string }
 ) => {
   try {
     const { conversationId } = data;
@@ -410,7 +419,7 @@ const handleMessagesRead = async (
         {
           read: true,
           readAt: new Date(),
-        },
+        }
       );
     } else {
       // Usuario regular: solo marcar SUS mensajes como leídos
@@ -423,7 +432,7 @@ const handleMessagesRead = async (
         {
           read: true,
           readAt: new Date(),
-        },
+        }
       );
     }
 
@@ -441,7 +450,7 @@ const handleMessagesRead = async (
 
       // El otro usuario es el que NO está en la lista de admins
       otherUserId = conversationParts.find(
-        (part) => !adminIdStrings.includes(part),
+        (part) => !adminIdStrings.includes(part)
       );
     } else {
       // Para usuario regular: el otro es el que no es él

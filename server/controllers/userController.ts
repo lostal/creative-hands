@@ -80,7 +80,7 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
       `Cascada de eliminación para usuario ${userId}: ` +
         `${ordersResult.deletedCount} pedidos, ` +
         `${messagesResult.deletedCount} mensajes, ` +
-        `${reviewsResult.modifiedCount} productos con reviews eliminadas`,
+        `${reviewsResult.modifiedCount} productos con reviews eliminadas`
     );
 
     // Finalmente eliminar el usuario
@@ -149,6 +149,17 @@ export const updateUserRole = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    // Prevenir degradar al último administrador del sistema
+    if (existingUser.role === "admin" && role === "user") {
+      const adminCount = await User.countDocuments({ role: "admin" });
+      if (adminCount <= 1) {
+        return res.status(400).json({
+          success: false,
+          message: "No se puede degradar al último administrador del sistema",
+        });
+      }
+    }
+
     // Verificar historial del usuario (pedidos y mensajes)
     const [orderCount, messageCount] = await Promise.all([
       Order.countDocuments({ user: userId }),
@@ -167,7 +178,7 @@ export const updateUserRole = async (req: AuthRequest, res: Response) => {
       updateData.roleChangedAt = new Date();
       logger.info(
         `Cambio de rol con historial: Usuario ${userId} de ${existingUser.role} a ${role}. ` +
-          `Historial: ${orderCount} pedidos, ${messageCount} mensajes.`,
+          `Historial: ${orderCount} pedidos, ${messageCount} mensajes.`
       );
     }
 
@@ -184,7 +195,7 @@ export const updateUserRole = async (req: AuthRequest, res: Response) => {
       }
       if (messageCount > 0) {
         historyParts.push(
-          `${messageCount} mensaje${messageCount > 1 ? "s" : ""}`,
+          `${messageCount} mensaje${messageCount > 1 ? "s" : ""}`
         );
       }
       warning = `El usuario tenía ${historyParts.join(" y ")} que permanecerán como historial.`;

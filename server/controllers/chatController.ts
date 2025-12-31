@@ -70,10 +70,12 @@ export const getAdmin = async (req: Request, res: Response) => {
 export const getMessages = async (req: AuthRequest, res: Response) => {
   try {
     let { conversationId } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(
       100,
-      Math.max(1, parseInt(req.query.limit as string) || 50),
+      Math.max(1, parseInt(req.query.limit as string) || 50)
     );
 
     if (!conversationId) {
@@ -96,6 +98,17 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
       const otherUserId = conversationId;
       const currentUserId = req.user?.id;
       conversationId = [currentUserId, otherUserId].sort().join("_");
+    }
+
+    // Verificar que el usuario es participante de la conversación (excepto admins)
+    if (userRole !== "admin") {
+      const participants = conversationId.split("_");
+      if (!participants.includes(userId!)) {
+        return res.status(403).json({
+          success: false,
+          message: "No autorizado para ver esta conversación",
+        });
+      }
     }
 
     // Obtener total y mensajes con paginación
