@@ -428,14 +428,27 @@ const handleMessagesRead = async (
     }
 
     // Notificar al remitente que los mensajes fueron leídos
-    const messages = await Message.find({ conversationId }).limit(1);
-    const firstMessage = messages[0];
-    if (firstMessage) {
-      const otherUserId =
-        firstMessage.sender.toString() === userId
-          ? firstMessage.receiver.toString()
-          : firstMessage.sender.toString();
+    // Para admins: el otro usuario es el usuario regular en el conversationId
+    // Para usuarios: es el otro participante
+    const conversationParts = conversationId.split("_");
+    let otherUserId: string | undefined;
 
+    if (userRole === "admin") {
+      // Para admin: buscar el usuario que NO es admin en la conversación
+      // El conversationId tiene formato "userId1_userId2" ordenados
+      const admins = await User.find({ role: "admin" }).select("_id");
+      const adminIdStrings = admins.map((a) => a._id.toString());
+
+      // El otro usuario es el que NO está en la lista de admins
+      otherUserId = conversationParts.find(
+        (part) => !adminIdStrings.includes(part),
+      );
+    } else {
+      // Para usuario regular: el otro es el que no es él
+      otherUserId = conversationParts.find((part) => part !== userId);
+    }
+
+    if (otherUserId) {
       io.to(otherUserId).emit("messages:read", { conversationId });
     }
   } catch (error) {
