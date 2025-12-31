@@ -56,47 +56,67 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
     // Crear mapa para acceso rápido
     const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
-    // Validar stock y calcular precio total
+    // Validar stock y decrementar ATÓMICAMENTE para evitar race conditions
+    // Usamos findOneAndUpdate con condición de stock >= cantidad
     let totalPrice = 0;
-    const stockUpdates: {
-      updateOne: {
-        filter: { _id: Types.ObjectId };
-        update: { $inc: { stock: number } };
-      };
+    const updatedProducts: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
     }[] = [];
 
     for (const item of orderItems) {
       const product = productMap.get(item.product.toString());
 
       if (!product) {
+        // Revertir stock de productos ya decrementados
+        for (const updated of updatedProducts) {
+          await Product.findByIdAndUpdate(updated.id, {
+            $inc: { stock: updated.quantity },
+          });
+        }
         return res.status(404).json({
           success: false,
           message: `Producto ${item.product} no encontrado`,
         });
       }
 
-      if (product.stock < item.quantity) {
+      // Operación ATÓMICA: solo decrementa si hay stock suficiente
+      const result = await Product.findOneAndUpdate(
+        {
+          _id: item.product,
+          stock: { $gte: item.quantity }, // Condición: stock >= cantidad
+        },
+        {
+          $inc: { stock: -item.quantity },
+        },
+        { new: true },
+      );
+
+      if (!result) {
+        // Stock insuficiente - revertir productos ya decrementados
+        for (const updated of updatedProducts) {
+          await Product.findByIdAndUpdate(updated.id, {
+            $inc: { stock: updated.quantity },
+          });
+        }
         return res.status(400).json({
           success: false,
-          message: `Stock insuficiente para ${product.name}`,
+          message: `Stock insuficiente para ${product.name}. Disponible: ${product.stock}`,
         });
       }
 
+      // Guardar info para posible rollback
+      updatedProducts.push({
+        id: item.product,
+        name: product.name,
+        price: product.price,
+        quantity: item.quantity,
+      });
+
       // Usar precio de la BD (seguridad)
       totalPrice += product.price * item.quantity;
-
-      // Preparar actualización de stock para bulkWrite
-      stockUpdates.push({
-        updateOne: {
-          filter: { _id: new Types.ObjectId(item.product) },
-          update: { $inc: { stock: -item.quantity } },
-        },
-      });
-    }
-
-    // Actualizar stock en una sola operación
-    if (stockUpdates.length > 0) {
-      await Product.bulkWrite(stockUpdates);
     }
 
     // Crear el pedido con status 'pending'
@@ -109,7 +129,18 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       status: "pending",
     });
 
-    await order.save();
+    try {
+      await order.save();
+    } catch (saveError) {
+      // Si falla la creación del pedido, revertir el stock
+      logger.error("Error al guardar pedido, revirtiendo stock:", saveError);
+      for (const updated of updatedProducts) {
+        await Product.findByIdAndUpdate(updated.id, {
+          $inc: { stock: updated.quantity },
+        });
+      }
+      throw saveError; // Re-throw para que el catch exterior lo maneje
+    }
 
     await order.populate("user", "name email");
     await order.populate("orderItems.product");
