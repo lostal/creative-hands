@@ -390,20 +390,42 @@ const handleMessagesRead = async (
   try {
     const { conversationId } = data;
     const userId = socket.userId;
+    const userRole = socket.userRole;
 
     if (!userId) return;
 
-    await Message.updateMany(
-      {
-        conversationId,
-        receiver: userId,
-        read: false,
-      },
-      {
-        read: true,
-        readAt: new Date(),
-      },
-    );
+    // Para admins en chat compartido: marcar como leídos todos los mensajes
+    // dirigidos a cualquier admin en esta conversación
+    if (userRole === "admin") {
+      // Obtener todos los admins para marcar mensajes dirigidos a cualquiera de ellos
+      const admins = await User.find({ role: "admin" }).select("_id");
+      const adminIds = admins.map((a) => a._id);
+
+      await Message.updateMany(
+        {
+          conversationId,
+          receiver: { $in: adminIds },
+          read: false,
+        },
+        {
+          read: true,
+          readAt: new Date(),
+        },
+      );
+    } else {
+      // Usuario regular: solo marcar SUS mensajes como leídos
+      await Message.updateMany(
+        {
+          conversationId,
+          receiver: userId,
+          read: false,
+        },
+        {
+          read: true,
+          readAt: new Date(),
+        },
+      );
+    }
 
     // Notificar al remitente que los mensajes fueron leídos
     const messages = await Message.find({ conversationId }).limit(1);
