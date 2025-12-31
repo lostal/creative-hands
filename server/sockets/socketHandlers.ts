@@ -62,7 +62,11 @@ export interface ServerToClientEvents {
 
 /** Eventos enviados del cliente al servidor */
 export interface ClientToServerEvents {
-  "message:send": (data: { receiverId: string; content: string }) => void;
+  "message:send": (data: {
+    receiverId: string;
+    content: string;
+    conversationId?: string; // Optional: usar conversationId existente
+  }) => void;
   "typing:start": (data: { receiverId: string }) => void;
   "typing:stop": (data: { receiverId: string }) => void;
   "messages:read": (data: { conversationId: string }) => void;
@@ -273,10 +277,14 @@ const registerUserConnection = async (
 const handleMessageSend = async (
   socket: AuthenticatedSocket,
   io: Server,
-  data: { receiverId: string; content: string },
+  data: { receiverId: string; content: string; conversationId?: string },
 ) => {
   try {
-    const { receiverId, content } = data;
+    const {
+      receiverId,
+      content,
+      conversationId: existingConversationId,
+    } = data;
     const senderId = socket.userId;
 
     if (!senderId) {
@@ -306,8 +314,9 @@ const handleMessageSend = async (
     // Sanitizar HTML para prevenir XSS
     const sanitizedContent = sanitizeHtml(validatedContent);
 
-    // Generar ID de conversación (ordenado para consistencia)
-    const conversationId = [senderId, receiverId].sort().join("_");
+    // Usar conversationId existente si se proporciona, sino generar uno nuevo
+    const conversationId =
+      existingConversationId || [senderId, receiverId].sort().join("_");
 
     // Guardar mensaje en DB (usando contenido sanitizado)
     const message = await Message.create({

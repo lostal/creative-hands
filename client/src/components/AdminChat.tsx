@@ -130,15 +130,16 @@ const AdminChat = () => {
     setSelectedConversation(conversation);
 
     // Marcar mensajes como leídos localmente y en el servidor
-    if (socket && user) {
-      const userId = user.id || user._id;
-      const conversationId = [userId, conversation.user._id].sort().join("_");
-      socket.emit("messages:read", { conversationId });
+    // IMPORTANTE: Usar el conversationId REAL de la conversación, no generar uno nuevo
+    if (socket) {
+      socket.emit("messages:read", {
+        conversationId: conversation.conversationId,
+      });
 
       // Actualizar unreadCount localmente para UI inmediata
       setConversations((prev) =>
         prev.map((conv) =>
-          conv.conversationId === conversationId
+          conv.conversationId === conversation.conversationId
             ? { ...conv, unreadCount: 0 }
             : conv,
         ),
@@ -146,8 +147,9 @@ const AdminChat = () => {
     }
 
     try {
+      // Usar el conversationId REAL de la conversación
       const { data } = await api.get<{ messages: Message[] }>(
-        `/chat/messages/${conversation.user._id}`,
+        `/chat/messages/${conversation.conversationId}`,
       );
       setMessages(data.messages);
     } catch (error) {
@@ -159,9 +161,11 @@ const AdminChat = () => {
     e.preventDefault();
     if (!newMessage.trim() || !socket || !selectedConversation) return;
 
+    // IMPORTANTE: Enviar el conversationId existente para evitar crear chats duplicados
     const messageData = {
       receiverId: selectedConversation.user._id,
       content: newMessage.trim(),
+      conversationId: selectedConversation.conversationId,
     };
 
     socket.emit("message:send", messageData);
