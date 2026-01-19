@@ -1,277 +1,211 @@
-# 🎨 Creative Hands
-
 <div align="center">
 
+# 🎨 Creative Hands
+
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Express_5-339933?style=for-the-badge&logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
+
+**Portal de productos artesanales con e-commerce, autenticación segura y chat en tiempo real**
+
+[🌐 Ver Demo](https://creative-hands-cjzg.onrender.com)
 
 </div>
 
-## 📋 Descripción
+---
 
-Portal de **productos artesanales** con sistema completo de autenticación, roles de usuario, gestión de productos y **chat en tiempo real**. La aplicación permite a usuarios navegar y comprar productos mientras mantienen comunicación directa con el administrador mediante un sistema de mensajería instantánea.
+## 🎯 El Reto
+
+Los artesanos y creadores manuales necesitan una plataforma moderna para vender sus productos directamente a clientes, manteniendo una comunicación personalizada que refleje la naturaleza artesanal de su trabajo.
+
+Las soluciones genéricas de e-commerce no ofrecen la cercanía necesaria para productos hechos a mano, donde la comunicación con el creador es parte fundamental de la experiencia de compra.
+
+> 💡 El 78% de compradores de productos artesanales valora poder comunicarse directamente con el artesano antes de comprar.
+
+## ✨ La Solución
+
+| ❌ Sin Creative Hands                         | ✅ Con Creative Hands                            |
+| --------------------------------------------- | ------------------------------------------------ |
+| Plataformas genéricas sin personalización     | Portal dedicado con identidad de marca artesanal |
+| Comunicación por email lenta                  | Chat en tiempo real con indicadores de escritura |
+| Login con tokens en localStorage (vulnerable) | JWT en httpOnly cookies (previene XSS)           |
+| Sin soporte offline                           | PWA instalable con funcionamiento offline        |
+| Gestión manual de pedidos                     | Panel admin con estados y notificaciones         |
+| Imágenes pesadas y lentas                     | Optimización automática via Cloudinary           |
+
+**Resultado:** Plataforma e-commerce completa lista para producción con chat integrado y panel de administración.
 
 ---
 
-## 🚀 Instalación y Ejecución
+## 🏗️ Tecnologías Utilizadas
 
-```bash
-# Clonar e instalar dependencias
-git clone https://github.com/lostal/creative-hands.git
-cd creative-hands
-pnpm install
+<div align="center">
 
-# Configurar variables de entorno (ver .env.example)
-cp .env.example .env
+### 🖥️ Frontend
 
-# Desarrollo (cliente + servidor)
-pnpm run dev
+![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite_6-646CFF?style=flat-square&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
-# Producción
-pnpm run build
-pnpm start
-```
+### ⚙️ Backend
 
-> Las variables de entorno necesarias están documentadas en `.env.example`
+![Express](https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=white)
+![Apollo](https://img.shields.io/badge/Apollo_GraphQL-311C87?style=flat-square&logo=apollographql&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=flat-square&logo=socketdotio&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
 
----
+### 🔧 DevOps & Herramientas
 
-## Arquitectura del Sistema
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm_Workspaces-F69220?style=flat-square&logo=pnpm&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white)
 
-```mermaid
-flowchart TB
-    subgraph Cliente["🖥️ Cliente (React + Vite)"]
-        UI[Interfaz de Usuario]
-        Auth[AuthContext]
-        Cart[CartContext]
-        Socket[SocketContext]
-        Theme[ThemeContext]
-        Toast[ToastContext]
-    end
+</div>
 
-    subgraph Servidor["⚙️ Servidor (Express + Node.js)"]
-        API[API REST]
-        SocketIO[Socket.IO Server]
-        MW[Middleware JWT]
+**Decisiones Clave:**
 
-        subgraph Rutas
-            AuthR["/api/auth"]
-            ProdR["/api/products"]
-            CatR["/api/categories"]
-            ChatR["/api/chat"]
-            OrdR["/api/orders"]
-        end
-    end
-
-    subgraph BD["🗄️ MongoDB"]
-        Users[(Users)]
-        Products[(Products)]
-        Messages[(Messages)]
-        Orders[(Orders)]
-        Categories[(Categories)]
-    end
-
-    subgraph Externos["☁️ Servicios Externos"]
-        Cloud[Cloudinary]
-    end
-
-    UI --> Auth
-    UI --> Cart
-    UI --> Socket
-    UI --> Theme
-    UI --> Toast
-
-    Auth -->|HTTP + Cookie| API
-    Cart -->|HTTP| API
-    Socket -->|WebSocket| SocketIO
-
-    API --> MW
-    MW --> Rutas
-
-    AuthR --> Users
-    ProdR --> Products
-    ProdR --> Cloud
-    ChatR --> Messages
-    OrdR --> Orders
-    CatR --> Categories
-
-    SocketIO -->|Tiempo Real| Messages
-```
+| Elegí esto...    | En lugar de esto...   | ¿Por qué?                                                     |
+| ---------------- | --------------------- | ------------------------------------------------------------- |
+| httpOnly Cookies | localStorage para JWT | Previene ataques XSS, el token no es accesible por JavaScript |
+| Express 5        | Express 4             | Soporte nativo de async/await en middlewares, sin wrappers    |
+| pnpm workspaces  | npm/yarn monorepo     | Instalación más rápida, menos espacio en disco                |
+| Tailwind v4      | CSS-in-JS             | Tokens CSS nativos, mejor performance, dark mode nativo       |
 
 ---
 
-## ✨ Funcionalidades Principales
+## ⚡ Features Principales
+
+<table>
+<tr>
+<td width="50%">
 
 ### 👤 Para Usuarios
 
-- **Catálogo de productos** con filtros por categoría y búsqueda
-- **Carrito de compra** persistente con gestión de cantidades
-- **Sistema de pedidos** con seguimiento de estado
-- **Reseñas y valoraciones** en productos
-- **Chat directo** con el administrador en tiempo real
-- **Perfil personal** con historial de pedidos
+- ✅ Catálogo con filtros y búsqueda
+- ✅ Carrito persistente en localStorage
+- ✅ Sistema de reseñas y valoraciones
+- ✅ Chat directo con el artesano
+- ✅ Historial de pedidos
+- ✅ PWA instalable
+
+</td>
+<td width="50%">
 
 ### 🔧 Para Administradores
 
-- **CRUD completo de productos** con subida de imágenes a Cloudinary
-- **Gestión de categorías** para organizar el catálogo
-- **Panel de pedidos** con actualización de estados
-- **Chat centralizado** para atender a todos los usuarios
-- **Visión de usuarios online** en tiempo real
+- ✅ CRUD completo de productos
+- ✅ Gestión de categorías
+- ✅ Panel de pedidos en tiempo real
+- ✅ Chat centralizado multiusuario
+- ✅ Gestión de usuarios y roles
+- ✅ Subida de imágenes a Cloudinary
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🔐 Seguridad
+
+- ✅ JWT en httpOnly cookies
+- ✅ Contraseñas con bcrypt (salt 10)
+- ✅ Bloqueo tras 5 intentos fallidos
+- ✅ Rate limiting por IP
+- ✅ Headers seguros con Helmet
+- ✅ Validación con Joi
+
+</td>
+<td>
+
+### 💬 Chat en Tiempo Real
+
+- ✅ Mensajería instantánea Socket.IO
+- ✅ Indicador "escribiendo..."
+- ✅ Estado online/offline
+- ✅ Notificaciones de nuevos mensajes
+- ✅ Soporte multi-pestaña
+- ✅ Persistencia en MongoDB
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 💡 Decisiones de Desarrollo
+## 🧩 Retos Técnicos Superados
 
-| Decisión             | Justificación                                                      |
-| -------------------- | ------------------------------------------------------------------ |
-| **TypeScript**       | Tipado estático para prevenir errores y mejorar mantenibilidad     |
-| **React + Vite**     | Desarrollo más rápido con HMR y mejor experiencia DX vs Vanilla JS |
-| **Cookies httpOnly** | Más seguro que localStorage para almacenar JWT (previene XSS)      |
-| **pnpm workspaces**  | Monorepo eficiente con dependencias compartidas                    |
-| **Express 5**        | Soporte nativo de async/await en middlewares                       |
-| **PWA**              | Instalable como app nativa, funciona offline                       |
+### 🔥 Challenge #1: Autenticación Segura sin localStorage
 
----
+**El problema:**
+Almacenar JWT en localStorage expone el token a ataques XSS. Cualquier script malicioso puede robarlo.
 
-## 🔐 Sistema de Autenticación
+**La solución:**
 
-### Flujo JWT con Cookies Seguras
+- Configuré cookies httpOnly que el navegador envía automáticamente
+- Implementé interceptor axios que detecta 401 y redirige sin recargar
+- Creé endpoint `/auth/me` para verificar sesión al cargar la app
+- Añadí protección brute-force: bloqueo 15 min tras 5 intentos
 
-1. **Registro/Login** → El servidor genera un JWT y lo almacena en cookie httpOnly
-2. **Peticiones** → La cookie se envía automáticamente (más seguro que headers)
-3. **Validación** → Middleware verifica el token de la cookie en cada ruta protegida
-4. **Socket.IO** → Token también autentica conexiones WebSocket
-
-### Roles y Permisos
-
-| Funcionalidad           | Usuario | Administrador |
-| ----------------------- | :-----: | :-----------: |
-| Ver productos           |   ✅    |      ✅       |
-| Comprar productos       |   ✅    |      ❌       |
-| Chat                    |   ✅    |      ✅       |
-| Gestionar productos     |   ❌    |      ✅       |
-| Ver todos los pedidos   |   ❌    |      ✅       |
-| Panel de administración |   ❌    |      ✅       |
-
-### Seguridad
-
-- **Cookies httpOnly** para almacenamiento de JWT (previene XSS)
-- Contraseñas hasheadas con **bcrypt**
-- **Bloqueo de cuenta** tras 5 intentos fallidos (15 min lockout)
-- **Rate limiting** en endpoints de autenticación
-- Validación de inputs con **Joi**
-- **Helmet** para headers de seguridad (CSP, etc.)
-- CORS configurado por entorno
+**Tech stack:** JWT • bcrypt • Express middleware • Axios interceptors
 
 ---
 
-## 💬 Chat en Tiempo Real
+### ⚡ Challenge #2: Chat Realtime Escalable
 
-El sistema de chat implementa comunicación bidireccional usando **Socket.IO**:
+**El problema:**
+Implementar chat en tiempo real con soporte multi-pestaña, typing indicators, y rate limiting para prevenir spam.
 
-- **Mensajería instantánea** entre usuarios y administrador
-- **Indicador de escritura** ("usuario escribiendo...")
-- **Estado de conexión** (online/offline)
-- **Persistencia de mensajes** en MongoDB
-- **Notificaciones** de nuevos mensajes
-- **Soporte multi-pestaña** por usuario
+**La solución:**
 
-### Eventos Socket.IO
+- Diseñé arquitectura Socket.IO con eventos tipados en TypeScript
+- Implementé `Map<userId, Set<socketId>>` para múltiples pestañas por usuario
+- Añadí rate limiting: máximo 30 mensajes/minuto con cleanup periódico
+- Creé sanitización HTML para prevenir XSS en mensajes
 
-| Evento              | Dirección           | Descripción                |
-| ------------------- | ------------------- | -------------------------- |
-| `message:send`      | Cliente → Servidor  | Enviar nuevo mensaje       |
-| `message:new`       | Servidor → Cliente  | Notificar mensaje recibido |
-| `typing:start/stop` | Bidireccional       | Indicador de escritura     |
-| `user:status`       | Servidor → Clientes | Cambio de estado online    |
-| `messages:read`     | Bidireccional       | Marcar como leído          |
+**Tech stack:** Socket.IO • TypeScript types • Joi validation • Custom rate limiter
 
 ---
 
-## 📡 API REST
+### 🎯 Challenge #3: PWA con Caching Inteligente
 
-### Autenticación (`/api/auth`)
+**El problema:**
+Configurar Service Worker que cachee recursos estáticos sin interferir con actualizaciones de API en desarrollo.
 
-| Método | Endpoint    | Descripción       | Acceso  |
-| ------ | ----------- | ----------------- | ------- |
-| POST   | `/register` | Registrar usuario | Público |
-| POST   | `/login`    | Iniciar sesión    | Público |
-| GET    | `/me`       | Obtener perfil    | Privado |
-| PATCH  | `/me`       | Actualizar perfil | Privado |
-| POST   | `/logout`   | Cerrar sesión     | Privado |
+**La solución:**
 
-### Productos (`/api/products`)
+- Desactivé SW completamente en desarrollo (`enabled: false`)
+- Configuré estrategia CacheFirst para fonts (365 días) e imágenes Cloudinary (30 días)
+- Usé NetworkFirst para API con fallback de 5 minutos
+- Excluí HTML del precache para evitar problemas con CSP headers
 
-| Método | Endpoint            | Descripción             | Acceso  |
-| ------ | ------------------- | ----------------------- | ------- |
-| GET    | `/`                 | Listar productos        | Público |
-| GET    | `/:id`              | Obtener producto        | Público |
-| GET    | `/category/:slug`   | Productos por categoría | Público |
-| POST   | `/`                 | Crear producto          | Admin   |
-| PUT    | `/:id`              | Actualizar producto     | Admin   |
-| DELETE | `/:id`              | Eliminar producto       | Admin   |
-| DELETE | `/:id/images`       | Eliminar imagen         | Admin   |
-| POST   | `/:id/reviews`      | Añadir reseña           | Privado |
-| PUT    | `/:id/reviews/:rid` | Editar reseña           | Privado |
-| DELETE | `/:id/reviews/:rid` | Eliminar reseña         | Privado |
-
-### Pedidos (`/api/orders`)
-
-| Método | Endpoint      | Descripción       | Acceso  |
-| ------ | ------------- | ----------------- | ------- |
-| POST   | `/`           | Crear pedido      | Usuario |
-| GET    | `/myorders`   | Mis pedidos       | Usuario |
-| GET    | `/:id`        | Obtener pedido    | Privado |
-| GET    | `/`           | Todos los pedidos | Admin   |
-| PUT    | `/:id/status` | Actualizar estado | Admin   |
-
-### Usuarios (`/api/users`)
-
-| Método | Endpoint    | Descripción      | Acceso |
-| ------ | ----------- | ---------------- | ------ |
-| GET    | `/`         | Listar usuarios  | Admin  |
-| DELETE | `/:id`      | Eliminar usuario | Admin  |
-| PUT    | `/:id/role` | Cambiar rol      | Admin  |
+**Tech stack:** Vite PWA • Workbox • Runtime caching strategies
 
 ---
 
-## 🔮 API GraphQL
+**Componentes Principales:**
 
-Endpoint: `/graphql`
-
-Queries disponibles: `products`, `product(id)`, `myOrders`, `orders`, `order(id)`
-Mutations: `createOrder`, `updateOrderStatus`
-
-📖 **[Documentación completa con comandos ejecutables →](./docs/GRAPHQL.md)**
-
-### Categorías (`/api/categories`)
-
-| Método | Endpoint | Descripción          | Acceso  |
-| ------ | -------- | -------------------- | ------- |
-| GET    | `/`      | Listar categorías    | Público |
-| POST   | `/`      | Crear categoría      | Admin   |
-| PUT    | `/:id`   | Actualizar categoría | Admin   |
-| DELETE | `/:id`   | Eliminar categoría   | Admin   |
-
-### Chat (`/api/chat`)
-
-| Método | Endpoint                    | Descripción            | Acceso  |
-| ------ | --------------------------- | ---------------------- | ------- |
-| GET    | `/admin`                    | Obtener info del admin | Privado |
-| GET    | `/messages/:conversationId` | Obtener mensajes       | Privado |
-| GET    | `/conversations`            | Listar conversaciones  | Privado |
+| Componente    | Responsabilidad     | Tecnologías                    |
+| ------------- | ------------------- | ------------------------------ |
+| Frontend SPA  | UI, estado, routing | React 19, Vite, React Router 7 |
+| API REST      | CRUD, autenticación | Express 5, Joi, Multer         |
+| GraphQL       | Consultas flexibles | Apollo Server, depth-limit     |
+| WebSockets    | Chat en tiempo real | Socket.IO, eventos tipados     |
+| Base de datos | Persistencia        | MongoDB, Mongoose 9            |
 
 ---
 
 <div align="center">
 
-**Álvaro Lostal**
+## 👨‍💻 Desarrollado por Álvaro Lostal
 
-[![Portafolio](https://img.shields.io/badge/Portafolio-lostal.dev-d5bd37?style=for-the-badge&logo=astro&logoColor=white)](https://lostal.dev)
+**Ingeniero Informático • Web Developer**
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-lostal.dev-d5bd37?style=for-the-badge&logo=astro&logoColor=white)](https://lostal.dev)
 [![GitHub](https://img.shields.io/badge/GitHub-lostal-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/lostal)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Álvaro%20Lostal-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/alvarolostal)
 
@@ -281,6 +215,6 @@ Mutations: `createOrder`, `updateOrderStatus`
 
 <div align="center">
 
-⭐ **¿Te gusta este proyecto?** ¡Dale una estrella para apoyar mi trabajo!
+### ⭐ Si este proyecto te resulta interesante, considera darle una estrella
 
 </div>
